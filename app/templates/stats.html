@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8"/>
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  <!-- Bootstrap CSS -->
+  <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous"
+  />
+
+  <!-- Neue Haas Grotesk font -->
+  <link
+          href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
+          rel="stylesheet"
+  />
+
+  <!-- Favicon -->
+  <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
+  />
+  <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
+  />
+  <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
+  />
+  <link
+          rel="manifest"
+          href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
+  />
+  <link
+          rel="mask-icon"
+          href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
+          color="#5bbad5"
+  />
+  <meta name="msapplication-TileColor" content="#da532c"/>
+  <meta name="theme-color" content="#ffffff"/>
+  <title>Spotify Stats</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
+</head>
+<body>
+<a href="https://rawcsav.com" class="homepage-link">
+  <img
+          src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1691358044/Screenshot_2023-08-03_at_12.28.52_AM_o9i44t-removebg-preview_r3lypt.png"
+          alt="Homepage"
+  />
+</a>
+<div class="content-container">
+  <h1>Top Tracks:</h1>
+  {% for period, tracks in top_tracks.items() %}
+  <h2>{{ period.replace('_', ' ').title() }}:</h2>
+  <p class="term-definition">
+    {% if period == "long_term" %} Computed over several years of data. {%
+    elif period == "medium_term" %} Computed approximately over the last 6
+    months. {% else %} Computed approximately over the last 4 weeks. {%
+    endif %}
+  </p>
+  <ul>
+    {% for track in tracks['items'] %}
+    <li>{{ track['name'] }} by {{ track['artists'][0]['name'] }}</li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+
+  <h1>Top Artists:</h1>
+  {% for period, artists in top_artists.items() %}
+  <h2>{{ period.replace('_', ' ').title() }}:</h2>
+  <p class="term-definition">
+    {% if period == "long_term" %} Computed over several years of data. {%
+    elif period == "medium_term" %} Computed approximately over the last 6
+    months. {% else %} Computed approximately over the last 4 weeks. {%
+    endif %}
+  </p>
+  <ul>
+    {% for artist in artists['items'] %}
+    <li>{{ artist['name'] }}</li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+
+  <!-- Neue Haas Grotesk font -->
+  <link href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro" rel="stylesheet"/>
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"/>
+  <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}"/>
+  <link rel="mask-icon" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" color="#5bbad5"/>
+  <meta name="msapplication-TileColor" content="#da532c"/>
+  <meta name="theme-color" content="#ffffff"/>
+  <title>Stats & Recs</title>
+
+  <!-- Link to the external CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+
+<div class="container">
+  <h1>Spotify Stats & Recommendations</h1>
+  <a href="https://rawcsav.com" class="homepage-link">
+    <img
+            src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1691358044/Screenshot_2023-08-03_at_12.28.52_AM_o9i44t-removebg-preview_r3lypt.png"
+            alt="Homepage"
+    />
+  </a>
+
+  <div class="login-button">
+    <a href="/login" class="btn btn-primary"> Login with Spotify </a>
+  </div>
+  <div class="subtext">
+    <p>
+      The code for this project can be found on
+      <a
+              href="https://github.com/rawcsav/SpotifyFlask"
+              target="_blank"
+              rel="noopener noreferrer"
+      >GitHub</a
+      >.
+    </p>
+    <p>
+      To use this hosted version of the application, you will need to
+      contact me with your name and the email attached to your Spotify
+      account to be added to the Spotify app in the Developer Console. I've
+      applied to open up the app to more users, but am currently waiting for
+      a response from Spotify.
+    </p>
+  </div>
+</div>
+</body>
+</html>
