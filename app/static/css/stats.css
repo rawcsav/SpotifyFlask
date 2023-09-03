@@ -3,10 +3,18 @@ body {
   background-color: #96b6c5;
 }
 
+h1 {
+  text-align: center;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
 .content-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
+  max-width: 90%;
+  margin: 20px auto;
+  padding: 15px;
   background-color: #adc4ce;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -14,6 +22,7 @@ body {
 .term-definition {
   font-size: 0.9em;
   font-style: italic;
+  text-align: center;
   margin-bottom: 10px;
 }
 
@@ -28,4 +37,50 @@ body {
 .homepage-link img {
   height: 80px;
   width: auto;
+}
+
+.carousel-content {
+  font-family: "Helvetica Neue", serif; /* Example font */
+  font-size: 10px;
+  color: #555;
+}
+
+.carousel-content h1 {
+  color: #333; /* Darker color for headers */
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.carousel-content h2 {
+  color: #333; /* Darker color for headers */
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.carousel-content h1,
+.carousel-content h2 {
+  margin: 0.5em 0; /* Reducing margins */
+}
+
+.carousel-content ul {
+  columns: 2; /* Displaying items in 2 columns */
+  max-height: 900px; /* Setting a max height */
+  overflow-y: auto; /* Making it scrollable if content exceeds max height */
+}
+
+.carousel-control-prev {
+  left: -12%; /* default is 0 */
+}
+
+.carousel-control-next {
+  right: -12%; /* default is 0 */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 30px;
+  height: 30px;
+  color: #000000; /* or any color of your choice */
 }

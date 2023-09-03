@@ -24,7 +24,15 @@ def search():
 
 @bp.route('/genres', methods=['GET'])
 def genres():
+    # Check if genres are already in session
+    if 'genre_seeds' in session:
+        return json.dumps(session['genre_seeds'])
+
     access_token = session['tokens'].get('access_token')
     sp = Spotify(auth=access_token)
     genres = sp.recommendation_genre_seeds()
+
+    # Store the genres in session for future use
+    session['genre_seeds'] = genres
+
     return json.dumps(genres)

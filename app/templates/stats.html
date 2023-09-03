@@ -1,98 +1,171 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8"/>
-  <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-  />
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <!-- Neue Haas Grotesk font -->
+    <link
+      href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
+      rel="stylesheet"
+    />
+    <!-- Favicon -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
+    />
+    <link
+      rel="mask-icon"
+      href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
+      color="#5bbad5"
+    />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Spotify Stats</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/stats.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Spotify Stats</h1>
+    <a href="https://rawcsav.com" class="homepage-link">
+      <img
+        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1691358044/Screenshot_2023-08-03_at_12.28.52_AM_o9i44t-removebg-preview_r3lypt.png"
+        alt="Homepage"
+      />
+    </a>
+    <div class="content-container">
+      <!-- Bootstrap Carousel component -->
+      <div id="spotifyStatsCarousel" class="carousel slide">
+        <div class="carousel-inner">
+          <!-- Slide for Top Artists -->
+          <div class="carousel-item active">
+            <div class="carousel-content">
+              <h1>Top Artists</h1>
+              <div class="row">
+                {% for period, artists in top_artists.items() %}
+                <div class="col-md-4">
+                  <h2>{{ period.replace('_', ' ').title() }}:</h2>
+                  <p class="term-definition">
+                    {% if period == "long_term" %} Computed over several years
+                    of data. {% elif period == "medium_term" %} Computed
+                    approximately over the last 6 months. {% else %} Computed
+                    approximately over the last 4 weeks. {% endif %}
+                  </p>
+                  <ul>
+                    {% for artist in artists['items'] %}
+                    <li>{{ artist['name'] }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
 
-  <!-- Bootstrap CSS -->
-  <link
-          rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous"
-  />
+          <!-- Slide for Top Tracks -->
+          <div class="carousel-item">
+            <div class="carousel-content">
+              <h1>Top Tracks</h1>
+              <div class="row">
+                {% for period, tracks in top_tracks.items() %}
+                <div class="col-md-4">
+                  <h2>{{ period.replace('_', ' ').title() }}:</h2>
+                  <p class="term-definition">
+                    {% if period == "long_term" %} Computed over several years
+                    of data. {% elif period == "medium_term" %} Computed
+                    approximately over the last 6 months. {% else %} Computed
+                    approximately over the last 4 weeks. {% endif %}
+                  </p>
+                  <ul>
+                    {% for track in tracks['items'] %}
+                    <li>
+                      {{ track['name'] }} by {{ track['artists'][0]['name'] }}
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <!-- Slide for Top Genres -->
+          <div class="carousel-item">
+            <div class="carousel-content">
+              <h1>Top Genres</h1>
+              <div class="row">
+                {% for period, genres in sorted_genres.items() %}
+                <div class="col-md-4">
+                  <h2>{{ period.replace('_', ' ').title() }}:</h2>
+                  <p class="term-definition">
+                    {% if period == "long_term" %} Computed over several years
+                    of data. {% elif period == "medium_term" %} Computed
+                    approximately over the last 6 months. {% else %} Computed
+                    approximately over the last 4 weeks. {% endif %}
+                  </p>
+                  <ul>
+                    {% for genre, count in genres %}
+                    <li>{{ genre }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <!-- Neue Haas Grotesk font -->
-  <link
-          href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
-          rel="stylesheet"
-  />
-
-  <!-- Favicon -->
-  <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
-  />
-  <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
-  />
-  <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
-  />
-  <link
-          rel="manifest"
-          href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
-  />
-  <link
-          rel="mask-icon"
-          href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
-          color="#5bbad5"
-  />
-  <meta name="msapplication-TileColor" content="#da532c"/>
-  <meta name="theme-color" content="#ffffff"/>
-  <title>Spotify Stats</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
-</head>
-<body>
-<a href="https://rawcsav.com" class="homepage-link">
-  <img
-          src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1691358044/Screenshot_2023-08-03_at_12.28.52_AM_o9i44t-removebg-preview_r3lypt.png"
-          alt="Homepage"
-  />
-</a>
-<div class="content-container">
-  <h1>Top Tracks:</h1>
-  {% for period, tracks in top_tracks.items() %}
-  <h2>{{ period.replace('_', ' ').title() }}:</h2>
-  <p class="term-definition">
-    {% if period == "long_term" %} Computed over several years of data. {%
-    elif period == "medium_term" %} Computed approximately over the last 6
-    months. {% else %} Computed approximately over the last 4 weeks. {%
-    endif %}
-  </p>
-  <ul>
-    {% for track in tracks['items'] %}
-    <li>{{ track['name'] }} by {{ track['artists'][0]['name'] }}</li>
-    {% endfor %}
-  </ul>
-  {% endfor %}
-
-  <h1>Top Artists:</h1>
-  {% for period, artists in top_artists.items() %}
-  <h2>{{ period.replace('_', ' ').title() }}:</h2>
-  <p class="term-definition">
-    {% if period == "long_term" %} Computed over several years of data. {%
-    elif period == "medium_term" %} Computed approximately over the last 6
-    months. {% else %} Computed approximately over the last 4 weeks. {%
-    endif %}
-  </p>
-  <ul>
-    {% for artist in artists['items'] %}
-    <li>{{ artist['name'] }}</li>
-    {% endfor %}
-  </ul>
-  {% endfor %}
-</div>
-</body>
+        <!-- Carousel controls -->
+        <a
+          class="carousel-control-prev"
+          href="#spotifyStatsCarousel"
+          role="button"
+          data-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a
+          class="carousel-control-next"
+          href="#spotifyStatsCarousel"
+          role="button"
+          data-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+  </body>
 </html>

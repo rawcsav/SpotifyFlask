@@ -43,6 +43,9 @@ def get_recommendations():
         tempo_min, tempo_max = map(float, request.form.get('tempo_slider').split(','))
         danceability_min, danceability_max = map(float, request.form.get('danceability_slider').split(','))
         valence_min, valence_max = map(float, request.form.get('valence_slider').split(','))
+        print("Seed Tracks:", seed_tracks)
+        print("Seed Artists:", seed_artists)
+        print("Seed Genres:", seed_genres)
 
         # Use the slider values in the recommendations function
         recommendations = sp.recommendations(
