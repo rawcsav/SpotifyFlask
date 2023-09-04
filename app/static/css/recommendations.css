@@ -29,6 +29,30 @@ h1 {
   width: auto;
 }
 
+.top-right-nav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px; /* space between the links */
+}
+
+.profile-link,
+.stats-link {
+  text-decoration: none;
+  font-family: "Helvetica Neue", serif;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.profile-link:hover,
+.stats-link:hover {
+  background-color: #f5f5f5;
+}
+
 audio {
   display: none; /* Hide the audio elements */
 }
@@ -127,7 +151,7 @@ audio {
 
 #track_search_results div,
 #artist_search_results div {
-  font-family: "padding Neue", serif;
+  font-family: "Helvetica Neue", serif;
   font-size: 10px;
   padding: 1px;
 }

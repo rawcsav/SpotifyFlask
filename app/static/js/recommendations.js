@@ -250,9 +250,8 @@ $(document).ready(function () {
                         <div class="result-text">
                             <h2>
                                 <a href="${trackInfo["trackUrl"]}" target="_blank">${trackInfo["trackName"]}</a>
-                                <small>(${trackInfo["trackid"]})</small>
                             </h2>
-                            <p>Artist: ${trackInfo["artist"]}<small>(${trackInfo["artistid"]})</small></p>
+                            <p>Artist: ${trackInfo["artist"]}</p>
                             <p>Album: ${trackInfo["albumName"]}</p>
                         </div>
                         <audio controls>
