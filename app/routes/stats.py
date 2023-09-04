@@ -1,20 +1,43 @@
 from collections import defaultdict
 
-from flask import Blueprint, session, render_template
+from flask import Blueprint, session, render_template, jsonify
 from spotipy import Spotify
 
+from app import cache
+
 bp = Blueprint('stats', __name__)
+
+
+@cache.memoize(timeout=3600)  # Cache the results for 1 hour
+def get_top_tracks(access_token, period):
+    sp = Spotify(auth=access_token)
+    return sp.current_user_top_tracks(time_range=period, limit=50)
+
+
+@cache.memoize(timeout=3600)  # Cache the results for 1 hour
+def get_top_artists(access_token, period):
+    sp = Spotify(auth=access_token)
+    return sp.current_user_top_artists(time_range=period, limit=50)
+
+
+@cache.memoize(timeout=3600)
+def get_artists_info(access_token, batch):
+    sp = Spotify(auth=access_token)
+    return sp.artists(batch)
 
 
 @bp.route('/stats')
 def stats():
     access_token = session['tokens'].get('access_token')
-    sp = Spotify(auth=access_token)
 
     time_periods = ['short_term', 'medium_term', 'long_term']
 
-    top_tracks = {period: sp.current_user_top_tracks(time_range=period, limit=50) for period in time_periods}
-    top_artists = {period: sp.current_user_top_artists(time_range=period, limit=50) for period in time_periods}
+    try:
+        top_tracks = {period: get_top_tracks(access_token, period) for period in time_periods}
+        top_artists = {period: get_top_artists(access_token, period) for period in time_periods}
+    except Exception as e:
+        # Handle the cache miss or any other exception
+        return jsonify(error=str(e)), 500
 
     artist_id_freq = defaultdict(int)
     for period, tracks in top_tracks.items():
@@ -26,9 +49,13 @@ def stats():
     artist_ids = list(artist_id_freq.keys())
     for i in range(0, len(artist_ids), 50):
         batch = artist_ids[i:i + 50]
-        artists_info = sp.artists(batch)
-        for artist in artists_info['artists']:
-            all_artists_info[artist['id']] = artist
+        try:
+            artists_info = get_artists_info(access_token, batch)
+            for artist in artists_info['artists']:
+                all_artists_info[artist['id']] = artist
+        except Exception as e:
+            # Handle the cache miss or any other exception
+            return jsonify(error=str(e)), 500
 
     # Create a dictionary to store artist frequencies for each genre
     genre_artist_freq = defaultdict(lambda: defaultdict(int))
