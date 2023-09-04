@@ -53,6 +53,21 @@ h1 {
   background-color: #f5f5f5;
 }
 
+.custom-line {
+  border: none;
+  height: 2px;
+  background-color: black;
+  margin: 5px 0;
+  width: 100%;
+  clear: both;
+  display: block;
+}
+
+.instructions-container {
+  padding: 5px;
+  font-size: 14px;
+}
+
 audio {
   display: none; /* Hide the audio elements */
 }
