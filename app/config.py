@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -16,3 +17,9 @@ REDIRECT_URI = os.getenv('REDIRECT_URI')
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
+MAIN_USER_DIR = 'app/user_data_dir'
+
+SECRET_KEY = os.urandom(24)
+SESSION_TYPE = "filesystem"
+SESSION_PERMANENT = True
+PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)

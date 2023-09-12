@@ -1,20 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <!-- Neue Haas Grotesk font -->
     <link
       href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
       rel="stylesheet"
@@ -23,7 +20,6 @@
       href="https://fonts.cdnfonts.com/css/helvetica-neue-9"
       rel="stylesheet"
     />
-    <!-- Favicon -->
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -55,6 +51,10 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+      window.genreData = {{ genre_specific_data |tojson }};
+    </script>
+
     <title>Spotify Stats</title>
     <link
       rel="stylesheet"
@@ -78,14 +78,12 @@
       />
     </a>
     <div class="content-container">
-      <!-- Bootstrap Carousel component -->
       <div
         id="spotifyStatsCarousel"
         class="carousel slide"
         data-interval="false"
       >
         <div class="carousel-inner">
-          <!-- Slide for Top Artists -->
           <div class="carousel-item active">
             <div class="carousel-content">
               <h1>Top Artists</h1>
@@ -110,7 +108,6 @@
             </div>
           </div>
 
-          <!-- Slide for Top Tracks -->
           <div class="carousel-item">
             <div class="carousel-content">
               <h1>Top Tracks</h1>
@@ -136,9 +133,11 @@
               </div>
             </div>
           </div>
+
           <div class="carousel-item">
             <div class="carousel-content">
               <h1>Top Genres</h1>
+              <p>Click on a genre for more period-specific information.</p>
               <div class="row">
                 {% for period, genres in sorted_genres.items() %}
                 <div class="col-md-4">
@@ -151,7 +150,15 @@
                   </p>
                   <ul>
                     {% for genre, count in genres %}
-                    <li>{{ genre }}</li>
+                    <li>
+                      <a
+                        href="#"
+                        onclick="showGenreDetails('{{ period }}', '{{ genre }}')"
+                        class="genre-link"
+                      >
+                        {{ genre }}
+                      </a>
+                    </li>
                     {% endfor %}
                   </ul>
                 </div>
@@ -161,7 +168,40 @@
           </div>
         </div>
 
-        <!-- Carousel controls -->
+        <div id="genreOverlay" class="overlay">
+          <div class="content">
+            <h2 id="overlayGenreTitle"></h2>
+            <h4 id="overlayTimePeriod"></h4>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h3>Top Artists</h3>
+                <ul id="overlayTopArtists">
+                  {% for artist in
+                  user_data['top_artists']['short_term']['items'] %}
+                  <li>
+                    <span>{{ artist['name'] }}</span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div class="col-md-6">
+                <h3>Top Tracks</h3>
+                <ul id="overlayTopTracks">
+                  {% for track in user_data['top_tracks']['short_term']['items']
+                  %}
+                  <li>
+                    <span>{{ track['name'] }}</span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <button onclick="closeGenreOverlay()">Close</button>
+          </div>
+        </div>
+
         <a
           class="carousel-control-prev"
           href="#spotifyStatsCarousel"
@@ -182,5 +222,7 @@
         </a>
       </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
   </body>
 </html>

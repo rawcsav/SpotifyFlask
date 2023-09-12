@@ -25,18 +25,15 @@ def get_recommendations():
 
     sp = Spotify(auth=access_token)
     if request.method == 'POST':
-        # Handle the form data
         tracks = [track.strip() for track in request.form.get('track_seeds', '').split(',') if track.strip()]
         artists = [artist.strip() for artist in request.form.get('artist_seeds', '').split(',') if artist.strip()]
         genres = [genre.strip() for genre in request.form.get('genre_seeds', '').split(',') if genre.strip()]
 
-        # Check if the lists are not empty before using them
         seed_tracks = tracks if tracks else None
         seed_artists = artists if artists else None
         seed_genres = genres if genres else None
 
         limit = request.form.get('limit', 5)
-        # Parse the slider values
         popularity_min, popularity_max = map(int, request.form.get('popularity_slider').split(','))
         energy_min, energy_max = map(float, request.form.get('energy_slider').split(','))
         instrumentalness_min, instrumentalness_max = map(float, request.form.get('instrumentalness_slider').split(','))
@@ -47,7 +44,6 @@ def get_recommendations():
         print("Seed Artists:", seed_artists)
         print("Seed Genres:", seed_genres)
 
-        # Use the slider values in the recommendations function
         recommendations = sp.recommendations(
             seed_tracks=seed_tracks,
             seed_artists=seed_artists,

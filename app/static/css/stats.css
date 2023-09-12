@@ -108,3 +108,79 @@ h1 {
   height: 30px;
   color: #000000; /* or any color of your choice */
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay .content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 60%; /* Set this to whatever size you want */
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Optional: Adds a slight shadow for depth */
+  text-align: center; /* Ensures that text inside is centered */
+}
+
+.overlay h2,
+.overlay h3 {
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-size: 22px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.overlay ul {
+  list-style-type: none;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.overlay li:last-child {
+  border-bottom: none;
+}
+
+.overlay button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.overlay button:hover {
+  background: #0056b3;
+}
+
+#overlayTimePeriod {
+  text-align: center;
+
+  font-size: 18px;
+  font-weight: 400;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.genre-link {
+  color: inherit; /* make the link color the same as the surrounding text */
+  text-decoration: none; /* remove underline */
+  transition: transform 0.3s ease; /* animate any transformations */
+  font-size: 13px;
+}
+
+.genre-link:hover {
+  cursor: pointer;
+  transform: translateY(-5px); /* move the link up by 5 pixels */
+}
