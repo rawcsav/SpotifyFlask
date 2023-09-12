@@ -40,13 +40,14 @@ python run.py
 ```
 
 2. Navigate to `http://localhost:8080` in a web browser.
-3. Use the search function to select tracks, artists, or genres as seeds.
-4. Adjust preferences using the provided sliders.
-5. Click "Get Recommendations" to receive a list of songs tailored to your inputs.
+3. Login and access the `Recommendations` sectio` through the main profile portal.
+4. Use the search function to select tracks, artists, or genres as seeds.
+5. Adjust preferences using the provided sliders.
+6. Click "Get Recommendations" to receive a list of songs tailored to your inputs.
 
 ### Spotify Stats
 
-- Access the `Stats` section via the web interface.
+- Access the `Stats` section through the main profile portal.
 - View top tracks, artists, and genres based on short-term, medium-term, and long-term listening habits.
 
 ## License
