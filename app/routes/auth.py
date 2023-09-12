@@ -1,5 +1,4 @@
 import json
-import logging
 import secrets
 import string
 from urllib.parse import urlencode
@@ -8,10 +7,6 @@ import requests
 from flask import Blueprint, abort, make_response, redirect, render_template, request, session, url_for
 
 from app import config
-
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG
-)
 
 bp = Blueprint('auth', __name__)
 
@@ -66,8 +61,6 @@ def callback():
 
     # Check state
     if state is None or state != stored_state:
-        bp.logger.error('Error message: %s', repr(error))
-        bp.logger.error('State mismatch: %s != %s', stored_state, state)
         abort(400)
 
     # Request tokens with code we obtained
@@ -81,10 +74,6 @@ def callback():
     res_data = res.json()
 
     if res_data.get('error') or res.status_code != 200:
-        bp.logger.error(
-            'Failed to receive token: %s',
-            res_data.get('error', 'No error information received.'),
-        )
         abort(res.status_code)
 
     # Load tokens into session

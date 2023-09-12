@@ -15,11 +15,12 @@ def create_app():
     cache.init_app(app)
 
     # Register blueprints
-    from .routes import auth, user, stats, search, recommendations
+    from .routes import auth, user, stats, search, recommendations, taste
     app.register_blueprint(auth.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
+    app.register_blueprint(taste.bp)
 
     return app
