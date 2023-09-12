@@ -16,6 +16,8 @@ eggs/
 .eggs/
 lib/
 bin/
+etc/
+share/
 .idea/
 lib64/
 .DS_Store
