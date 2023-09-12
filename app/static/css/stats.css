@@ -184,3 +184,7 @@ h1 {
   cursor: pointer;
   transform: translateY(-5px); /* move the link up by 5 pixels */
 }
+
+.center-text {
+  text-align: center;
+}
