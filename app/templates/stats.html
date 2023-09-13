@@ -168,8 +168,69 @@
               </div>
             </div>
           </div>
+          <div class="carousel-item">
+            <div class="carousel-content">
+              <h1>Average Audio Features</h1>
+              <div class="row equal-height-row">
+                {% for period, data in period_data.items() %}
+                <div class="col-md-3">
+                  <h2 class="mb-4">{{ period.replace('_', ' ').title() }}</h2>
+                  {% for feature, value in data['averages'].items() %}
+                  <div class="card equal-height-card mb-4">
+                    <div class="card-body">
+                      <div class="feature-header">
+                        <h5 class="feature-name">{{ feature.title() }}</h5>
+                        <span class="average-value">{{ value|round(2) }}</span>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 feature-detail">
+                          <div class="feature-value-wrapper">
+                            <span class="feature-value"
+                              >Min: {{ data['min_values'][feature]|round(2)
+                              }}</span
+                            >
+                          </div>
+                          <div class="image-wrapper">
+                            <img
+                              class="audio-feature-image"
+                              src="{{ data['min_track'][feature]['album']['images'][0]['url'] }}"
+                              alt="{{ data['min_track'][feature]['name'] }}"
+                            />
+                          </div>
+                          <div class="track-info-wrapper">
+                            {{ data['min_track'][feature]['name'] }} by {{
+                            data['min_track'][feature]['artists'][0]['name'] }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 feature-detail">
+                          <div class="feature-value-wrapper">
+                            <span class="feature-value"
+                              >Max: {{ data['max_values'][feature]|round(2)
+                              }}</span
+                            >
+                          </div>
+                          <div class="image-wrapper">
+                            <img
+                              class="audio-feature-image"
+                              src="{{ data['max_track'][feature]['album']['images'][0]['url'] }}"
+                              alt="{{ data['max_track'][feature]['name'] }}"
+                            />
+                          </div>
+                          <div class="track-info-wrapper">
+                            {{ data['max_track'][feature]['name'] }} by {{
+                            data['max_track'][feature]['artists'][0]['name'] }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
         </div>
-
         <div id="genreOverlay" class="overlay">
           <div class="content">
             <h2 id="overlayGenreTitle"></h2>
@@ -203,7 +264,6 @@
             <button onclick="closeGenreOverlay()">Close</button>
           </div>
         </div>
-
         <a
           class="carousel-control-prev"
           href="#spotifyStatsCarousel"
@@ -224,7 +284,6 @@
         </a>
       </div>
     </div>
-
     <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
   </body>
 </html>

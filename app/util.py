@@ -54,3 +54,14 @@ def get_top_tracks(access_token, period):
 def get_top_artists(access_token, period):
     sp = Spotify(auth=access_token)
     return sp.current_user_top_artists(time_range=period, limit=50)
+
+
+def get_audio_features_for_tracks(sp, track_ids):
+    features = {}
+    for i in range(0, len(track_ids), 100):
+        batch = track_ids[i:i + 100]
+        batch_features = sp.audio_features(batch)
+        for feature in batch_features:
+            if feature:
+                features[feature['id']] = feature
+    return features

@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, session, abort, jsonify
 from spotipy import Spotify
 
 from app import config
-from app.util import get_top_tracks, get_top_artists
+from app.util import get_top_tracks, get_top_artists, get_audio_features_for_tracks
 
 bp = Blueprint('user', __name__)
 
@@ -35,6 +35,7 @@ def profile():
         return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)
 
     # If not, proceed with the data collection
+    # If not, proceed with the data collection
     access_token = session['tokens'].get('access_token')
     sp = Spotify(auth=access_token)
     time_periods = ['short_term', 'medium_term', 'long_term']
@@ -46,12 +47,15 @@ def profile():
         return jsonify(error=str(e)), 500
 
     all_artist_ids = []
+    all_track_ids = []
 
     for period in time_periods:
         all_artist_ids.extend([artist['id'] for artist in top_artists[period]['items']])
         all_artist_ids.extend([artist['id'] for track in top_tracks[period]['items'] for artist in track['artists']])
+        all_track_ids.extend([track['id'] for track in top_tracks[period]['items']])
 
     unique_artist_ids = list(set(all_artist_ids))
+    unique_track_ids = list(set(all_track_ids))
 
     # Fetching details about all the artists using the sp.artists method.
     all_artists_info = {}
@@ -60,6 +64,9 @@ def profile():
         artists_data = sp.artists(batch_ids)
         for artist in artists_data['artists']:
             all_artists_info[artist['id']] = artist
+
+    # Fetching audio features for all the top tracks across every period
+    audio_features = get_audio_features_for_tracks(sp, unique_track_ids)
 
     def get_genre_counts_from_artists_and_tracks(top_artists, top_tracks):
         genre_counts = defaultdict(int)
@@ -107,6 +114,7 @@ def profile():
     user_data = {
         'top_tracks': top_tracks,
         'top_artists': top_artists,
+        'audio_features': audio_features,
         'sorted_genres': sorted_genres_by_period,
         'genre_specific_data': genre_specific_data
     }
