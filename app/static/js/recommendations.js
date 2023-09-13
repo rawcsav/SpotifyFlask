@@ -234,7 +234,36 @@ $(document).ready(function () {
 
   let currentPlayingAudio = null; // To keep track of the current playing audio element
   let currentPlayingButton = null; // To keep track of the current playing button
-  // Function to fetch recommendations
+
+  $(document).on("click", ".add-seed", function () {
+    let trackId = $(this).attr("data-trackid");
+    if (getTotalSeeds() < 5) {
+      let trackElement = $(`
+            <div class="clickable-result" data-id="${trackId}">
+                <img src="${$(this)
+                  .closest(".result-item")
+                  .find(".result-cover-art-container img")
+                  .attr("src")}" alt="Cover Art" class="result-image">
+                <div class="result-info">
+                    <h2>${$(this)
+                      .siblings(".result-text")
+                      .find("a")
+                      .text()}</h2>
+                    <p>Artist: ${$(this)
+                      .siblings(".result-text")
+                      .find("p:first")
+                      .text()
+                      .replace("Artist: ", "")}</p>
+                </div>
+            </div>
+        `);
+      $("#track_seeds_container").append(trackElement);
+      updateSeedsInput("track_seeds");
+    } else {
+      alert("You can select no more than 5 combined seeds.");
+    }
+  });
+
   function getRecommendations() {
     $.post("/get_recommendations", $("form").serialize(), function (data) {
       let recommendations = data["recommendations"];
@@ -247,13 +276,17 @@ $(document).ready(function () {
                             <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
                             <div class="play-button" id="play_${trackInfo["trackid"]}">&#9654;</div>
                         </div>
-                        <div class="result-text">
+                        <div class="result-info-container">
+                          <div class="result-text">
                             <h2>
                                 <a href="${trackInfo["trackUrl"]}" target="_blank">${trackInfo["trackName"]}</a>
                             </h2>
                             <p>Artist: ${trackInfo["artist"]}</p>
                             <p>Album: ${trackInfo["albumName"]}</p>
+                          </div>
+                          <button class="add-seed" data-trackid="${trackInfo["trackid"]}">+</button>
                         </div>
+
                         <audio controls>
                             <source src="${trackInfo["preview"]}" type="audio/mpeg">
                             Your browser does not support the audio element.

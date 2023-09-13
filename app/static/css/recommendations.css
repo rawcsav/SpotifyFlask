@@ -346,6 +346,9 @@ audio {
   padding: 5px;
   width: 100%; /* Full width */
   margin: 0 auto;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 95%; /* you can adjust this value based on your design */
 }
 
 .search-title {
@@ -368,18 +371,14 @@ audio {
   border-bottom: 1px solid;
   border-color: #000000; /* Add a bottom border to each result item */
   padding-bottom: 20px; /* Add some padding to the bottom */
-  margin-bottom: 20px; /* Add some margin to the bottom */
-}
-
-.result-item {
+  margin-bottom: 20px;
   display: flex;
   justify-content: start;
   align-items: flex-start;
-  margin-bottom: 40px;
 }
 
 .result-text {
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 /* Album Art and Play Button */
@@ -412,4 +411,20 @@ audio {
 
 .result-cover-art {
   width: 150px;
+}
+.result-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.add-seed {
+  align-self: flex-start; /* Ensures the button starts at the beginning */
+  background-color: #cedebd;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 10px;
 }
