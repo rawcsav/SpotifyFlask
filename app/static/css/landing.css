@@ -1,5 +1,29 @@
 body {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  background-color: #1ed760;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh; /* Cover the entire viewport height */
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1694707526/layered-waves-haikei_jlojle.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed; /* Makes the background fixed when scrolling */
+}
+
+.center_column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.spacer {
+  aspect-ratio: 960/300;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .homepage-link {
@@ -11,35 +35,147 @@ body {
 }
 
 .homepage-link img {
-  height: 80px;
+  height: 60px;
   width: auto;
 }
 
 .container {
-  max-width: 600px;
-  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
-.container h1 {
+h1 {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  padding: 10px 0;
+  margin-top: 10px;
   font-size: 3rem;
-  font-weight: 700;
+  letter-spacing: 2px;
+  font-weight: 800;
   line-height: 1.2;
-  color: #000;
-  margin-bottom: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  text-align: center;
 }
 
-.container subtext {
-  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+h2 {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #ffffff;
+}
+
+p {
+  margin-top: 15px;
+  text-align: center;
   font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.2;
-  color: #000;
-  margin-top: 20px;
+  font-weight: 500;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.container p {
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 300;
+  max-width: 400px;
+  overflow-wrap: normal;
+  line-height: 1;
+  color: darkslategrey;
+  font-style: oblique;
 }
 
 .login-button {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  background-color: #ffffff;
+  color: #191919;
+  padding: 10px 15px 10px 10px;
+  font-size: 1.3em;
+  text-decoration: none;
+  transition: box-shadow 0.3s;
+  font-weight: 700;
+  height: 40px;
+  display: flex;
+  align-items: center; /* vertically centers the contents */
+  justify-content: center;
+}
+
+.login-button,
+.login-button img {
+  vertical-align: middle; /* aligns inline elements to the middle */
+  line-height: normal; /* resets the line height */
+}
+
+.spotify-logo {
+  margin-top: 10px;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.spotify-logo img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+
+h1,
+h2,
+p {
+  animation: fadeIn 2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.login-button:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px); /* subtle lift effect */
+  text-decoration: none;
+}
+
+/* Loading Spinner */
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.dot1,
+.dot2 {
+  width: 60%;
+  height: 60%;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  background-color: #fff;
+  border-radius: 100%;
+  animation: sk-bounce 2s infinite ease-in-out;
+}
+
+.dot2 {
+  top: auto;
+  bottom: 0;
+  animation-delay: -1s;
+}
+
+@keyframes sk-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
 }

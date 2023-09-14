@@ -1,24 +1,40 @@
 body {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
-  background-color: #ffbfbf;
+  background-color: #fb6f92;
   margin: 0;
   padding: 0;
-  color: #333;
+  color: #6d2e46;
   line-height: 1.6;
+  width: 100%;
+  overflow: hidden;
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1694712481/blob-scene-haikei_ahjogm.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed; /* Makes the background fixed when scrolling */
 }
 
 h1 {
   text-align: center;
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
-  font-size: 45px;
+  font-size: 3rem;
+  color: #6d2e46;
   font-weight: bold;
-  font-color: #000000;
-  margin-top: 20px;
+  letter-spacing: normal;
+}
+
+h3 {
+  text-align: center;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-size: 1.5rem;
+  color: #6d2e46;
+  font-weight: bold;
+  letter-spacing: normal;
 }
 
 .container {
+  margin-top: 50px;
   max-width: 1200px;
-  margin: 0 auto;
   padding: 20px;
 }
 
@@ -31,16 +47,23 @@ h1 {
 }
 
 .homepage-link img {
-  height: 80px;
+  height: 60px;
   width: auto;
 }
 
 .card {
-  background-color: #ffe5e5;
+  height: 400px;
+  max-height: 400px;
+  background-color: #ffb3bd;
   border-radius: 8px;
+  border-color: #6d2e46;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 30px;
   margin-bottom: 30px;
+  flex-direction: column;
+  display: flex;
+  flex: 1;
+  color: #6d2e46;
 }
 
 .media-body {
@@ -53,14 +76,19 @@ h1 {
 }
 
 .btn {
+  margin-top: 30px;
   display: inline-block;
   border: none;
-  padding: 12px 24px;
+  padding: 14px 26px;
   border-radius: 8px;
   text-decoration: none;
   transition:
     background-color 0.3s,
     transform 0.3s;
+  cursor: pointer;
+  width: 60%;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-weight: bold;
 }
 
 .btn:hover {
@@ -68,39 +96,64 @@ h1 {
 }
 
 .btn-primary {
-  background-color: #5c8374;
-  color: #fff;
+  padding: 8px 16px;
+  font-style: oblique;
+  background-color: #a26769;
+  color: #ffe5ec;
+  font-weight: bolder;
 }
 
 .btn-info {
-  background-color: #176b87;
-  color: #fff;
-  margin-right: 15px;
+  font-style: oblique;
+  padding: 8px 16px;
+  background-color: #a26769;
+  color: #ffe5ec;
+  font-weight: bolder;
 }
 
 .btn-xs {
   padding: 8px 16px;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  font-style: oblique;
+  font-weight: bold;
+  padding: 8px 16px;
+  background-color: #a26769;
+  color: #ffe5ec;
 }
 
 .btn-success {
   background-color: #28a745;
-  color: #fff;
+  font-style: oblique;
+  font-weight: bold;
+  color: #6d6875;
   margin-right: 15px;
 }
 
 .btn-danger {
   background-color: #dc3545;
-  color: #fff;
+  font-style: oblique;
+  font-weight: bold;
+  color: #ffe5ec;
 }
 
 dl dt {
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 h1,
 h2 {
   margin-top: 0;
   margin-bottom: 20px;
+}
+
+.recent-tracks {
+  max-height: 350px;
+  overflow-y: auto;
+  list-style-type: none;
+}
+
+.recent-tracks li {
+  margin-bottom: 10px;
+  font-size: 1em;
 }

@@ -122,12 +122,34 @@ def profile():
                 'top_tracks': top_genre_tracks
             }
 
+    recent_tracks = sp.current_user_recently_played(limit=50)['items']
+
+    playlist_info = []
+    offset = 0
+    while True:
+        playlists = sp.current_user_playlists(limit=50, offset=offset)
+        if not playlists['items']:
+            break  # Exit the loop if no more playlists are found
+
+        for playlist in playlists['items']:
+            info = {
+                'id': playlist['id'],
+                'name': playlist['name'],
+                'cover_art': playlist['images'][0]['url'] if playlist['images'] else None
+            }
+            playlist_info.append(info)
+
+        offset += 50  # Move to the next page of playlists
+
+    # Storing in user_data
     user_data = {
         'top_tracks': top_tracks,
         'top_artists': top_artists,
         'audio_features': audio_features,
         'sorted_genres': sorted_genres_by_period,
-        'genre_specific_data': genre_specific_data
+        'genre_specific_data': genre_specific_data,
+        'recent_tracks': recent_tracks,
+        'playlists': playlist_info
     }
 
     with open(json_path, 'w') as f:

@@ -23,7 +23,8 @@ def login(loginout):
     )
 
     # Request authorization from user
-    scope = 'user-read-private user-read-email user-top-read'
+    scope = 'user-read-private user-top-read user-read-recently-played playlist-read-private playlist-read-collaborative ' \
+            'playlist-modify-private playlist-modify-public user-library-modify user-library-read'
 
     if loginout == 'logout':
         payload = {
