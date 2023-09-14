@@ -33,7 +33,6 @@ def profile():
             session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
             os.makedirs(session_dir, exist_ok=True)
             session['UPLOAD_DIR'] = session_dir
-
     else:
         session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
         os.makedirs(session_dir, exist_ok=True)
@@ -43,7 +42,6 @@ def profile():
     os.makedirs(user_directory, exist_ok=True)
     json_path = os.path.join(user_directory, 'user_data.json')
 
-    # If user_data.json exists, load it and return
     if os.path.exists(json_path):
         with open(json_path, 'r') as f:
             user_data = json.load(f)
