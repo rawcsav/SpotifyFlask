@@ -24,6 +24,21 @@ def profile():
     if res.status_code != 200:
         abort(res.status_code)
 
+    spotify_user_id = res_data.get('id')
+
+    if 'UPLOAD_DIR' in session:
+        current_user_id = os.path.basename(session['UPLOAD_DIR'])
+
+        if current_user_id != spotify_user_id:
+            session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
+            os.makedirs(session_dir, exist_ok=True)
+            session['UPLOAD_DIR'] = session_dir
+
+    else:
+        session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
+        os.makedirs(session_dir, exist_ok=True)
+        session['UPLOAD_DIR'] = session_dir
+
     user_directory = session["UPLOAD_DIR"]
     os.makedirs(user_directory, exist_ok=True)
     json_path = os.path.join(user_directory, 'user_data.json')
@@ -34,8 +49,6 @@ def profile():
             user_data = json.load(f)
         return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)
 
-    # If not, proceed with the data collection
-    # If not, proceed with the data collection
     access_token = session['tokens'].get('access_token')
     sp = Spotify(auth=access_token)
     time_periods = ['short_term', 'medium_term', 'long_term']

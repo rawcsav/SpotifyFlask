@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -32,12 +31,6 @@ def create_app():
                 session.clear()
 
         session['last_activity'] = datetime.utcnow()
-
-        if 'UPLOAD_DIR' not in session:
-            session_id = str(id(session))
-            session_dir = os.path.join(config.MAIN_USER_DIR, session_id)
-            os.makedirs(session_dir, exist_ok=True)
-            session['UPLOAD_DIR'] = session_dir
 
     # Register blueprints
     from .routes import auth, user, stats, search, recommendations
