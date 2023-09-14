@@ -79,11 +79,12 @@ p {
 
 .container p {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 300;
   max-width: 400px;
   overflow-wrap: normal;
-  line-height: 1;
+  line-height: 1.5;
+  text-align: left;
   color: darkslategrey;
   font-style: oblique;
 }
@@ -142,32 +143,6 @@ p {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px); /* subtle lift effect */
   text-decoration: none;
-}
-
-/* Loading Spinner */
-.spinner {
-  margin: 100px auto;
-  width: 40px;
-  height: 40px;
-  position: relative;
-}
-
-.dot1,
-.dot2 {
-  width: 60%;
-  height: 60%;
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  background-color: #fff;
-  border-radius: 100%;
-  animation: sk-bounce 2s infinite ease-in-out;
-}
-
-.dot2 {
-  top: auto;
-  bottom: 0;
-  animation-delay: -1s;
 }
 
 @keyframes sk-bounce {
