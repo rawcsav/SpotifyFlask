@@ -1,20 +1,12 @@
 body {
+  width: 100%;
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
-  background: radial-gradient(
-    circle at 50% 50%,
-    #96a6c5,
-    #97a6c4,
-    #9aa5c3,
-    #9ea5c1,
-    #a3a4be,
-    #a7a4ba,
-    #aaa4b7,
-    #aca4b3,
-    #ada5b1,
-    #ada5af,
-    #ada6ad,
-    #ada6ad
-  );
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1694728486/layered-peaks-haikei_lyxdy9.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  overflow: hidden;
 }
 
 /* Header styles */
@@ -59,6 +51,8 @@ h1 {
   padding: 15px;
   background-color: #adc4ce;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 90vh; /* This sets the maximum height to 90% of the viewport height */
+  overflow-y: auto;
 }
 
 /* Term definition */
@@ -119,26 +113,29 @@ h1 {
   overflow-y: auto; /* Making it scrollable if content exceeds max height */
 }
 
-/* Carousel control buttons */
+.carousel-control-prev,
+.carousel-control-next {
+  position: fixed; /* Fix them on the screen */
+  top: 50%; /* Center them vertically */
+  z-index: 9999; /* Ensure they're on top */
+  width: 50px; /* A specific width for visibility */
+  height: 50px; /* A specific height for visibility */
+  transform: translateY(-50%); /* This will truly center them vertically */
+}
+
 .carousel-control-prev {
-  left: -12%; /* default is 0 */
+  left: 1%; /* Position the previous control on the left */
 }
 
 .carousel-control-next {
-  right: -12%; /* default is 0 */
+  right: 1%; /* Position the next control on the right */
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   width: 30px;
   height: 30px;
-  color: #000000; /* or any color of your choice */
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-  top: 250px;
-  transform: translateY(-50%);
+  color: #000000; /* Making sure the icons don't have a background */
 }
 
 /* Overlay styles */
