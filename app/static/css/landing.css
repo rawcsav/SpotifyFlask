@@ -154,3 +154,11 @@ p {
     transform: scale(1);
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.3s ease;
+}
