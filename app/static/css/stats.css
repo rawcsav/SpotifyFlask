@@ -1,6 +1,20 @@
 body {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
-  background-color: #96b6c5;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #96a6c5,
+    #97a6c4,
+    #9aa5c3,
+    #9ea5c1,
+    #a3a4be,
+    #a7a4ba,
+    #aaa4b7,
+    #aca4b3,
+    #ada5b1,
+    #ada5af,
+    #ada6ad,
+    #ada6ad
+  );
 }
 
 /* Header styles */
