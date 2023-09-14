@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, session, current_app
 from flask_session import Session
 
@@ -40,7 +39,7 @@ def create_app():
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(scheduled_cleanup, 'interval', hours=2)  # Run every hour
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(scheduled_cleanup, 'interval', hours=2)
+    # scheduler.start()
     return app
