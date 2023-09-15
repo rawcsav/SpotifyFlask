@@ -3,9 +3,23 @@ body {
   font-family: "Neue Haas Grotesk Display Pro", sans-serif;
   padding: 20px;
   display: flex;
+  background: linear-gradient(
+    90deg,
+    #4f772d,
+    #5a803a,
+    #668946,
+    #719253,
+    #7d9b60,
+    #88a56d,
+    #94ae7a,
+    #9fb787,
+    #abc194,
+    #b6cba2,
+    #c2d4af,
+    #cedebd
+  );
   flex-direction: column;
   align-items: center;
-  background-color: #cedebd;
 }
 
 h1 {
