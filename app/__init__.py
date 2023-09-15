@@ -4,7 +4,7 @@ from flask import Flask, session, current_app
 from flask_session import Session
 
 from app import config
-from app.util import remove_directory, scheduled_cleanup
+from app.util.session_utils import remove_directory
 
 
 def create_app():
@@ -39,7 +39,4 @@ def create_app():
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
 
-    # scheduler = BackgroundScheduler()
-    # scheduler.add_job(scheduled_cleanup, 'interval', hours=2)
-    # scheduler.start()
     return app

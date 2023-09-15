@@ -1,158 +1,56 @@
-import json
 import os
-from collections import defaultdict
 
-import requests
-from flask import Blueprint, render_template, session, abort, jsonify
-from spotipy import Spotify
+from flask import Blueprint, render_template, session
 
-from app import config
-from app.util import get_top_tracks, get_top_artists, get_audio_features_for_tracks
+from app.util.session_utils import (
+    verify_session,
+    fetch_user_data,
+    manage_user_directory,
+    store_to_json,
+    load_from_json
+)
+from app.util.spotify_utils import fetch_and_process_data
 
 bp = Blueprint('user', __name__)
 
 
 @bp.route('/profile')
 def profile():
-    if 'tokens' not in session:
-        abort(400)
+    # Verify if the session has tokens and fetch access_token
+    access_token = verify_session(session)
 
-    headers = {'Authorization': f"Bearer {session['tokens'].get('access_token')}"}
-    res = requests.get(config.ME_URL, headers=headers)
-    res_data = res.json()
-
-    if res.status_code != 200:
-        abort(res.status_code)
-
+    # Fetch Spotify user data
+    res_data = fetch_user_data(access_token)
     spotify_user_id = res_data.get('id')
 
-    if 'UPLOAD_DIR' in session:
-        current_user_id = os.path.basename(session['UPLOAD_DIR'])
-
-        if current_user_id != spotify_user_id:
-            session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
-            os.makedirs(session_dir, exist_ok=True)
-            session['UPLOAD_DIR'] = session_dir
-    else:
-        session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
-        os.makedirs(session_dir, exist_ok=True)
-        session['UPLOAD_DIR'] = session_dir
-
+    # Manage user directory
+    manage_user_directory(spotify_user_id, session)
     user_directory = session["UPLOAD_DIR"]
-    os.makedirs(user_directory, exist_ok=True)
     json_path = os.path.join(user_directory, 'user_data.json')
 
+    # Check if user data already exists
     if os.path.exists(json_path):
-        with open(json_path, 'r') as f:
-            user_data = json.load(f)
+        user_data = load_from_json(json_path)
         return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)
 
-    access_token = session['tokens'].get('access_token')
-    sp = Spotify(auth=access_token)
+    # Define time periods for Spotify data
     time_periods = ['short_term', 'medium_term', 'long_term']
 
-    try:
-        top_tracks = {period: get_top_tracks(access_token, period) for period in time_periods}
-        top_artists = {period: get_top_artists(access_token, period) for period in time_periods}
-    except Exception as e:
-        return jsonify(error=str(e)), 500
+    # Fetch and process Spotify data
+    top_tracks, top_artists, all_artists_info, audio_features, genre_counts, genre_specific_data = fetch_and_process_data(
+        access_token, time_periods)
 
-    all_artist_ids = []
-    all_track_ids = []
-
-    for period in time_periods:
-        all_artist_ids.extend([artist['id'] for artist in top_artists[period]['items']])
-        all_artist_ids.extend([artist['id'] for track in top_tracks[period]['items'] for artist in track['artists']])
-        all_track_ids.extend([track['id'] for track in top_tracks[period]['items']])
-
-    unique_artist_ids = list(set(all_artist_ids))
-    unique_track_ids = list(set(all_track_ids))
-
-    # Fetching details about all the artists using the sp.artists method.
-    all_artists_info = {}
-    for i in range(0, len(unique_artist_ids), 50):  # Spotify's API can retrieve a maximum of 50 artists at a time.
-        batch_ids = unique_artist_ids[i:i + 50]
-        artists_data = sp.artists(batch_ids)
-        for artist in artists_data['artists']:
-            all_artists_info[artist['id']] = artist
-
-    # Fetching audio features for all the top tracks across every period
-    audio_features = get_audio_features_for_tracks(sp, unique_track_ids)
-
-    def get_genre_counts_from_artists_and_tracks(top_artists, top_tracks):
-        genre_counts = defaultdict(int)
-
-        for artist in top_artists['items']:
-            for genre in artist['genres']:
-                genre_counts[genre] += 1
-
-        for track in top_tracks['items']:
-            for artist in track['artists']:
-                for genre in all_artists_info[artist['id']]['genres']:
-                    genre_counts[genre] += 1
-
-        return sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:20]
-
-    def get_artists_for_genre(all_artists_info, genre, artist_ids):
-        return [artist for artist_id, artist in all_artists_info.items() if
-                genre in artist['genres'] and artist_id in artist_ids]
-
-    def get_tracks_for_artists(tracks, artist_ids):
-        return [track for track in tracks if any(artist['id'] in artist_ids for artist in track['artists'])]
-
-    sorted_genres_by_period = {}
-    genre_specific_data = {period: {} for period in time_periods}
-
-    for period in time_periods:
-        sorted_genres = get_genre_counts_from_artists_and_tracks(top_artists[period], top_tracks[period])
-        sorted_genres_by_period[period] = sorted_genres
-
-        artist_ids_for_period = {artist['id'] for artist in top_artists[period]['items']} | {artist['id'] for track in
-                                                                                             top_tracks[period]['items']
-                                                                                             for artist in
-                                                                                             track['artists']}
-
-        for genre, count in sorted_genres:
-            top_genre_artists = get_artists_for_genre(all_artists_info, genre, artist_ids_for_period)
-            top_genre_tracks = get_tracks_for_artists(top_tracks[period]['items'],
-                                                      [artist['id'] for artist in top_genre_artists])
-
-            genre_specific_data[period][genre] = {
-                'top_artists': top_genre_artists,
-                'top_tracks': top_genre_tracks
-            }
-
-    recent_tracks = sp.current_user_recently_played(limit=50)['items']
-
-    playlist_info = []
-    offset = 0
-    while True:
-        playlists = sp.current_user_playlists(limit=50, offset=offset)
-        if not playlists['items']:
-            break  # Exit the loop if no more playlists are found
-
-        for playlist in playlists['items']:
-            info = {
-                'id': playlist['id'],
-                'name': playlist['name'],
-                'cover_art': playlist['images'][0]['url'] if playlist['images'] else None
-            }
-            playlist_info.append(info)
-
-        offset += 50  # Move to the next page of playlists
-
-    # Storing in user_data
+    # Aggregate user data
     user_data = {
         'top_tracks': top_tracks,
         'top_artists': top_artists,
+        'all_artists_info': all_artists_info,
         'audio_features': audio_features,
-        'sorted_genres': sorted_genres_by_period,
-        'genre_specific_data': genre_specific_data,
-        'recent_tracks': recent_tracks,
-        'playlists': playlist_info
+        'genre_counts': genre_counts,
+        'genre_specific_data': genre_specific_data
     }
 
-    with open(json_path, 'w') as f:
-        json.dump(user_data, f, ensure_ascii=False, indent=4)
+    # Store the processed data as JSON
+    store_to_json(user_data, json_path)
 
     return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)

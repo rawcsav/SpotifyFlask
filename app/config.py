@@ -22,3 +22,8 @@ SESSION_PERMANENT = True
 PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
 
 NOVAAI_API_KEY = os.getenv('NOVAAI_API_KEY')
+NOVAAI_API_BASE = "https://api.nova-oss.com/v1"
+
+AUDIO_FEATURES = ['acousticness', 'danceability', 'duration_ms', 'energy', 'instrumentalness',
+                  'liveness', 'loudness', 'speechiness', 'tempo', 'valence', 'popularity'
+                  ]

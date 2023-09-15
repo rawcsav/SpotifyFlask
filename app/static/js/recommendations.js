@@ -366,6 +366,8 @@ $(document).ready(function () {
 
   function getRecommendations() {
     $.post("/get_recommendations", $("form").serialize(), function (data) {
+      console.log($("form").serialize());
+
       let recommendations = data["recommendations"];
       $("#results").empty();
       recommendations.forEach((trackInfo) => {
