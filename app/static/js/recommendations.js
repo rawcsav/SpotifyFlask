@@ -1,27 +1,92 @@
 $(document).ready(function () {
-  $("#genre_label_container").click(function () {
-    $("#genre_list").toggle();
+  // Get the modal and close button
+  var modal = $("#instructionsModal");
+  var closeBtn = $(".close");
+
+  // Show the modal when the button is clicked
+  $("#showInstructions").click(function () {
+    modal.css("display", "block");
   });
 
-  $.get("/genres", function (data) {
-    let genres = JSON.parse(data)["genres"];
-    let genreHTML = genres
-      .map((genre) => `<span class="clickable-genre">${genre}</span>`)
-      .join(", ");
-    $("#genre_list").html(`<div class="genre-box">${genreHTML}</div>`);
-  }).fail(function (jqXHR, textStatus, errorThrown) {
-    console.error("Error:", textStatus, errorThrown);
+  // Hide the modal when the close button (×) is clicked
+  closeBtn.click(function () {
+    modal.css("display", "none");
   });
 
-  // Submit form
-  $("form").submit(function (event) {
-    event.preventDefault();
-    getRecommendations();
+  $(window).click(function (event) {
+    if ($(event.target).is(modal)) {
+      modal.css("display", "none");
+    }
+  });
+});
+
+$(document).ready(function () {
+  // Modal behavior
+  $("#showInstructions").on("click", function () {
+    $("#instructionsModal").fadeIn();
+    $("body").css("overflow", "hidden"); // Prevent background scrolling
+  });
+
+  $(".close").on("click", function () {
+    $("#instructionsModal").fadeOut();
+    $("body").css("overflow", "auto"); // Allow scrolling again
+  });
+
+  $(window).on("click", function (event) {
+    if ($(event.target).is("#instructionsModal")) {
+      $("#instructionsModal").fadeOut();
+      $("body").css("overflow", "auto"); // Allow scrolling again
+    }
+  });
+
+  // Genre search behavior
+  $("#genre_search").click(function () {
+    let query = $("#genre_input").val();
+    searchGenres(query);
+  });
+
+  function searchGenres(query) {
+    $("#genre_search_results").empty(); // Clear the previous search results
+    $("#genre_loading").show(); // Show the loading message
+    $("#genre_error").hide(); // Hide any previous error message
+    $.ajax({
+      url: "/genres", // Update the endpoint URL as per your Flask route
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ query: query }),
+      success: function (data) {
+        $("#genre_loading").hide(); // Hide the loading message when data is received
+
+        let results = JSON.parse(data)["genres"];
+        $("#genre_search_results").empty();
+
+        results.forEach((genre) => {
+          $("#genre_search_results").append(
+            `<div class="clickable-genre">${genre}</div>`,
+          );
+        });
+      },
+      fail: function (jqXHR, textStatus, errorThrown) {
+        $("#genre_error").show(); // Show the error message
+        $("#genre_loading").hide(); // Hide the loading message
+        console.error("Error:", textStatus, errorThrown);
+      },
+    });
+  }
+
+  $("#genre_input").on("keypress", function (e) {
+    if (e.which == 13) {
+      let query = $(this).val();
+      searchGenres(query);
+    }
   });
 
   // Track Search with error handling and template literals
   $("#track_search").click(function () {
     let query = $("#track_input").val();
+    $("#track_search_results").empty(); // Clear the previous search results
+    $("#track_loading").show(); // Show the loading message
+    $("#track_error").hide(); // Hide any previous error message
     $.ajax({
       url: "/search",
       method: "POST",
@@ -31,6 +96,8 @@ $(document).ready(function () {
         type: "track",
       }),
       success: function (data) {
+        $("#track_loading").hide(); // Hide the loading message when data is received
+
         let results = JSON.parse(data)["tracks"]["items"];
         $("#track_search_results").empty();
         results.forEach((result) => {
@@ -45,14 +112,28 @@ $(document).ready(function () {
                     `);
         });
       },
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-      console.error("Error:", textStatus, errorThrown);
+      fail: function (jqXHR, textStatus, errorThrown) {
+        $("#track_error").show(); // Show the error message
+        $("#track_loading").hide(); // Hide the loading message
+        console.error("Error:", textStatus, errorThrown);
+      },
     });
+  });
+
+  $("#track_input").on("keypress", function (e) {
+    if (e.which == 13) {
+      let query = $(this).val();
+      // Trigger the click event for the track search button to initiate the search
+      $("#track_search").trigger("click");
+    }
   });
 
   // Artist Search with error handling and template literals
   $("#artist_search").click(function () {
     let query = $("#artist_input").val();
+    $("#artist_search_results").empty(); // Clear the previous search results
+    $("#artist_loading").show(); // Show the loading message
+    $("#artist_error").hide(); // Hide any previous error message
     $.ajax({
       url: "/search",
       method: "POST",
@@ -62,6 +143,8 @@ $(document).ready(function () {
         type: "artist",
       }),
       success: function (data) {
+        $("#artist_loading").hide(); // Hide the loading message when data is received
+
         let results = JSON.parse(data)["artists"]["items"];
         $("#artist_search_results").empty();
         results.forEach((result) => {
@@ -75,9 +158,20 @@ $(document).ready(function () {
                     `);
         });
       },
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-      console.error("Error:", textStatus, errorThrown);
+      fail: function (jqXHR, textStatus, errorThrown) {
+        $("#artist_error").show(); // Show the error message
+        $("#artist_loading").hide(); // Hide the loading message
+        console.error("Error:", textStatus, errorThrown);
+      },
     });
+  });
+
+  $("#artist_input").on("keypress", function (e) {
+    if (e.which == 13) {
+      let query = $(this).val();
+      // Trigger the click event for the artist search button to initiate the search
+      $("#artist_search").trigger("click");
+    }
   });
 
   function getTotalSeeds() {
@@ -148,6 +242,12 @@ $(document).ready(function () {
   $("#genre_seeds_container").on("click", ".genre-seed", function () {
     $(this).remove();
     updateSeedsInput("genre_seeds");
+  });
+
+  // Submit form
+  $("form").submit(function (event) {
+    event.preventDefault();
+    getRecommendations();
   });
 
   $("#popularity_slider")

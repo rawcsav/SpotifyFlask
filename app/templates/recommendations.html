@@ -45,7 +45,6 @@
     />
     <title>Recommendations</title>
 
-    <!-- Link to the external CSS and JS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/recommendations.css') }}"
@@ -54,12 +53,16 @@
   </head>
   <body>
     <div class="top-right-nav">
-      <a href="https://webstats.rawcsav.com/profile" class="profile-link"
-        >Return to Profile</a
-      >
-      <a href="https://webstats.rawcsav.com/stats" class="stats-link"
-        >View Stats</a
-      >
+      <div class="nav-buttons">
+        <a href="https://webstats.rawcsav.com/profile" class="profile-link"
+          >Return to Profile</a
+        >
+        <a href="https://webstats.rawcsav.com/stats" class="stats-link"
+          >View Stats</a
+        >
+      </div>
+      <button id="showInstructions">Show Instructions</button>
+      <!-- Keep the button inside top-right-nav but outside of nav-buttons -->
     </div>
     <h1>Music Recommendations</h1>
     <a href="https://rawcsav.com" class="homepage-link">
@@ -69,83 +72,127 @@
       />
     </a>
     <!-- After the title, redirect links, and image -->
-    <hr class="custom-line" />
-    <div class="instructions-container">
-      <h3>How to Use:</h3>
-      <h4>Search & Select:</h4>
-      <p>
-        Begin with at least one seed from a track, artist, or genre. Note: You
-        can use a maximum combination of up to 5 seeds.
-      </p>
-      <ul>
-        <li>
-          Tracks: Input a track name and select from the dropdown results.
-        </li>
-        <li>Artists: Input an artist's name and choose from the results.</li>
-        <li>Genres: Browse and select from the available genre options.</li>
-      </ul>
-      <h4>Tune Your Preferences:</h4>
-      <ul>
-        <li>
-          Sliders: Adjust factors like popularity, energy, tempo, and more using
-          the min-max sliders to match your mood or preference.
-        </li>
-        <li>
-          Results Quantity: Choose the number of recommendations you'd like to
-          receive.
-        </li>
-      </ul>
-      <h4>Get Recommendations:</h4>
-      <p>
-        After setting your seeds and preferences, click the "Get
-        Recommendations" button. A list of personalized music tracks will
-        appear. Many tracks come with a built-in preview, allowing you to listen
-        directly on the page. However, note that some tracks might not have a
-        preview.
-      </p>
-      <p>Dive in and enjoy your music! 🎵</p>
+    <div id="instructionsModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="instructions-container">
+          <h3>How to Use:</h3>
+          <h4>Search & Select:</h4>
+          <p>
+            Begin with at least one seed from a track, artist, or genre. Note:
+            You can use a maximum combination of up to 5 seeds.
+          </p>
+          <ul>
+            <li>
+              Tracks: Input a track name and select from the dropdown results.
+            </li>
+            <li>
+              Artists: Input an artist's name and choose from the results.
+            </li>
+            <li>Genres: Browse and select from the available genre options.</li>
+          </ul>
+          <h4>Tune Your Preferences:</h4>
+          <ul>
+            <li>
+              Sliders: Adjust factors like popularity, energy, tempo, and more
+              using the min-max sliders to match your mood or preference.
+            </li>
+            <li>
+              Results Quantity: Choose the number of recommendations you'd like
+              to receive.
+            </li>
+          </ul>
+          <h4>Get Recommendations:</h4>
+          <p>
+            After setting your seeds and preferences, click the "Get
+            Recommendations" button. A list of personalized music tracks will
+            appear. Many tracks come with a built-in preview, allowing you to
+            listen directly on the page. However, note that some tracks might
+            not have a preview.
+          </p>
+          <p>Dive in and enjoy your music! 🎵</p>
+        </div>
+      </div>
     </div>
-    <hr class="custom-line" />
     <h2 class="search-title">Search Functions</h2>
+
+    <hr class="custom-line" />
     <div class="search-container">
       <!-- Track search -->
       <div id="track_container">
-        <label>Tracks:</label>
         <datalist id="track_results"></datalist>
-        <input
-          type="text"
-          id="track_input"
-          list="track_results"
-          autocomplete="off"
-        />
-        <button type="button" id="track_search">Search</button>
+        <div class="input-container">
+          <input
+            type="text"
+            id="track_input"
+            list="track_results"
+            placeholder="Track Search..."
+            autocomplete="off"
+          />
+          <button type="button" id="track_search" class="search-btn">
+            <img
+              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
+              alt="Search"
+              class="search-icon"
+            />
+          </button>
+        </div>
         <div id="track_search_results">
+          <div id="track_loading" class="loading-alert">Loading...</div>
+          <div id="track_error" class="error-alert">
+            An error occurred. Please try again.
+          </div>
           <!-- Track search results will be displayed here -->
         </div>
       </div>
       <!-- Artist search -->
       <div id="artist_container">
-        <label>Artists:</label>
         <datalist id="artist_results"></datalist>
-        <input
-          type="text"
-          id="artist_input"
-          list="artist_results"
-          autocomplete="off"
-        />
-        <button type="button" id="artist_search">Search</button>
+        <div class="input-container">
+          <input
+            type="text"
+            id="artist_input"
+            list="artist_results"
+            placeholder="Artist Search..."
+            autocomplete="off"
+          />
+          <button type="button" id="artist_search" class="search-btn">
+            <img
+              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
+              alt="Search"
+              class="search-icon"
+            />
+          </button>
+        </div>
+        <div id="artist_loading" class="loading-alert">Loading...</div>
+        <div id="artist_error" class="error-alert">
+          An error occurred. Please try again.
+        </div>
         <div id="artist_search_results">
           <!-- Artist search results will be displayed here -->
         </div>
       </div>
-      <!-- Genre select -->
       <div id="genre_container">
-        <div id="genre_label_container">
-          <label id="genre_label" for="genre_list">Genres:</label>
-          <small class="instructions">(Click to see options)</small>
+        <div class="input-container">
+          <input
+            type="text"
+            id="genre_input"
+            placeholder="Genre Search..."
+            autocomplete="off"
+          />
+          <button type="button" id="genre_search" class="search-btn">
+            <img
+              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
+              alt="Search"
+              class="search-icon"
+            />
+          </button>
         </div>
-        <div id="genre_list"></div>
-        <!-- Add this div to contain the genre list -->
+        <div id="genre_loading" class="loading-alert">Loading...</div>
+        <div id="genre_error" class="error-alert">
+          An error occurred. Please try again.
+        </div>
+        <div id="genre_search_results"></div>
       </div>
     </div>
     <div class="main-container">

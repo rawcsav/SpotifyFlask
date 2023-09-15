@@ -5,9 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Application Secret Key
-SECRET_KEY = os.getenv('SECRET_KEY')
-
 # Spotify API details
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -23,3 +20,5 @@ SECRET_KEY = os.urandom(24)
 SESSION_TYPE = "filesystem"
 SESSION_PERMANENT = True
 PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+
+NOVAAI_API_KEY = os.getenv('NOVAAI_API_KEY')
