@@ -68,6 +68,7 @@ def fetch_and_process_data(access_token, time_periods):
         # Initialize genre counts and genre-specific data
         genre_counts = defaultdict(int)
         genre_specific_data = {period: {} for period in time_periods}
+        sorted_genres_by_period = {}  # Added this line to store sorted genres by period
 
         # Process each time period
         for period in time_periods:
@@ -80,10 +81,13 @@ def fetch_and_process_data(access_token, time_periods):
                     for genre in all_artists_info[artist['id']]['genres']:
                         genre_counts[genre] += 1
 
+            # Sort genres for each period
+            sorted_genres_by_period[period] = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)
+
             # More processing logic can be added here if needed...
 
         # Return the processed data
-        return top_tracks, top_artists, all_artists_info, audio_features, genre_counts, genre_specific_data
+        return top_tracks, top_artists, all_artists_info, audio_features, genre_counts, genre_specific_data, sorted_genres_by_period
 
     except Exception as e:
         # Handle exceptions and return an error response

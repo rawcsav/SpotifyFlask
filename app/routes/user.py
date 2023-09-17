@@ -37,7 +37,7 @@ def profile():
     time_periods = ['short_term', 'medium_term', 'long_term']
 
     # Fetch and process Spotify data
-    top_tracks, top_artists, all_artists_info, audio_features, genre_counts, genre_specific_data = fetch_and_process_data(
+    top_tracks, top_artists, all_artists_info, audio_features, genre_counts, genre_specific_data, sorted_genres_by_period = fetch_and_process_data(
         access_token, time_periods)
 
     # Aggregate user data
@@ -47,6 +47,7 @@ def profile():
         'all_artists_info': all_artists_info,
         'audio_features': audio_features,
         'genre_counts': genre_counts,
+        'sorted_genres': sorted_genres_by_period,
         'genre_specific_data': genre_specific_data
     }
 
