@@ -31,7 +31,8 @@ def profile():
     # Check if user data already exists
     if os.path.exists(json_path):
         user_data = load_from_json(json_path)
-        return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)
+        return render_template('profile.html', data=res_data,
+                               tokens=session.get('tokens'), user_data=user_data)
 
     # Define time periods for Spotify data
     time_periods = ['short_term', 'medium_term', 'long_term']
@@ -54,4 +55,5 @@ def profile():
     # Store the processed data as JSON
     store_to_json(user_data, json_path)
 
-    return render_template('profile.html', data=res_data, tokens=session.get('tokens'), user_data=user_data)
+    return render_template('profile.html', data=res_data, tokens=session.get('tokens'),
+                           user_data=user_data)

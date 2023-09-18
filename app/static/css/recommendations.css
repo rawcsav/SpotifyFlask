@@ -26,6 +26,7 @@ h1 {
   transform: translateY(
     -30px
   ); /* Adjust the value to align the h1 with the logo */
+
   text-align: center;
 }
 
@@ -74,7 +75,7 @@ audio {
   width: 100%;
   background-color: #9eb384;
   padding: 20px;
-  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
   border-radius: 10px;
   max-height: 100vh;
   overflow-x: hidden;
@@ -137,12 +138,10 @@ audio {
 #track_seeds_container .clickable-result:hover,
 #artist_seeds_container .clickable-result:hover,
 #genre_seeds_container .genre-seed:hover {
-  background-color: rgba(
-    255,
-    0,
-    0,
-    0.2
+  background-color: rgb(
+    255 0 0 / 20%
   ); /* Light red background to indicate removal */
+
   cursor: pointer;
 }
 
@@ -222,6 +221,7 @@ audio {
   display: block;
   cursor: pointer; /* Add this line */
 }
+
 /* Form Container */
 
 /* Style the entire slider container */
@@ -265,7 +265,7 @@ audio {
   left: 0; /* Align to the start of the slider */
   top: 10px; /* Adjust this value to position the label above the slider */
   font-size: 10px; /* Adjust font size as needed */
-  color: #000000; /* Color of the label */
+  color: #000; /* Color of the label */
 }
 
 .ui-slider::after {
@@ -274,7 +274,7 @@ audio {
   right: 0; /* Align to the end of the slider */
   top: 10px; /* Adjust this value to position the label above the slider */
   font-size: 10px; /* Adjust font size as needed */
-  color: #000000; /* Color of the label */
+  color: #000; /* Color of the label */
 }
 
 .form-container {
@@ -297,6 +297,7 @@ audio {
   width: 95%;
   font-family: "Helvetica Neue", serif;
   font-size: 14px;
+
   /* Ensures the input and button take the full width */
 }
 
@@ -334,6 +335,7 @@ audio {
   margin-bottom: 8px;
   display: block;
 }
+
 /* Results Container */
 
 .results-container {
@@ -389,7 +391,7 @@ audio {
 
 .result-item {
   border-bottom: 1px solid;
-  border-color: #000000; /* Add a bottom border to each result item */
+  border-color: #000; /* Add a bottom border to each result item */
   padding-bottom: 20px; /* Add some padding to the bottom */
   margin-bottom: 20px;
   display: flex;
@@ -432,6 +434,7 @@ audio {
 .result-cover-art {
   width: 150px;
 }
+
 .result-info-container {
   display: flex;
   flex-direction: column;
@@ -514,10 +517,11 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgb(0 0 0 / 70%);
   z-index: 9999;
   overflow-y: hidden;
   margin-top: 0;
+
   /* In case the modal content is long */
 }
 
