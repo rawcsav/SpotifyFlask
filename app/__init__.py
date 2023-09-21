@@ -16,9 +16,9 @@ def create_app():
 
     app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
-    app.config["SESSION_COOKIE_SAMESITE"] = config.SESSION_COOKIE_SAMESITE
+    # app.config["SESSION_COOKIE_SAMESITE"] = config.SESSION_COOKIE_SAMESITE
 
-    app.config["WTF_CSRF_ENABLED"] = config.WTF_CSRF_ENABLED
+    # app.config["WTF_CSRF_ENABLED"] = config.WTF_CSRF_ENABLED
 
     Session(app)
 
