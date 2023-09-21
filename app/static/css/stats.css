@@ -1,41 +1,41 @@
 body {
-  width: 100%;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694728486/layered-peaks-haikei_lyxdy9.svg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
   background-attachment: fixed;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694728486/layered-peaks-haikei_lyxdy9.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   overflow: hidden;
+  width: 100%;
 }
 
 /* Header styles */
 h1 {
-  text-align: center;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
   margin-top: 20px;
+  text-align: center;
 }
 
 /* Top-right navigation */
 .top-right-nav {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
   gap: 10px; /* space between the links */
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 /* Profile and stats links */
 .profile-link,
 .stats-link {
-  text-decoration: none;
-  font-family: 'Helvetica Neue', serif;
-  padding: 5px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #333;
+  font-family: 'Helvetica Neue', serif;
+  padding: 5px 10px;
+  text-decoration: none;
   transition: background-color 0.3s ease;
 }
 
@@ -46,35 +46,35 @@ h1 {
 
 /* Content container */
 .content-container {
-  max-width: 90%;
-  margin: 20px auto;
-  padding: 15px;
   background-color: #adc4ce;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  margin: 20px auto;
   max-height: 90vh; /* This sets the maximum height to 90% of the viewport height */
+  max-width: 90%;
   overflow-y: auto;
+  padding: 15px;
 }
 
 /* Term definition */
 .term-definition {
   font-size: 0.9em;
   font-style: italic;
-  text-align: center;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 /* Homepage link */
 .homepage-link {
+  cursor: pointer;
+  left: 3px;
   position: absolute;
   top: 1px;
-  left: 3px;
-  cursor: pointer;
 }
 
 .homepage-link img {
   height: 60px;
-  width: auto;
   transition: transform 0.3s;
+  width: auto;
 }
 
 .homepage-link:hover img {
@@ -83,9 +83,9 @@ h1 {
 
 /* Carousel styles */
 .carousel-content {
+  color: #555;
   font-family: 'Helvetica Neue', serif; /* Example font */
   font-size: 10px;
-  color: #555;
 }
 
 .carousel-content h1 {
@@ -97,9 +97,9 @@ h1 {
 
 .carousel-content h2 {
   color: #333; /* Darker color for headers */
-  text-align: center;
   font-size: 20px;
   font-weight: bold;
+  text-align: center;
 }
 
 .carousel-content h1,
@@ -115,12 +115,12 @@ h1 {
 
 .carousel-control-prev,
 .carousel-control-next {
+  height: 50px; /* A specific height for visibility */
   position: fixed; /* Fix them on the screen */
   top: 50%; /* Center them vertically */
-  z-index: 9999; /* Ensure they're on top */
-  width: 50px; /* A specific width for visibility */
-  height: 50px; /* A specific height for visibility */
   transform: translateY(-50%); /* This will truly center them vertically */
+  width: 50px; /* A specific width for visibility */
+  z-index: 9999; /* Ensure they're on top */
 }
 
 .carousel-control-prev {
@@ -133,46 +133,46 @@ h1 {
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  width: 30px;
+  color: #000; /* Making sure the icons don't have a background */
   height: 30px;
-  color: #000000; /* Making sure the icons don't have a background */
+  width: 30px;
 }
 
 /* Overlay styles */
 .overlay {
+  align-items: center;
+  display: none;
+  height: 100vh;
+  justify-content: center;
+  left: 0;
   position: fixed;
   top: 0;
-  left: 0;
   width: 100vw;
-  height: 100vh;
-  display: none;
-  align-items: center;
-  justify-content: center;
 }
 
 .overlay .content {
   background: #fff;
-  padding: 20px;
   border-radius: 8px;
-  width: 60%; /* Set this to whatever size you want */
+  box-shadow: 0 0 10px rgb(0 0 0 / 20%); /* Optional: Adds a slight shadow for depth */
   max-height: 80%;
   overflow-y: auto;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Optional: Adds a slight shadow for depth */
+  padding: 20px;
   text-align: center; /* Ensures that text inside is centered */
+  width: 60%; /* Set this to whatever size you want */
 }
 
 .overlay h2,
 .overlay h3 {
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 22px;
-  text-align: center;
   margin-top: 10px;
+  text-align: center;
 }
 
 .overlay ul {
+  font-size: 16px;
   list-style-type: none;
   padding: 5px;
-  font-size: 16px;
 }
 
 .overlay li:last-child {
@@ -180,14 +180,14 @@ h1 {
 }
 
 .overlay button {
+  background: #007bff;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
   display: block;
   margin: 20px auto;
   padding: 10px 20px;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 
 .overlay button:hover {
@@ -196,19 +196,19 @@ h1 {
 
 /* Additional styles */
 #overlayTimePeriod {
-  text-align: center;
+  color: #777;
   font-size: 18px;
   font-weight: 400;
-  color: #777;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 /* Genre link styles */
 .genre-link {
   color: inherit; /* make the link color the same as the surrounding text */
+  font-size: 13px;
   text-decoration: none; /* remove underline */
   transition: transform 0.3s ease; /* animate any transformations */
-  font-size: 13px;
 }
 
 .genre-link:hover {
@@ -224,8 +224,8 @@ h1 {
 }
 
 .audio-feature-image {
-  max-width: 70px;
   max-height: 70px;
+  max-width: 70px;
 }
 
 .equal-height-card {
@@ -235,8 +235,8 @@ h1 {
 }
 
 .card-title {
-  font-size: 1.3rem;
   color: #333;
+  font-size: 1.3rem;
 }
 
 .card-body p,
@@ -245,63 +245,58 @@ h1 {
 }
 
 .feature-header {
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px; /* space between header and details */
 }
 
 .feature-name {
-  font-size: 1.2rem;
   color: #333;
+  font-size: 1.2rem;
   margin: 0;
 }
 
 .average-value {
-  font-size: 1.2rem;
   color: #007bff;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
 .feature-detail {
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  height: 100%;
   justify-content: space-between;
 }
 
 .feature-value {
-  font-size: 1rem;
   color: #555;
+  font-size: 1rem;
   margin-bottom: 10px;
 }
 
 .track-info {
-  font-size: 0.8rem;
   color: #777;
-  text-align: center;
+  font-size: 0.8rem;
   margin-top: 5px;
-}
-
-.feature-detail {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  text-align: center;
 }
 
 .feature-value-wrapper,
 .image-wrapper,
 .track-info-wrapper {
-  flex: 1; /* Let each section take up an equal amount of space */
-  display: flex;
   align-items: center; /* Center content vertically */
+  display: flex;
+  flex: 1; /* Let each section take up an equal amount of space */
   justify-content: center; /* Center content horizontally */
 }
 
 .track-info-wrapper {
   flex-direction: column; /* Stack children vertically */
-  text-align: center; /* Center text */
   margin-top: 5px;
+  text-align: center; /* Center text */
 }
 
 .card {

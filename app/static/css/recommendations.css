@@ -1,6 +1,6 @@
 /* Global Styles */
 body {
-  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   padding: 20px;
   display: flex;
   background: linear-gradient(
@@ -30,7 +30,6 @@ h1 {
   text-align: center;
 }
 
-/* Navigation and Links */
 .homepage-link {
   position: absolute;
   top: 1px;
@@ -93,7 +92,7 @@ audio {
 
 .search-container input,
 .search-container label {
-  font-family: "Helvetica Neue", serif;
+  font-family: 'Helvetica Neue', serif;
   font-size: 14px; /* Adjust the font size */
 }
 
@@ -295,7 +294,7 @@ audio {
   display: block;
   margin-bottom: 4px;
   width: 95%;
-  font-family: "Helvetica Neue", serif;
+  font-family: 'Helvetica Neue', serif;
   font-size: 14px;
 
   /* Ensures the input and button take the full width */
@@ -347,7 +346,7 @@ audio {
 }
 
 #results {
-  font-family: "Helvetica Neue", serif; /* Optional: You can change the font family */
+  font-family: 'Helvetica Neue', serif; /* Optional: You can change the font family */
   font-size: 12px; /* Adjust the font size */
   color: #333;
   padding: 5px;
