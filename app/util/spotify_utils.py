@@ -50,27 +50,16 @@ def fetch_and_process_data(access_token, time_periods):
         all_track_ids = []
         for period in time_periods:
             all_artist_ids.extend(
-                [
-                    artist["id"]
-                    for artist in top_artists[period]["items"]
-                    if artist["id"] is not None
-                ]
+                [artist["id"] for artist in top_artists[period]["items"]]
             )
             all_artist_ids.extend(
                 [
                     artist["id"]
                     for track in top_tracks[period]["items"]
                     for artist in track["artists"]
-                    if artist["id"] is not None
                 ]
             )
-            all_track_ids.extend(
-                [
-                    track["id"]
-                    for track in top_tracks[period]["items"]
-                    if track["id"] is not None
-                ]
-            )
+            all_track_ids.extend([track["id"] for track in top_tracks[period]["items"]])
 
         # Remove duplicate IDs
         unique_artist_ids = list(set(all_artist_ids))
