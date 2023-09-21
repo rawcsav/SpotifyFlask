@@ -13,22 +13,12 @@ FEATURES = config.AUDIO_FEATURES
 
 def get_top_tracks(access_token, period):
     sp = Spotify(auth=access_token)
-    tracks = sp.current_user_top_tracks(time_range=period, limit=50)
-    return [
-        track
-        for track in tracks["items"]
-        if track
-        and track.get("id")
-        and track.get("artists")
-        and track.get("album")
-        and track.get("album").get("id")
-    ]
+    return sp.current_user_top_tracks(time_range=period, limit=50)
 
 
 def get_top_artists(access_token, period):
     sp = Spotify(auth=access_token)
-    artists = sp.current_user_top_artists(time_range=period, limit=50)
-    return [artist for artist in artists["items"] if artist and artist.get("id")]
+    return sp.current_user_top_artists(time_range=period, limit=50)
 
 
 def get_audio_features_for_tracks(sp, track_ids):
@@ -37,7 +27,7 @@ def get_audio_features_for_tracks(sp, track_ids):
         batch = track_ids[i : i + 100]
         batch_features = sp.audio_features(batch)
         for feature in batch_features:
-            if feature and feature.get("id"):
+            if feature:
                 features[feature["id"]] = feature
     return features
 
@@ -60,16 +50,27 @@ def fetch_and_process_data(access_token, time_periods):
         all_track_ids = []
         for period in time_periods:
             all_artist_ids.extend(
-                [artist["id"] for artist in top_artists[period]["items"]]
+                [
+                    artist["id"]
+                    for artist in top_artists[period]["items"]
+                    if artist["id"] is not None
+                ]
             )
             all_artist_ids.extend(
                 [
                     artist["id"]
                     for track in top_tracks[period]["items"]
                     for artist in track["artists"]
+                    if artist["id"] is not None
                 ]
             )
-            all_track_ids.extend([track["id"] for track in top_tracks[period]["items"]])
+            all_track_ids.extend(
+                [
+                    track["id"]
+                    for track in top_tracks[period]["items"]
+                    if track["id"] is not None
+                ]
+            )
 
         # Remove duplicate IDs
         unique_artist_ids = list(set(all_artist_ids))
