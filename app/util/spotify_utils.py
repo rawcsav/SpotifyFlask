@@ -32,6 +32,37 @@ def get_audio_features_for_tracks(sp, track_ids):
     return features
 
 
+def get_genre_counts_from_artists_and_tracks(top_artists, top_tracks, all_artists_info):
+    genre_counts = defaultdict(int)
+
+    for artist in top_artists["items"]:
+        for genre in artist["genres"]:
+            genre_counts[genre] += 1
+
+    for track in top_tracks["items"]:
+        for artist in track["artists"]:
+            for genre in all_artists_info[artist["id"]]["genres"]:
+                genre_counts[genre] += 1
+
+    return sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:20]
+
+
+def get_artists_for_genre(all_artists_info, genre, artist_ids):
+    return [
+        artist
+        for artist_id, artist in all_artists_info.items()
+        if genre in artist["genres"] and artist_id in artist_ids
+    ]
+
+
+def get_tracks_for_artists(tracks, artist_ids):
+    return [
+        track
+        for track in tracks
+        if any(artist["id"] in artist_ids for artist in track["artists"])
+    ]
+
+
 def fetch_and_process_data(access_token, time_periods):
     try:
         # Initialize the Spotify API client
@@ -79,25 +110,36 @@ def fetch_and_process_data(access_token, time_periods):
         audio_features = get_audio_features_for_tracks(sp, unique_track_ids)
 
         # Initialize genre counts and genre-specific data
-        genre_counts = defaultdict(int)
         genre_specific_data = {period: {} for period in time_periods}
         sorted_genres_by_period = {}  # Added this line to store sorted genres by period
 
-        # Process each time period
         for period in time_periods:
-            # Count genres
-            for artist in top_artists[period]["items"]:
-                for genre in artist["genres"]:
-                    genre_counts[genre] += 1
-            for track in top_tracks[period]["items"]:
-                for artist in track["artists"]:
-                    for genre in all_artists_info[artist["id"]]["genres"]:
-                        genre_counts[genre] += 1
+            sorted_genres = get_genre_counts_from_artists_and_tracks(
+                top_artists[period], top_tracks[period], all_artists_info
+            )
+            sorted_genres_by_period[period] = sorted_genres
 
-            # Sort genres for each period
-            sorted_genres_by_period[period] = sorted(
-                genre_counts.items(), key=lambda x: x[1], reverse=True
-            )[:15]
+            artist_ids_for_period = {
+                artist["id"] for artist in top_artists[period]["items"]
+            } | {
+                artist["id"]
+                for track in top_tracks[period]["items"]
+                for artist in track["artists"]
+            }
+
+            for genre, count in sorted_genres:
+                top_genre_artists = get_artists_for_genre(
+                    all_artists_info, genre, artist_ids_for_period
+                )
+                top_genre_tracks = get_tracks_for_artists(
+                    top_tracks[period]["items"],
+                    [artist["id"] for artist in top_genre_artists],
+                )
+
+                genre_specific_data[period][genre] = {
+                    "top_artists": top_genre_artists,
+                    "top_tracks": top_genre_tracks,
+                }
 
             # More processing logic can be added here if needed...
         recent_tracks = sp.current_user_recently_played(limit=50)["items"]
@@ -127,7 +169,6 @@ def fetch_and_process_data(access_token, time_periods):
             top_artists,
             all_artists_info,
             audio_features,
-            genre_counts,
             genre_specific_data,
             sorted_genres_by_period,
             recent_tracks,
