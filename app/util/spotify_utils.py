@@ -97,9 +97,29 @@ def fetch_and_process_data(access_token, time_periods):
             # Sort genres for each period
             sorted_genres_by_period[period] = sorted(
                 genre_counts.items(), key=lambda x: x[1], reverse=True
-            )
+            )[:15]
 
             # More processing logic can be added here if needed...
+        recent_tracks = sp.current_user_recently_played(limit=50)["items"]
+
+        playlist_info = []
+        offset = 0
+        while True:
+            playlists = sp.current_user_playlists(limit=50, offset=offset)
+            if not playlists["items"]:
+                break  # Exit the loop if no more playlists are found
+
+            for playlist in playlists["items"]:
+                info = {
+                    "id": playlist["id"],
+                    "name": playlist["name"],
+                    "cover_art": playlist["images"][0]["url"]
+                    if playlist["images"]
+                    else None,
+                }
+                playlist_info.append(info)
+
+            offset += 50  # Move to the next page of playlists
 
         # Return the processed data
         return (
@@ -110,6 +130,8 @@ def fetch_and_process_data(access_token, time_periods):
             genre_counts,
             genre_specific_data,
             sorted_genres_by_period,
+            recent_tracks,
+            playlist_info,
         )
 
     except Exception as e:

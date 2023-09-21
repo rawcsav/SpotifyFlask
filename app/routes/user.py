@@ -50,6 +50,8 @@ def profile():
         genre_counts,
         genre_specific_data,
         sorted_genres_by_period,
+        recent_tracks,
+        playlist_info,
     ) = fetch_and_process_data(access_token, time_periods)
 
     # Aggregate user data
@@ -61,6 +63,8 @@ def profile():
         "genre_counts": genre_counts,
         "sorted_genres": sorted_genres_by_period,
         "genre_specific_data": genre_specific_data,
+        "recent_tracks": recent_tracks,
+        "playlists": playlist_info,
     }
 
     # Store the processed data as JSON
