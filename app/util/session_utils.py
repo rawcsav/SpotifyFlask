@@ -41,9 +41,21 @@ def manage_user_directory(spotify_user_id, session):
 
 
 # Store User Data to JSON
+def replace_none_with_empty_str(obj):
+    if isinstance(obj, dict):
+        return {k: replace_none_with_empty_str(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [replace_none_with_empty_str(x) for x in obj]
+    elif obj is None:
+        return ""
+    else:
+        return obj
+
+
 def store_to_json(user_data, json_path):
+    sanitized_data = replace_none_with_empty_str(user_data)
     with open(json_path, "w") as f:
-        json.dump(user_data, f, ensure_ascii=False, indent=4)
+        json.dump(sanitized_data, f, ensure_ascii=False, indent=4)
 
 
 # Load User Data from JSON
