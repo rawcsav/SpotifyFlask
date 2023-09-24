@@ -329,18 +329,16 @@ audio {
 .results-container {
   flex: 1;
   max-height: 90vh;
-  max-width: 25%;
+  max-width: 30%;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-right: 20px;
 }
 
 #results {
   color: #333;
-  font-family: 'Helvetica Neue', serif; /* Optional: You can change the font family */
   font-size: 12px; /* Adjust the font size */
-  margin: 0 auto;
   max-width: 95%; /* you can adjust this value based on your design */
-  padding: 5px;
   white-space: normal;
   width: 100%; /* Full width */
   word-wrap: break-word;
@@ -368,76 +366,31 @@ audio {
   color: red; /* Light red background */
 }
 
-#results h2 {
-  font-size: 14px; /* Adjust the font size for the title */
-  font-weight: bold; /* Make it bold */
+.dropdown-content {
+  font-size: 13px;
 }
 
-#results p {
-  font-size: 12px; /* Adjust the font size for the paragraph */
+.dropdown-content a {
+  border-radius: 5px;
+  color: #283567;
+  display: grid;
+  font-weight: bold;
+  line-height: 1.6; /* Increase line height for readability */
+  margin-bottom: 30px;
+  margin-left: 20px;
+  padding: 5px;
+  text-decoration: none;
+  transition:
+    background-color 0.3s,
+    transform 0.3s; /* Add transition for smoother hover effect */
+
+  width: fit-content;
 }
 
-.result-item {
-  align-items: flex-start;
-  border-bottom: 1px solid;
-  border-color: #000; /* Add a bottom border to each result item */
-  display: flex;
-  justify-content: start;
-  margin-bottom: 20px;
-  padding-bottom: 20px; /* Add some padding to the bottom */
-}
-
-.result-text {
-  margin-left: 10px;
-}
-
-/* Album Art and Play Button */
-.result-cover-art-container {
-  position: relative;
-  width: 150px;
-}
-
-.play-button {
-  color: #fff;
-  cursor: pointer;
-  display: none;
-  font-size: 48px;
-  left: 50%;
-  line-height: 1;
-  position: absolute;
-  text-align: center;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-}
-
-.result-cover-art-container:hover .play-button {
-  display: block;
-}
-
-.result-cover-art-container:hover .result-cover-art {
-  opacity: 0.6;
-}
-
-.result-cover-art {
-  width: 150px;
-}
-
-.result-info-container {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.add-seed {
-  align-self: flex-start; /* Ensures the button starts at the beginning */
-  background-color: #cedebd;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-  margin-left: 10px;
-  padding: 5px 10px;
+.dropdown-content a:hover {
+  background-color: #f5f5f5;
+  color: #000; /* Change text color on hover for better contrast */
+  transform: scale(1.05);
 }
 
 html {
@@ -504,13 +457,69 @@ html {
   height: 100%;
   left: 0;
   margin-top: 0;
-  overflow-y: hidden;
+  overflow-y: auto;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 9999;
 
   /* In case the modal content is long */
+}
+
+#playlistOptions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.playlist-option {
+  color: black;
+  margin-bottom: 10px;
+  text-decoration: none;
+  width: 30%;
+}
+
+.playlist-modal-content {
+  background-color: #9eb384;
+  border-radius: 5px;
+  margin: 5% auto;
+  padding: 20px;
+  width: 40%;
+}
+
+.playlist-item {
+  align-items: center;
+  box-shadow:
+    0 4px 8px 0 rgb(0 0 0 / 20%),
+    0 6px 20px 0 rgb(0 0 0 / 19%);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Set a fixed height */
+  width: auto; /* Set a fixed width */
+}
+
+.playlist-item:hover {
+  box-shadow:
+    0 4px 8px 0 rgb(0 0 0 / 40%),
+    0 6px 20px 0 rgb(0 0 0 / 39%);
+  transform: scale(1.05);
+}
+
+.playlist-image {
+  height: 80%; /* Adjust this to control the height of the image */
+  object-fit: cover; /* To ensure the image covers the entire area */
+  width: 100%;
+}
+
+.playlist-name {
+  align-items: center; /* Vertically center the text */
+  background-color: black;
+  color: white;
+  display: flex; /* Use flex to center the text */
+  height: 20%; /* Adjust this to control the height of the label */
+  justify-content: center; /* Horizontally center the text */
+  text-align: center; /* Center the text */
+  width: 100%; /* This makes the label the same width as the image */
 }
 
 .modal-content {
@@ -521,14 +530,84 @@ html {
   width: 70%;
 }
 
-.close {
-  color: #aaa;
+.result-item h2 {
+  font-size: 10px; /* Adjust the font size for the title */
+  font-weight: bold; /* Make it bold */
+  margin-left: 10px;
+  padding: 0;
+}
+
+.result-item p {
+  font-size: 10px;
+  margin-left: 10px;
+  padding: 0;
+}
+
+.result-item {
+  align-items: flex-start;
+  border-bottom: 1px solid;
+  border-color: #000; /* Add a bottom border to each result item */
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 20px; /* Add some padding to the bottom */
+  position: relative;
+}
+
+.play-button {
+  color: #fff;
   cursor: pointer;
-  float: right;
+  display: none;
+  font-size: 48px;
+  left: 50%;
+  line-height: 1;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.result-cover-art-container:hover .play-button {
+  display: block;
+}
+
+.result-cover-art-container:hover .result-cover-art {
+  opacity: 0.6;
+}
+
+.result-cover-art {
+  border-radius: 5px;
+  box-shadow:
+    4px 5px 8px 0 rgb(0 0 0 / 20%),
+    0 2px 20px 0 rgb(0 0 0 / 19%);
+  height: auto;
+  width: 200px;
+}
+
+.result-item .result-cover-art-container {
+  position: relative;
+}
+
+.result-item .result-cover-art-container .caption {
+  background: rgb(0 0 0 / 80%); /* Semi-transparent black */
+  border-radius: 5px;
+  bottom: 3px;
+  box-sizing: border-box; /* Include the padding and border in the width */
+  color: white;
+  position: absolute;
+  width: 100%; /* Make the caption always fit the width of the image */
+}
+
+.close {
+  color: black;
+  cursor: pointer;
   font-size: 28px;
   font-weight: bold;
+  left: 0;
+  top: 0;
 }
 
 .close:hover {
-  color: black;
+  color: red;
 }

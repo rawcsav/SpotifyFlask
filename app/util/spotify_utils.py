@@ -25,7 +25,7 @@ def get_audio_features_for_tracks(sp, track_ids):
     features = {}
     for i in range(0, len(track_ids), 100):
         batch = track_ids[i : i + 100]
-        batch_features = sp.features(batch)
+        batch_features = sp.audio_features(batch)
         for feature in batch_features:
             if feature:
                 features[feature["id"]] = feature
@@ -155,6 +155,7 @@ def fetch_and_process_data(access_token, time_periods):
                 info = {
                     "id": playlist["id"],
                     "name": playlist["name"],
+                    "owner": playlist["owner"]["display_name"],
                     "cover_art": playlist["images"][0]["url"]
                     if playlist["images"]
                     else None,

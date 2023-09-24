@@ -14,6 +14,7 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 ME_URL = "https://api.spotify.com/v1/me"
+
 MAIN_USER_DIR = "app/user_data_dir"
 
 SECRET_KEY = os.getenv("SECRET_KEY")

@@ -23,7 +23,9 @@ def profile():
     res_data = fetch_user_data(access_token)
     spotify_user_id = res_data.get("id")
 
-    # Manage user directory
+    spotify_user_display_name = res_data.get("display_name")
+    session["DISPLAY_NAME"] = spotify_user_display_name
+
     manage_user_directory(spotify_user_id, session)
     user_directory = session["UPLOAD_DIR"]
     json_path = os.path.join(user_directory, "user_data.json")

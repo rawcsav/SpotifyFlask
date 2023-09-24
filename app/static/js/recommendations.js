@@ -1,4 +1,15 @@
 $(document).ready(function () {
+  $('#playlistOptions').empty();
+  playlistData.forEach(function (playlist) {
+    $('#playlistOptions')
+      .append(`<a href="#" class="playlist-option" data-playlistid="${playlist.id}">
+                  <div class="playlist-item">
+                    <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
+                    <span class="playlist-name">${playlist.name}</span>
+                  </div>
+                </a>`);
+  });
+
   // Get the modal and close button
   var modal = $('#instructionsModal');
   var closeBtn = $('.close');
@@ -39,12 +50,6 @@ $(document).ready(function () {
     }
   });
 
-  // Genre search behavior
-  $('#genre_search').click(function () {
-    let query = $('#genre_input').val();
-    searchGenres(query);
-  });
-
   function searchGenres(query) {
     $('#genre_search_results').empty(); // Clear the previous search results
     $('#genre_loading').show(); // Show the loading message
@@ -79,6 +84,11 @@ $(document).ready(function () {
       let query = $(this).val();
       searchGenres(query);
     }
+  });
+
+  $('#genre_search').click(function () {
+    let query = $('#genre_input').val();
+    searchGenres(query);
   });
 
   // Track Search with error handling and template literals
@@ -180,6 +190,7 @@ $(document).ready(function () {
     let genreSeeds = $('#genre_seeds_container .genre-seed').length;
     return trackSeeds + artistSeeds + genreSeeds;
   }
+
   // For track selection:
   $('#track_search_results').on('click', '.clickable-result', function () {
     if (getTotalSeeds() < 5) {
@@ -335,28 +346,23 @@ $(document).ready(function () {
   let currentPlayingAudio = null; // To keep track of the current playing audio element
   let currentPlayingButton = null; // To keep track of the current playing button
 
-  $(document).on('click', '.add-seed', function () {
-    let trackId = $(this).attr('data-trackid');
+  $(document).on('click', '.add-to-seeds', function () {
     if (getTotalSeeds() < 5) {
+      let trackId = $(this).attr('data-trackid');
+      let trackName = $(this).attr('data-name'); // Get track name from data attribute
+      let artistName = $(this).attr('data-artist'); // Get artist name from data attribute
       let trackElement = $(`
-            <div class="clickable-result" data-id="${trackId}">
-                <img src="${$(this)
-                  .closest('.result-item')
-                  .find('.result-cover-art-container img')
-                  .attr('src')}" alt="Cover Art" class="result-image">
-                <div class="result-info">
-                    <h2>${$(this)
-                      .siblings('.result-text')
-                      .find('a')
-                      .text()}</h2>
-                    <p>Artist: ${$(this)
-                      .siblings('.result-text')
-                      .find('p:first')
-                      .text()
-                      .replace('Artist: ', '')}</p>
-                </div>
-            </div>
-        `);
+      <div class="clickable-result" data-id="${trackId}">
+        <img src="${$(this)
+          .closest('.result-item')
+          .find('.result-cover-art-container img')
+          .attr('src')}" alt="Cover Art" class="result-image">
+        <div class="result-info">
+          <h2>${trackName}</h2>  
+          <p>${artistName}</p>  
+        </div>
+      </div>
+    `);
       $('#track_seeds_container').append(trackElement);
       updateSeedsInput('track_seeds');
     } else {
@@ -373,27 +379,29 @@ $(document).ready(function () {
       recommendations.forEach((trackInfo) => {
         let audioElement = new Audio(trackInfo['preview']);
         $('#results').append(`
-                    <div class="result-item">
-                        <div class="result-cover-art-container">
-                            <img src="${trackInfo['cover_art']}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo['trackid']}">
-                            <div class="play-button" id="play_${trackInfo['trackid']}">&#9654;</div>
-                        </div>
-                        <div class="result-info-container">
-                          <div class="result-text">
-                            <h2>
-                                <a href="${trackInfo['trackUrl']}" target="_blank">${trackInfo['trackName']}</a>
-                            </h2>
-                            <p>Artist: ${trackInfo['artist']}</p>
-                            <p>Album: ${trackInfo['albumName']}</p>
-                          </div>
-                          <button class="add-seed" data-trackid="${trackInfo['trackid']}">+</button>
-                        </div>
-
-                        <audio controls>
-                            <source src="${trackInfo['preview']}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
+                  <div class="result-item">
+                    <div class="result-cover-art-container">
+                      <img src="${trackInfo['cover_art']}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo['trackid']}">
+                      <div class="caption">
+                        <h2>${trackInfo['trackName']}</h2>
+                        <p>${trackInfo['artist']}</p>
+                      </div>
+                      <div class="play-button" id="play_${trackInfo['trackid']}">&#9654;</div>
                     </div>
+                          <div class="dropdown-content"> 
+                              <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">Add to Liked</a>
+                              <a href="#" class="add-to-seeds" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add to Seeds</a>
+                              <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">Add to Playlist</a>
+                              <div id="toast" style="display: none; position: absolute; transform: translate(-50%, -50%);"></div>
+
+                            </div>
+                        
+                  </div>
+                  <audio controls>
+                    <source src="${trackInfo['preview']}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                  </audio>
+                  </div> 
                 `);
 
         let playButton = $(`#play_${trackInfo['trackid']}`);
@@ -421,5 +429,55 @@ $(document).ready(function () {
     }).fail(function (jqXHR, textStatus, errorThrown) {
       console.error('Error:', textStatus, errorThrown);
     });
+  }
+});
+
+$(document).on('click', '.add-to-saved', function () {
+  let trackId = $(this).attr('data-trackid');
+  $.ajax({
+    url: '/save_track', // Update the endpoint URL as per your Flask route
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ track_id: trackId }),
+    success: function (data) {
+      alert('Track has been added to your saved songs.');
+    },
+    fail: function (jqXHR, textStatus, errorThrown) {
+      console.error('Error:', textStatus, errorThrown);
+    },
+  });
+});
+
+$(document).on('click', '.add-to-playlist', function () {
+  let trackId = $(this).attr('data-trackid');
+  $('#playlistModal').data('trackid', trackId).css('display', 'block');
+});
+
+$(document).on('click', '.playlist-option', function () {
+  let playlistId = $(this).attr('data-playlistid');
+  let trackId = $('#playlistModal').data('trackid');
+
+  $.ajax({
+    url: '/add_to_playlist',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
+    success: function (data) {
+      alert('Track has been added to your selected playlist.');
+      $('#playlistModal').css('display', 'none');
+    },
+    fail: function (jqXHR, textStatus, errorThrown) {
+      console.error('Error:', textStatus, errorThrown);
+    },
+  });
+});
+
+$('.close').click(function () {
+  $('#playlistModal').css('display', 'none');
+});
+
+$(window).click(function (event) {
+  if ($(event.target).is($('#playlistModal'))) {
+    $('#playlistModal').css('display', 'none');
   }
 });
