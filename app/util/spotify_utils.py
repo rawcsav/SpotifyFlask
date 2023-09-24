@@ -24,7 +24,7 @@ def get_top_artists(access_token, period):
 def get_audio_features_for_tracks(sp, track_ids):
     features = {}
     for i in range(0, len(track_ids), 100):
-        batch = track_ids[i : i + 100]
+        batch = track_ids[i: i + 100]
         batch_features = sp.audio_features(batch)
         for feature in batch_features:
             if feature:
@@ -99,9 +99,9 @@ def fetch_and_process_data(access_token, time_periods):
         # Fetch detailed artist info
         all_artists_info = {}
         for i in range(
-            0, len(unique_artist_ids), 50
+                0, len(unique_artist_ids), 50
         ):  # Spotify's API allows max 50 at a time
-            batch_ids = unique_artist_ids[i : i + 50]
+            batch_ids = unique_artist_ids[i: i + 50]
             artists_data = sp.artists(batch_ids)
             for artist in artists_data["artists"]:
                 all_artists_info[artist["id"]] = artist
@@ -120,12 +120,12 @@ def fetch_and_process_data(access_token, time_periods):
             sorted_genres_by_period[period] = sorted_genres
 
             artist_ids_for_period = {
-                artist["id"] for artist in top_artists[period]["items"]
-            } | {
-                artist["id"]
-                for track in top_tracks[period]["items"]
-                for artist in track["artists"]
-            }
+                                        artist["id"] for artist in top_artists[period]["items"]
+                                    } | {
+                                        artist["id"]
+                                        for track in top_tracks[period]["items"]
+                                        for artist in track["artists"]
+                                    }
 
             for genre, count in sorted_genres:
                 top_genre_artists = get_artists_for_genre(
@@ -222,7 +222,7 @@ def init_spotify_client(access_token):
 
 
 # Handle Spotify Search
-def spotify_search(sp, query, type, limit=5):
+def spotify_search(sp, query, type, limit=4):
     try:
         return sp.search(q=query, type=type, limit=limit)
     except SpotifyException as e:
@@ -242,12 +242,10 @@ def init_session_client(session):
 def get_recommendations(sp, limit, market, **kwargs):
     seed_tracks = kwargs.get("track", None)
     seed_artists = kwargs.get("artist", None)
-    seed_genres = kwargs.get("genre", None)
     try:
         return sp.recommendations(
             seed_tracks=seed_tracks,
             seed_artists=seed_artists,
-            seed_genres=seed_genres,
             limit=limit,
             **kwargs
         )

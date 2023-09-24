@@ -28,9 +28,6 @@ SESSION_COOKIE_SAMESITE = "Strict"
 
 WTF_CSRF_ENABLED = True
 
-NOVAAI_API_KEY = os.getenv("NOVAAI_API_KEY")
-NOVAAI_API_BASE = "https://api.nova-oss.com/v1"
-
 AUDIO_FEATURES = [
     "acousticness",
     "danceability",

@@ -81,8 +81,8 @@
           <h3>How to Use:</h3>
           <h4>Search & Select:</h4>
           <p>
-            Begin with at least one seed from a track, artist, or genre. Note:
-            You can use a maximum combination of up to 5 seeds.
+            Begin with at least one seed from a track, or artist. Note: You can
+            use a maximum combination of up to 5 seeds.
           </p>
           <ul>
             <li>
@@ -91,7 +91,6 @@
             <li>
               Artists: Input an artist's name and choose from the results.
             </li>
-            <li>Genres: Browse and select from the available genre options.</li>
           </ul>
           <h4>Tune Your Preferences:</h4>
           <ul>
@@ -116,102 +115,37 @@
         </div>
       </div>
     </div>
-    <h2 class="search-title">Search Functions</h2>
-
-    <hr class="custom-line" />
     <div class="search-container">
-      <!-- Track search -->
-      <div id="track_container">
-        <datalist id="track_results"></datalist>
-        <div class="input-container">
-          <input
-            type="text"
-            id="track_input"
-            list="track_results"
-            placeholder="Track Search..."
-            autocomplete="off"
+      <div id="universal_container">
+        <datalist id="universal_results"></datalist>
+        <input
+          type="text"
+          id="universal_input"
+          list="universal_results"
+          placeholder="Search for Tracks & Artists"
+          autocomplete="off"
+        />
+        <button type="button" id="universal_search" class="search-btn">
+          <img
+            src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
+            alt="Search"
+            class="search-icon"
           />
-          <button type="button" id="track_search" class="search-btn">
-            <img
-              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
-              alt="Search"
-              class="search-icon"
-            />
-          </button>
-        </div>
-        <div id="track_search_results">
-          <div id="track_loading" class="loading-alert">Loading...</div>
-          <div id="track_error" class="error-alert">
-            An error occurred. Please try again.
-          </div>
-          <!-- Track search results will be displayed here -->
-        </div>
+        </button>
       </div>
-      <!-- Artist search -->
-      <div id="artist_container">
-        <datalist id="artist_results"></datalist>
-        <div class="input-container">
-          <input
-            type="text"
-            id="artist_input"
-            list="artist_results"
-            placeholder="Artist Search..."
-            autocomplete="off"
-          />
-          <button type="button" id="artist_search" class="search-btn">
-            <img
-              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
-              alt="Search"
-              class="search-icon"
-            />
-          </button>
-        </div>
-        <div id="artist_loading" class="loading-alert">Loading...</div>
-        <div id="artist_error" class="error-alert">
-          An error occurred. Please try again.
-        </div>
-        <div id="artist_search_results">
-          <!-- Artist search results will be displayed here -->
-        </div>
+      <div id="universal_loading" class="loading-alert">Loading...</div>
+      <div id="universal_error" class="error-alert">
+        An error occurred. Please try again.
       </div>
-      <div id="genre_container">
-        <div class="input-container">
-          <input
-            type="text"
-            id="genre_input"
-            placeholder="Genre Search..."
-            autocomplete="off"
-          />
-          <button type="button" id="genre_search" class="search-btn">
-            <img
-              src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694755771/magnifying-glass-svgrepo-com_sf4h8b.svg"
-              alt="Search"
-              class="search-icon"
-            />
-          </button>
-        </div>
-        <div id="genre_loading" class="loading-alert">Loading...</div>
-        <div id="genre_error" class="error-alert">
-          An error occurred. Please try again.
-        </div>
-        <div id="genre_search_results"></div>
+      <div id="universal_search_results">
+        <!-- Universal search results will be displayed here -->
       </div>
     </div>
+    <div class="seed-container">
+      <hr class="custom-line" />
+      <div id="universal_seeds_container"></div>
+    </div>
     <div class="main-container">
-      <div class="seed-container">
-        <h2>Rec Seeds</h2>
-        <!-- Track seeds -->
-        <label for="track_seeds">Track Seeds:</label>
-        <div id="track_seeds_container"></div>
-
-        <!-- Artist seeds -->
-        <label for="artist_seeds">Artist Seeds:</label>
-        <div id="artist_seeds_container"></div>
-
-        <label for="genre_seeds">Genre Seeds:</label>
-        <div id="genre_seeds_container"></div>
-        <!-- Genre seeds -->
-      </div>
       <div class="results-container">
         <h2>Results</h2>
         <div id="results"></div>
@@ -221,7 +155,6 @@
         <form>
           <input type="hidden" id="track_seeds" name="track_seeds" />
           <input type="hidden" id="artist_seeds" name="artist_seeds" />
-          <input type="hidden" id="genre_seeds" name="genre_seeds" />
 
           <label for="limit"># of Results:</label>
           <select name="limit" id="limit">

@@ -73,36 +73,51 @@ audio {
 /* Search Container */
 .search-container {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   margin-top: 10px;
+  width: 100%;
+}
+
+.seed-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 10px;
+  max-width: 100%;
   padding-bottom: 20px;
   width: 100%;
 }
 
-.search-container input,
-.search-container label {
-  font-family: 'Helvetica Neue', serif;
-  font-size: 14px; /* Adjust the font size */
+#universal_seeds_container {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 10px;
 }
 
-#track_container,
-#artist_container {
-  flex: 2;
+#universal_input::placeholder {
+  color: black;
+  font-size: 16px; /* Adjust the font size */
+  font-weight: 600;
 }
 
-#genre_container {
-  flex: 1;
-}
-
-.input-container {
-  display: inline-block;
+#universal_container {
+  display: inline;
   position: relative;
+  width: 100%;
 }
 
-#track_input,
-#artist_input,
-#genre_input {
+#universal_input {
+  background-color: darkseagreen;
+  border-color: transparent;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 8px 0 rgb(0 0 0 / 20%),
+    0 6px 20px 0 rgb(0 0 0 / 19%);
+  color: black;
+  min-height: 30px;
   padding-right: 30px; /* to make space for the magnifying glass icon */
+  width: 30%;
 }
 
 .search-btn {
@@ -111,7 +126,7 @@ audio {
   cursor: pointer;
   padding: 5px;
   position: absolute;
-  right: 5px; /* adjust as needed */
+  right: 68%; /* adjust as needed */
   top: 50%;
   transform: translateY(-50%);
 }
@@ -123,9 +138,7 @@ audio {
 }
 
 /* Add hover effect to seeds */
-#track_seeds_container .clickable-result:hover,
-#artist_seeds_container .clickable-result:hover,
-#genre_seeds_container .genre-seed:hover {
+#universal_seeds_container .clickable-result:hover {
   background-color: rgb(
     255 0 0 / 20%
   ); /* Light red background to indicate removal */
@@ -133,75 +146,57 @@ audio {
   cursor: pointer;
 }
 
-#track_search_results,
-#artist_search_results,
-#genre_search_results {
+#universal_search_results {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: row nowrap;
   gap: 10px;
   margin-bottom: 10px;
-  padding: 1px;
-}
-
-#genre_search_results {
-  line-height: 1;
-  padding: 3px;
-  width: 100%;
-  word-wrap: break-word;
 }
 
 .clickable-result {
   align-items: center;
-  background-color: #9eb384;
   border-radius: 5px;
   cursor: pointer;
   display: flex;
-  gap: 10px;
-  height: 60px;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
   margin-top: 10px;
-  max-width: 200px;
+  max-height: 100px;
+  max-width: 100px;
   overflow: hidden;
-  padding: 5px;
-  transition: background-color 0.3s;
-  width: auto;
+  position: relative;
 }
 
-.clickable-genre {
-  align-items: center;
-  background-color: #9eb384;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  font-size: 12px;
-  font-weight: bolder;
-  gap: 3px;
-  margin-top: 10px;
-  padding: 5px;
-  transition: background-color 0.3s;
-}
-
-.clickable-result:hover,
-.clickable-genre:hover {
-  background-color: #d0d0d0;
+.clickable-result:hover {
+  transform: scale(1.05);
 }
 
 .result-image {
   border-radius: 5px;
-  height: 50px;
-  object-fit: cover;
-  width: 50px;
+  height: 100px;
+  width: 100px;
+}
+
+.result-info {
+  background: rgb(0 0 0 / 80%);
+  bottom: 0;
+  color: white;
+  position: absolute;
+  width: 100px;
 }
 
 .result-info h2 {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bolder;
   margin: 0;
+  margin-left: 5px;
   padding: 0;
 }
 
 .result-info p {
-  font-size: 12px;
+  font-size: 10px;
   margin: 0;
+  margin-left: 5px;
   padding: 0;
 }
 
@@ -209,8 +204,6 @@ audio {
   cursor: pointer; /* Add this line */
   display: block;
 }
-
-/* Form Container */
 
 /* Style the entire slider container */
 .ui-slider {
@@ -295,35 +288,6 @@ audio {
   background-color: #cedebd;
 }
 
-.seed-container {
-  flex: 1;
-  max-height: 90vh;
-  max-width: 25%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-#track_seeds_container,
-#artist_seeds_container,
-#genre_seeds_container {
-  background-color: #e9f2e5;
-  border: 1px solid #31572c;
-  border-radius: 5px;
-  display: grid; /* Enable grid layout */
-  gap: 3px; /* Gap between grid items */
-  grid-template-columns: 1fr 1fr; /* Define two columns of equal width */
-  margin: 10px 0;
-  padding: 10px;
-}
-
-#track_seeds_container label,
-#artist_seeds_container label,
-#genre_seeds_container label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
 /* Results Container */
 
 .results-container {
@@ -376,7 +340,7 @@ audio {
   display: grid;
   font-weight: bold;
   line-height: 1.6; /* Increase line height for readability */
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   margin-left: 20px;
   padding: 5px;
   text-decoration: none;

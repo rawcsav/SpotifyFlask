@@ -52,7 +52,7 @@ def get_recommendations_route():
                      if item.strip()
                  ]
                  or None
-            for key in ["track", "artist", "genre"]
+            for key in ["track", "artist"]
         }
         limit = request.form.get("limit", 5)
         sliders = {

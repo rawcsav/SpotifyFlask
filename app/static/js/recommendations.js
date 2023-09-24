@@ -50,209 +50,107 @@ $(document).ready(function () {
     }
   });
 
-  function searchGenres(query) {
-    $('#genre_search_results').empty(); // Clear the previous search results
-    $('#genre_loading').show(); // Show the loading message
-    $('#genre_error').hide(); // Hide any previous error message
+  $('#universal_search').click(function () {
+    let query = $('#universal_input').val();
+    $('#universal_search_results').empty(); // Clear the previous search results
+    $('#universal_loading').show(); // Show the loading message
+    $('#universal_error').hide(); // Hide any previous error message
+
     $.ajax({
-      url: '/genres', // Update the endpoint URL as per your Flask route
+      url: '/search',
       method: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({ query: query }),
+      data: JSON.stringify({
+        query: query,
+        type: 'track,artist', // Search for both tracks and artists
+      }),
       success: function (data) {
-        $('#genre_loading').hide(); // Hide the loading message when data is received
+        $('#universal_loading').hide(); // Hide the loading message when data is received
 
-        let results = JSON.parse(data)['genres'];
-        $('#genre_search_results').empty();
+        let trackResults = JSON.parse(data)['tracks']['items'];
+        let artistResults = JSON.parse(data)['artists']['items'];
+        $('#universal_search_results').empty();
 
-        results.forEach((genre) => {
-          $('#genre_search_results').append(
-            `<div class="clickable-genre">${genre}</div>`,
-          );
+        trackResults.forEach((result) => {
+          $('#universal_search_results').append(`
+                  <div class="clickable-result track" data-id="${result['id']}">
+                      <img src="${result['album']['images'][0]['url']}" alt="Cover Art" class="result-image">
+                      <div class="result-info">
+                          <h2>${result['name']}</h2>
+                          <p>${result['artists'][0]['name']}</p>
+                      </div>
+                  </div>
+              `);
+        });
+        // Append artist results
+        artistResults.forEach((result) => {
+          $('#universal_search_results').append(`
+                  <div class="clickable-result artist" data-id="${result['id']}">
+                      <img src="${result['images'][0]['url']}" alt="${result['name']}" class="result-image">
+                      <div class="result-info">
+                          <h2>${result['name']}</h2>
+                      </div>
+                  </div>
+              `);
         });
       },
       fail: function (jqXHR, textStatus, errorThrown) {
-        $('#genre_error').show(); // Show the error message
-        $('#genre_loading').hide(); // Hide the loading message
+        $('#universal_error').show(); // Show the error message
+        $('#universal_loading').hide(); // Hide the loading message
         console.error('Error:', textStatus, errorThrown);
       },
     });
+  });
+  function updateSeedsInput(inputId) {
+    let ids = [];
+    let trackIds = [];
+    let artistIds = [];
+
+    $(`#${inputId} .clickable-result`).each(function () {
+      ids.push($(this).attr('data-id'));
+      if ($(this).hasClass('track')) {
+        trackIds.push($(this).attr('data-id'));
+      } else if ($(this).hasClass('artist')) {
+        artistIds.push($(this).attr('data-id'));
+      }
+    });
+
+    $(`#${inputId}`).val(ids.join(','));
+    $('#track_seeds').val(trackIds.join(','));
+    $('#artist_seeds').val(artistIds.join(','));
   }
 
-  $('#genre_input').on('keypress', function (e) {
+  $('#universal_input').on('keypress', function (e) {
     if (e.which == 13) {
       let query = $(this).val();
-      searchGenres(query);
-    }
-  });
-
-  $('#genre_search').click(function () {
-    let query = $('#genre_input').val();
-    searchGenres(query);
-  });
-
-  // Track Search with error handling and template literals
-  $('#track_search').click(function () {
-    let query = $('#track_input').val();
-    $('#track_search_results').empty(); // Clear the previous search results
-    $('#track_loading').show(); // Show the loading message
-    $('#track_error').hide(); // Hide any previous error message
-    $.ajax({
-      url: '/search',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        query: query,
-        type: 'track',
-      }),
-      success: function (data) {
-        $('#track_loading').hide(); // Hide the loading message when data is received
-
-        let results = JSON.parse(data)['tracks']['items'];
-        $('#track_search_results').empty();
-        results.forEach((result) => {
-          $('#track_search_results').append(`
-                        <div class="clickable-result" data-id="${result['id']}">
-                            <img src="${result['album']['images'][0]['url']}" alt="Cover Art" class="result-image">
-                            <div class="result-info">
-                                <h2>${result['name']}</h2>
-                                <p>${result['artists'][0]['name']}</p>
-                            </div>
-                        </div>
-                    `);
-        });
-      },
-      fail: function (jqXHR, textStatus, errorThrown) {
-        $('#track_error').show(); // Show the error message
-        $('#track_loading').hide(); // Hide the loading message
-        console.error('Error:', textStatus, errorThrown);
-      },
-    });
-  });
-
-  $('#track_input').on('keypress', function (e) {
-    if (e.which == 13) {
-      let query = $(this).val();
-      // Trigger the click event for the track search button to initiate the search
-      $('#track_search').trigger('click');
-    }
-  });
-
-  // Artist Search with error handling and template literals
-  $('#artist_search').click(function () {
-    let query = $('#artist_input').val();
-    $('#artist_search_results').empty(); // Clear the previous search results
-    $('#artist_loading').show(); // Show the loading message
-    $('#artist_error').hide(); // Hide any previous error message
-    $.ajax({
-      url: '/search',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        query: query,
-        type: 'artist',
-      }),
-      success: function (data) {
-        $('#artist_loading').hide(); // Hide the loading message when data is received
-
-        let results = JSON.parse(data)['artists']['items'];
-        $('#artist_search_results').empty();
-        results.forEach((result) => {
-          $('#artist_search_results').append(`
-                        <div class="clickable-result" data-id="${result['id']}">
-                            <img src="${result['images'][0]['url']}" alt="${result['name']}" class="result-image">
-                            <div class="result-info">
-                                <h2>${result['name']}</h2>
-                            </div>
-                        </div>
-                    `);
-        });
-      },
-      fail: function (jqXHR, textStatus, errorThrown) {
-        $('#artist_error').show(); // Show the error message
-        $('#artist_loading').hide(); // Hide the loading message
-        console.error('Error:', textStatus, errorThrown);
-      },
-    });
-  });
-
-  $('#artist_input').on('keypress', function (e) {
-    if (e.which == 13) {
-      let query = $(this).val();
-      // Trigger the click event for the artist search button to initiate the search
-      $('#artist_search').trigger('click');
+      $('#universal_search').trigger('click');
     }
   });
 
   function getTotalSeeds() {
-    let trackSeeds = $('#track_seeds_container .clickable-result').length;
-    let artistSeeds = $('#artist_seeds_container .clickable-result').length;
-    let genreSeeds = $('#genre_seeds_container .genre-seed').length;
-    return trackSeeds + artistSeeds + genreSeeds;
+    return $('#universal_seeds_container .clickable-result').length;
   }
 
-  // For track selection:
-  $('#track_search_results').on('click', '.clickable-result', function () {
+  $('#universal_search_results').on('click', '.clickable-result', function () {
     if (getTotalSeeds() < 5) {
-      $('#track_seeds_container').append($(this).clone());
-      updateSeedsInput('track_seeds');
-    } else {
-      alert('You can select no more than 5 combined seeds.');
-    }
-  });
-
-  // For artist selection:
-  $('#artist_search_results').on('click', '.clickable-result', function () {
-    if (getTotalSeeds() < 5) {
-      $('#artist_seeds_container').append($(this).clone());
-      updateSeedsInput('artist_seeds');
-    } else {
-      alert('You can select no more than 5 combined seeds.');
-    }
-  });
-
-  // For genre selection:
-  $(document).on('click', '.clickable-genre', function () {
-    if (getTotalSeeds() < 5) {
-      let genre = $(this).text();
-      let newGenreElement = $(`<div class="genre-seed">${genre}</div>`);
-      $('#genre_seeds_container').append(newGenreElement);
-      updateSeedsInput('genre_seeds');
-    } else {
-      alert('You can select no more than 5 combined seeds.');
-    }
-  });
-
-  function updateSeedsInput(inputId) {
-    let ids = [];
-    if (inputId === 'genre_seeds') {
-      $(`#${inputId}_container .genre-seed`).each(function () {
-        ids.push($(this).text());
+      let seedType = $(this).hasClass('track') ? 'track' : 'artist'; // Determine the seed type
+      $('#universal_seeds_container').append(
+        $(this).clone().addClass(seedType),
+      ); // Add the seed type as a class
+      updateSeedsInput('universal_seeds_container');
+      $('#universal_search_results').fadeOut(500, function () {
+        $(this).empty().show();
       });
     } else {
-      $(`#${inputId}_container .clickable-result`).each(function () {
-        ids.push($(this).attr('data-id'));
-      });
+      alert('You can select no more than 5 combined seeds.');
     }
-    $(`#${inputId}`).val(ids.join(','));
-  }
+  });
 
   // For removing track seeds:
-  $('#track_seeds_container').on('click', '.clickable-result', function () {
+  $('#universal_seeds_container').on('click', '.clickable-result', function () {
+    let seedType = $(this).hasClass('track') ? 'track' : 'artist'; // Determine the seed type
     $(this).remove();
-    updateSeedsInput('track_seeds');
-  });
-
-  // For removing artist seeds:
-  $('#artist_seeds_container').on('click', '.clickable-result', function () {
-    $(this).remove();
-    updateSeedsInput('artist_seeds');
-  });
-
-  // For removing genre seeds:
-  $('#genre_seeds_container').on('click', '.genre-seed', function () {
-    $(this).remove();
-    updateSeedsInput('genre_seeds');
+    updateSeedsInput('universal_seeds_container'); // Update the appropriate seeds input
   });
 
   // Submit form
@@ -348,25 +246,42 @@ $(document).ready(function () {
 
   $(document).on('click', '.add-to-seeds', function (event) {
     event.preventDefault();
-
     if (getTotalSeeds() < 5) {
-      let trackId = $(this).attr('data-trackid');
-      let trackName = $(this).attr('data-name'); // Get track name from data attribute
-      let artistName = $(this).attr('data-artist'); // Get artist name from data attribute
-      let trackElement = $(`
-      <div class="clickable-result" data-id="${trackId}">
-        <img src="${$(this)
-          .closest('.result-item')
-          .find('.result-cover-art-container img')
-          .attr('src')}" alt="Cover Art" class="result-image">
-        <div class="result-info">
-          <h2>${trackName}</h2>  
-          <p>${artistName}</p>  
-        </div>
-      </div>
-    `);
-      $('#track_seeds_container').append(trackElement);
-      updateSeedsInput('track_seeds');
+      let trackId, trackName, artistName, artistId;
+      let seedType = $(this).hasClass('track') ? 'track' : 'artist';
+      let imgSrc = $(this)
+        .closest('.result-item')
+        .find('.result-cover-art-container img')
+        .attr('src');
+
+      if (seedType === 'track') {
+        let trackId = $(this).attr('data-trackid');
+        let trackName = $(this).attr('data-name'); // Get name from data attribute
+        let artistName = $(this).attr('data-artist');
+        seedElement = $(`
+                <div class="clickable-result track" data-id="${trackId}">
+                    <img src="${imgSrc}" alt="Cover Art" class="result-image">
+                    <div class="result-info">
+                        <h2>${trackName}</h2>
+                        <p>${artistName}</p>
+                    </div>
+                </div>
+            `);
+      } else {
+        let artistName = $(this).attr('data-artist'); // Get artist name from data attribute
+        let artistId = $(this).attr('data-artistid'); // Get artist ID from data attribute
+        seedElement = $(`
+                <div class="clickable-result artist" data-id="${artistId}">
+                    <img src="${imgSrc}" alt="Cover Art" class="result-image">
+                    <div class="result-info">
+                        <h2>${artistName}</h2>
+                    </div>
+                </div>
+            `);
+      }
+
+      $('#universal_seeds_container').append(seedElement);
+      updateSeedsInput('universal_seeds_container');
     } else {
       alert('You can select no more than 5 combined seeds.');
     }
@@ -390,20 +305,19 @@ $(document).ready(function () {
                       </div>
                       <div class="play-button" id="play_${trackInfo['trackid']}">&#9654;</div>
                     </div>
-                          <div class="dropdown-content"> 
-                              <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">Add to Liked</a>
-                              <a href="#" class="add-to-seeds" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add to Seeds</a>
-                              <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">Add to Playlist</a>
-                            </div>
-                        
-                  </div>
-                  <audio controls>
-                    <source src="${trackInfo['preview']}" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                  </audio>
+                          <div class="dropdown-content">
+                            <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">Add to Liked</a>
+                            <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">Add to Playlist</a>
+                            <a href="#" class="add-to-seeds track" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add Track to Seeds</a>
+                            <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo['artistid']}" data-artist="${trackInfo['artist']}">Add Artist to Seeds</a>
+                          </div>
+                      </div>
+                      <audio controls>
+                          <source src="${trackInfo['preview']}" type="audio/mpeg">
+                          Your browser does not support the audio element.
+                      </audio>
                   </div> 
                 `);
-
         let playButton = $(`#play_${trackInfo['trackid']}`);
         audioElement.addEventListener('play', function () {
           if (currentPlayingAudio && currentPlayingAudio !== audioElement) {
@@ -442,7 +356,7 @@ function showToast(button, message) {
     left: buttonOffset.left,
   });
 
-  toast.text(message).fadeIn(400).delay(2000).fadeOut(400); // Show the toast
+  toast.text(message).fadeIn(400).delay(2000).fadeOut(1000); // Show the toast
 }
 $(document).on('click', '.add-to-saved', function (event) {
   event.preventDefault();

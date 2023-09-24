@@ -5,7 +5,6 @@ import shutil
 import string
 from flask import abort
 
-import openai as novaai
 import requests
 
 from app import config
@@ -57,36 +56,6 @@ def load_user_data(json_path):
         return None
     with open(json_path, "r") as f:
         return json.load(f)
-
-
-def init_novaai_client():
-    novaai.api_base = config.NOVAAI_API_BASE
-    novaai.api_key = config.NOVAAI_API_KEY
-
-
-# NovaAI Chat Completion
-def novaai_chat_completion(genre_seeds, query):
-    try:
-        return novaai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"You are a helpful search assistant that provides the top 10-15 most related genre seeds to a given user query. These are the genres you must choose from: {genre_seeds} Answer only with the exact names of related genres from this list, nothing else. Under no circumstances can you list a genre that is not on the list.",
-                },
-                {"role": "user", "content": "dance"},
-                {
-                    "role": "assistant",
-                    "content": "dance, edm, electro, club, techno, trance, house, electronic, disco, breakbeat, dubstep",
-                },
-                {"role": "user", "content": query},
-            ],
-            temperature=0,
-            max_tokens=100,
-        )
-    except Exception as e:
-        print(e)
-        return {"error": "Error processing request"}
 
 
 def generate_state():
