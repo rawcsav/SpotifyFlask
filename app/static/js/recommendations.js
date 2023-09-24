@@ -346,7 +346,9 @@ $(document).ready(function () {
   let currentPlayingAudio = null; // To keep track of the current playing audio element
   let currentPlayingButton = null; // To keep track of the current playing button
 
-  $(document).on('click', '.add-to-seeds', function () {
+  $(document).on('click', '.add-to-seeds', function (event) {
+    event.preventDefault();
+
     if (getTotalSeeds() < 5) {
       let trackId = $(this).attr('data-trackid');
       let trackName = $(this).attr('data-name'); // Get track name from data attribute
@@ -392,8 +394,6 @@ $(document).ready(function () {
                               <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">Add to Liked</a>
                               <a href="#" class="add-to-seeds" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add to Seeds</a>
                               <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">Add to Playlist</a>
-                              <div id="toast" style="display: none; position: absolute; transform: translate(-50%, -50%);"></div>
-
                             </div>
                         
                   </div>
@@ -432,7 +432,23 @@ $(document).ready(function () {
   }
 });
 
-$(document).on('click', '.add-to-saved', function () {
+function showToast(button, message) {
+  let toast = $('#toast');
+
+  // Position the toast next to the button
+  let buttonOffset = button.offset();
+  toast.css({
+    top: buttonOffset.top,
+    left: buttonOffset.left,
+  });
+
+  toast.text(message).fadeIn(400).delay(2000).fadeOut(400); // Show the toast
+}
+$(document).on('click', '.add-to-saved', function (event) {
+  event.preventDefault();
+
+  let button = $(this);
+
   let trackId = $(this).attr('data-trackid');
   $.ajax({
     url: '/save_track', // Update the endpoint URL as per your Flask route
@@ -440,7 +456,7 @@ $(document).on('click', '.add-to-saved', function () {
     contentType: 'application/json',
     data: JSON.stringify({ track_id: trackId }),
     success: function (data) {
-      alert('Track has been added to your saved songs.');
+      showToast(button, 'Saved Sucessfully!');
     },
     fail: function (jqXHR, textStatus, errorThrown) {
       console.error('Error:', textStatus, errorThrown);
@@ -448,14 +464,27 @@ $(document).on('click', '.add-to-saved', function () {
   });
 });
 
-$(document).on('click', '.add-to-playlist', function () {
+$(document).on('click', '.add-to-playlist', function (event) {
+  event.preventDefault();
+
+  let button = $(this);
   let trackId = $(this).attr('data-trackid');
-  $('#playlistModal').data('trackid', trackId).css('display', 'block');
+
+  $('#playlistModal')
+    .data('trackid', trackId)
+    .data('button', button)
+    .css('display', 'block');
 });
 
-$(document).on('click', '.playlist-option', function () {
+$(document).on('click', '.playlist-option', function (event) {
+  event.preventDefault();
+
   let playlistId = $(this).attr('data-playlistid');
-  let trackId = $('#playlistModal').data('trackid');
+  let modal = $('#playlistModal');
+  let trackId = modal.data('trackid');
+
+  // Retrieve the button element from the modal data
+  let button = modal.data('button');
 
   $.ajax({
     url: '/add_to_playlist',
@@ -463,8 +492,8 @@ $(document).on('click', '.playlist-option', function () {
     contentType: 'application/json',
     data: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
     success: function (data) {
-      alert('Track has been added to your selected playlist.');
-      $('#playlistModal').css('display', 'none');
+      showToast(button, 'Added to Playlist!');
+      modal.css('display', 'none');
     },
     fail: function (jqXHR, textStatus, errorThrown) {
       console.error('Error:', textStatus, errorThrown);

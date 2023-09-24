@@ -611,3 +611,16 @@ html {
 .close:hover {
   color: red;
 }
+
+#toast {
+  background-color: #333;
+  border-radius: 5px;
+  color: white;
+  padding: 10px;
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Center the toast relative to the button */
+
+  z-index: 1000; /* Ensure the toast appears above other elements */
+}
