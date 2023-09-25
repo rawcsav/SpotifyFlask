@@ -1,0 +1,81 @@
+body {
+  background-color: #f3dc77;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  width: 100%;
+}
+h1 {
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+}
+
+h2 {
+  text-decoration: none;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+}
+.homepage-link {
+  cursor: pointer;
+  left: 3px;
+  position: absolute;
+  top: 1px;
+}
+
+.homepage-link img {
+  height: 60px;
+  transition: transform 0.3s;
+  width: auto;
+}
+
+.homepage-link:hover img {
+  transform: scale(1.05);
+}
+
+#playlist-container {
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 10px;
+}
+
+.playlist-info {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 200px;
+}
+
+.playlist-info:hover {
+  box-shadow:
+    0 4px 8px 0 rgb(0 0 0 / 40%),
+    0 6px 20px 0 rgb(0 0 0 / 39%);
+  transform: scale(1.05);
+}
+
+.playlist-image {
+  height: 200px;
+  object-fit: cover;
+  width: 200px;
+}
+
+.playlist-name {
+  align-items: center;
+  background-color: black;
+  color: white;
+  display: flex;
+  height: 20%;
+  justify-content: center;
+  text-align: center;
+  max-width: 200px;
+  text-decoration: none;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+}

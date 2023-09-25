@@ -101,12 +101,17 @@
               <!-- Actions section -->
               <div class="text-center mt-4 d-flex justify-content-center">
                 <a href="{{ url_for('stats.stats') }}" class="btn btn-info mr-2"
-                  >See My Music Stats</a
+                  >Personal Music Stats</a
                 >
                 <a
                   href="{{ url_for('recommendations.recommendations') }}"
-                  class="btn btn-primary"
-                  >Get Music Recommendations</a
+                  class="btn btn-info mr-2"
+                  >Music Recommendations</a
+                >
+                <a
+                  href="{{ url_for('playlist.playlist') }}"
+                  class="btn btn-info mr-2"
+                  >Playlist Explorer</a
                 >
               </div>
               <div class="text-center mt-4 d-flex justify-content-center">

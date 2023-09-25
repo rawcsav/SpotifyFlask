@@ -36,12 +36,13 @@ def create_app():
         session["last_activity"] = datetime.utcnow()
 
     # Register blueprints
-    from .routes import auth, user, stats, search, recommendations
+    from .routes import auth, user, stats, search, recommendations, playlist
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
+    app.register_blueprint(playlist.bp)
 
     return app

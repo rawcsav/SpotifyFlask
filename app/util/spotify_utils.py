@@ -159,6 +159,10 @@ def fetch_and_process_data(access_token, time_periods):
                     "cover_art": playlist["images"][0]["url"]
                     if playlist["images"]
                     else None,
+                    "public": playlist["public"],
+                    "collaborative": playlist["collaborative"],
+                    "total_tracks": playlist["tracks"]["total"],
+
                 }
                 playlist_info.append(info)
 
