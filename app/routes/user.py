@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, jsonify
 
 from app.util.session_utils import (
     verify_session,
@@ -73,3 +73,39 @@ def profile():
     return render_template(
         "profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data
     )
+
+
+@bp.route('/refresh-data', methods=['POST'])
+def refresh_data():
+    access_token = verify_session(session)
+    spotify_user_id = fetch_user_data(access_token).get("id")
+    manage_user_directory(spotify_user_id, session)
+    user_directory = session["UPLOAD_DIR"]
+
+    # Define time periods for Spotify data
+    time_periods = ["short_term", "medium_term", "long_term"]
+
+    # Fetch and process Spotify data
+    (
+        top_tracks,
+        top_artists,
+        all_artists_info,
+        audio_features,
+        genre_specific_data,
+        sorted_genres_by_period,
+        recent_tracks,
+        playlist_info,
+    ) = fetch_and_process_data(access_token, time_periods)
+
+    # Aggregate user data
+    user_data = {
+        "top_tracks": top_tracks,
+        "top_artists": top_artists,
+        "all_artists_info": all_artists_info,
+        "audio_features": audio_features,
+        "sorted_genres": sorted_genres_by_period,
+        "genre_specific_data": genre_specific_data,
+        "recent_tracks": recent_tracks,
+        "playlists": playlist_info,
+    }
+    return jsonify(user_data), 200
