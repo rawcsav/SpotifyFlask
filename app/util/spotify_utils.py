@@ -222,7 +222,7 @@ def init_spotify_client(access_token):
 
 
 # Handle Spotify Search
-def spotify_search(sp, query, type, limit=4):
+def spotify_search(sp, query, type, limit=6):
     try:
         return sp.search(q=query, type=type, limit=limit)
     except SpotifyException as e:
