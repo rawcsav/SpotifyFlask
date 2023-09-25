@@ -293,6 +293,7 @@ $(document).ready(function () {
       alert('You can select no more than 5 combined seeds.');
     }
   });
+  const MAX_RETRIES = 3;
 
   function getRecommendations() {
     $.post('/get_recommendations', $('form').serialize(), function (data) {

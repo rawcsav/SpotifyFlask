@@ -421,7 +421,7 @@ h2 {
   max-height: 80vh;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-right: 20px;
+  margin-right: 20px;
 }
 
 #results {
@@ -465,7 +465,7 @@ h2 {
 .result-item p {
   align-items: center;
   display: flex;
-  font-size: 10x;
+  font-size: 10px;
   justify-content: center;
   padding: 0;
   position: relative;
@@ -617,5 +617,4 @@ audio {
   padding: 10px;
   transform: translate(-50%, -50%);
   z-index: 1000;
-}input,.form-containerlimit,border-radius
 }
