@@ -138,11 +138,18 @@ $(document).ready(function () {
         $(this).clone().addClass(seedType),
       ); // Add the seed type as a class
       updateSeedsInput('universal_seeds_container');
-      $('#universal_search_results').fadeOut(500, function () {
-        $(this).empty().show();
-      });
     } else {
       alert('You can select no more than 5 combined seeds.');
+    }
+  });
+
+  $(document).on('click', function (event) {
+    if ($('#universal_search_results').children().length > 0) {
+      if (!$(event.target).closest('#universal_search_results').length) {
+        $('#universal_search_results').fadeOut(1000, function () {
+          $(this).empty().show();
+        });
+      }
     }
   });
 
