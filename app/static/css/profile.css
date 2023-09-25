@@ -71,7 +71,6 @@ h3 {
 .homepage-link:hover img {
   transform: scale(1.05);
 }
-
 .card {
   background-color: #ffb3bd;
   border-color: #6d2e46;
@@ -93,6 +92,13 @@ h3 {
   padding: 30px;
 }
 
+.col-md-4 {
+  -ms-flex: 0 0 33.333333%;
+  flex: 0 0 33.333333%;
+  max-width: 33.333333%;
+  text-wrap: nowrap;
+  overflow-x: hidden;
+}
 .media-body {
   flex: 1;
 }
