@@ -327,6 +327,8 @@ $(document).ready(function () {
                   </div> 
                 `);
         let playButton = $(`#play_${trackInfo['trackid']}`);
+        playButton.addClass('noselect');
+
         audioElement.addEventListener('play', function () {
           if (currentPlayingAudio && currentPlayingAudio !== audioElement) {
             currentPlayingAudio.pause();
