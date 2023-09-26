@@ -1,5 +1,3 @@
-// Assuming playlistData is already defined and imported
-// Assuming playlistData is already defined and imported
 document.addEventListener('DOMContentLoaded', function () {
   const playlistContainer = document.getElementById('playlist-container');
 
@@ -9,14 +7,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const securityLabel = playlist.public ? 'Public' : 'Private';
 
     playlistContainer.innerHTML += `
-      <a href="#" class="playlist-option" data-playlistid="${playlist.id}">
-        <div class="playlist-item">
-          <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
-          <span class="playlist-name">${playlist.name}</span>
-          <p>Created by ${playlist.owner}</p>
-          <p>${playlist.total_tracks} Tracks</p>
-          <p>Security: ${securityLabel} ${collaborativeLabel}</p>
-        </div>
-      </a>`;
+  <div class="playlist-item">
+    <a href="#" class="playlist-option" data-playlistid="${playlist.id}"> <!-- Moved anchor tag -->
+      <div class="image-container">  
+        <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
+        <div class="overlay-text">${playlist.name}</div>
+      </div>
+    </a>
+    <p>${playlist.owner}</p>
+    <p>${playlist.total_tracks} Tracks</p>
+    <p>${securityLabel} ${collaborativeLabel}</p>
+  </div>`;
   });
 });

@@ -1,9 +1,11 @@
 body {
-  background-color: #f3dc77;
+  background-color: #edc9af;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   width: 100%;
 }
+
 h1 {
+  color: #704214;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
@@ -12,11 +14,18 @@ h1 {
 }
 
 h2 {
-  text-decoration: none;
+  color: #704214;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 25px;
   font-weight: bold;
+  text-decoration: none;
 }
+
+p {
+  color: #704214;
+  text-decoration: none;
+}
+
 .homepage-link {
   cursor: pointer;
   left: 3px;
@@ -35,32 +44,47 @@ h2 {
 }
 
 #playlist-container {
-  display: flex;
   align-content: center;
+  align-items: stretch;
+  display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  align-items: stretch;
   padding: 10px;
+}
+
+.playlist-name,
+.playlist-info p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .playlist-info {
   align-items: center;
+  color: #704214;
   display: flex;
   flex-direction: column;
   height: 200px;
+  text-decoration: none;
   width: 200px;
 }
 
-.playlist-info:hover {
-  box-shadow:
-    0 4px 8px 0 rgb(0 0 0 / 40%),
-    0 6px 20px 0 rgb(0 0 0 / 39%);
+.image-container {
+  cursor: pointer;
+  position: relative;
+}
+
+.image-container:hover {
   transform: scale(1.05);
 }
 
 .playlist-image {
+  background-color: #ccc; /* Placeholder background color */
+  cursor: pointer;
   height: 200px;
+  min-height: 200px; /* Set to your specific size */
+  min-width: 200px; /* Set to your specific size */
   object-fit: cover;
   width: 200px;
 }
@@ -69,13 +93,27 @@ h2 {
   align-items: center;
   background-color: black;
   color: white;
+  cursor: pointer;
   display: flex;
-  height: 20%;
-  justify-content: center;
-  text-align: center;
-  max-width: 200px;
-  text-decoration: none;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 15px;
   font-weight: bold;
+  height: 20%;
+  justify-content: center;
+  max-width: 200px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.overlay-text {
+  cursor: pointer;
+  align-items: center;
+  background-color: rgb(0 0 0 / 80%); /* Black background with 60% opacity */
+  bottom: 0;
+  color: white;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
 }
