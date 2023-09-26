@@ -96,9 +96,10 @@ h3 {
   -ms-flex: 0 0 33.333333%;
   flex: 0 0 33.333333%;
   max-width: 33.333333%;
-  text-wrap: nowrap;
+  white-space: nowrap;
   overflow-x: hidden;
 }
+
 .media-body {
   flex: 1;
 }
@@ -143,6 +144,9 @@ h3 {
   font-style: oblique;
   font-weight: bolder;
   padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .btn-xs {
