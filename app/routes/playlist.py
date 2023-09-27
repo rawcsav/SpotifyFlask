@@ -1,6 +1,5 @@
 import os
-
-from flask import Blueprint, render_template, jsonify, session
+from flask import Blueprint, render_template, jsonify, session, request
 import json
 
 from app.util.session_utils import load_user_data
@@ -24,3 +23,10 @@ def playlist():
     playlists = [playlist for playlist in user_data["playlists"]]
 
     return render_template('playlist.html', playlists=playlists)
+
+
+@bp.route('/playlist/<string:playlist_id>')
+def show_playlist(playlist_id):
+    playlist_name = request.args.get('playlist_name', 'Default Name')
+
+    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_name=playlist_name)

@@ -8,9 +8,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     playlistContainer.innerHTML += `
   <div class="playlist-item">
-    <a href="#" class="playlist-option" data-playlistid="${playlist.id}"> <!-- Moved anchor tag -->
+    <a href="/playlist/${playlist.id}?playlist_name=${encodeURIComponent(
+      playlist.name,
+    )}" target="_blank" class="playlist-option">
       <div class="image-container">  
-        <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
+        <img src="${playlist.cover_art}" alt="${
+          playlist.name
+        }" class="playlist-image">
         <div class="overlay-text">${playlist.name}</div>
       </div>
     </a>

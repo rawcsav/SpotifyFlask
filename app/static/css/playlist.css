@@ -1,12 +1,13 @@
 body {
   background-color: #edc9af;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Futura, sans-serif;
   width: 100%;
+  overflow-x: hidden;
 }
 
 h1 {
-  color: #704214;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  color: #507494;
+  font-family: Futura, sans-serif;
   font-size: 45px;
   font-weight: bold;
   margin-top: 20px;
@@ -14,15 +15,17 @@ h1 {
 }
 
 h2 {
-  color: #704214;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  color: #507494;
+  font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
   text-decoration: none;
 }
 
 p {
-  color: #704214;
+  color: #507494;
+  font-weight: 500;
+  margin: 0;
   text-decoration: none;
 }
 
@@ -48,9 +51,9 @@ p {
   align-items: stretch;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 70px;
   justify-content: center;
-  padding: 10px;
+  padding: 20px;
 }
 
 .playlist-name,
@@ -106,14 +109,18 @@ p {
 }
 
 .overlay-text {
-  cursor: pointer;
   align-items: center;
   background-color: rgb(0 0 0 / 80%); /* Black background with 60% opacity */
   bottom: 0;
   color: white;
+  cursor: pointer;
   display: flex;
   justify-content: center;
   left: 0;
   position: absolute;
   right: 0;
+}
+
+.playlist-item {
+  margin-bottom: 20px;
 }
