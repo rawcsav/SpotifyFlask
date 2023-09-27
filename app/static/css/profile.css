@@ -17,7 +17,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   color: #6d2e46;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Futura, sans-serif;
   line-height: 1.6;
   margin: 0;
   overflow: hidden;
@@ -71,6 +71,7 @@ h3 {
 .homepage-link:hover img {
   transform: scale(1.05);
 }
+
 .card {
   background-color: #ffb3bd;
   border-color: #6d2e46;
@@ -93,11 +94,11 @@ h3 {
 }
 
 .col-md-4 {
-  -ms-flex: 0 0 33.333333%;
+  flex: 0 0 33.333333%;
   flex: 0 0 33.333333%;
   max-width: 33.333333%;
-  white-space: nowrap;
   overflow-x: hidden;
+  white-space: nowrap;
 }
 
 .media-body {
@@ -114,7 +115,7 @@ h3 {
   border-radius: 8px;
   cursor: pointer;
   display: inline-block;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Futura, sans-serif;
   font-weight: bold;
   margin-top: 30px;
   padding: 14px 26px;
@@ -141,12 +142,12 @@ h3 {
 .btn-info {
   background-color: #a26769;
   color: #ffe5ec;
-  font-style: oblique;
-  font-weight: bolder;
-  padding: 8px 16px;
   display: flex;
   flex-direction: column;
+  font-style: oblique;
+  font-weight: bolder;
   justify-content: center;
+  padding: 8px 16px;
 }
 
 .btn-xs {

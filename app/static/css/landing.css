@@ -56,7 +56,7 @@ body {
 
 h1 {
   color: #fff;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Futura, sans-serif;
   font-size: 3rem;
   font-weight: 800;
   letter-spacing: 2px;
@@ -92,7 +92,7 @@ p {
 
 .container p {
   color: darkslategrey;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Futura, sans-serif;
   font-size: 1rem;
   font-style: oblique;
   font-weight: 300;

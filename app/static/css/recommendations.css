@@ -4,7 +4,7 @@ body {
   background-color: #02343f;
   display: flex;
   flex-direction: column;
-  font-family: 'Futura', sans-serif;
+  font-family: Futura, sans-serif;
   height: 100vh;
   max-height: 100vh;
   overflow-x: hidden;
@@ -13,19 +13,16 @@ body {
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Chrome, Safari, Opera */
-  -khtml-user-select: none; /* Konqueror */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE/Edge */
+  -webkit-touch-callout: none; /* iOS Safari */ /* Chrome, Safari, Opera */ /* Konqueror */ /* Firefox */ /* IE/Edge */
   user-select: none; /* Non-prefixed version, currently not supported by any browser */
 }
 
 .form-container input {
-  letter-spacing: 0px;
-  margin-top: 30px;
   color: #f0edcc;
+  letter-spacing: 0;
+  margin-top: 30px;
 }
+
 .homepage-link {
   cursor: pointer;
   left: 3px;
@@ -65,17 +62,19 @@ html {
   gap: 6px;
 }
 
-.profile-link,
-.stats-link {
+.profile-link {
   background-color: #f0edcc;
   border: transparent;
   border-radius: 5px;
   color: #02343f;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 10px;
   font-weight: bold;
-  padding: 2px 4px;
+  padding: 4px 8px;
   text-decoration: none;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
+  width: 100%;
 }
 
 #showInstructions {
@@ -83,17 +82,18 @@ html {
   border: transparent;
   border-radius: 5px;
   color: #02343f;
-  text-decoration: none;
   cursor: pointer;
-  font-family: 'Futura', sans-serif;
   font-size: 10px;
   font-weight: bold;
   padding: 4px 8px;
+  text-decoration: none;
   transition: background-color 0.3s;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+
   width: 100%;
 }
+
 .profile-link:hover,
-.stats-link:hover,
 #showInstructions:hover {
   background-color: #1e4174;
 }
@@ -113,8 +113,8 @@ html {
 
 .modal-content {
   background-color: #f0edcc;
-  color: #02343f;
   border-radius: 5px;
+  color: #02343f;
   margin: 5% auto;
   padding: 20px;
   width: 70%;
@@ -135,6 +135,7 @@ html {
 
 h1 {
   color: #f0edcc;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 25px;
   position: absolute;
   text-align: center;
@@ -190,7 +191,7 @@ h1 {
 }
 
 #universal_seeds_container .clickable-result {
-  box-shadow: 0px 0px 25px 5px #02343f;
+  box-shadow: 0 0 25px 5px #02343f;
 }
 
 #universal_search_results {
@@ -206,6 +207,7 @@ h1 {
 .clickable-result {
   align-items: center;
   border-radius: 5px;
+  box-shadow: 0 0 55px 10px #f0edcc;
   cursor: pointer;
   display: flex;
   flex-flow: column nowrap;
@@ -215,7 +217,6 @@ h1 {
   max-width: 75px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0px 0px 55px 10px #f0edcc;
 }
 
 .clickable-result:hover {
@@ -256,8 +257,8 @@ h3 {
 
 h2,
 h3 {
-  color: #02343f;
   align-items: center;
+  color: #02343f;
   display: flex;
   justify-content: center;
   position: relative;
@@ -347,8 +348,8 @@ h2 {
   max-height: 90vh;
   overflow-x: hidden;
   overflow-y: hidden;
-  padding-right: 30px;
   padding-left: 10px;
+  padding-right: 30px;
   position: sticky;
   width: 100%;
 }
@@ -365,15 +366,17 @@ h2 {
 .form-container input,
 .form-container limit,
 .form-container select {
-  font-family: 'Futura', sans-serif;
-  color: #f0edcc;
-  margin-bottom: 5px;
   border-radius: 5px;
+  color: #f0edcc;
   cursor: pointer;
+  font-family: Futura, sans-serif;
+  margin-bottom: 5px;
 }
+
 .form-container select {
   margin-bottom: 15px;
 }
+
 .form-container label {
   color: #02343f;
   display: flex;
@@ -391,17 +394,19 @@ h2 {
 
 .ui-slider {
   background-color: #ac1b1dff;
-  border-radius: 3px;
   border-color: transparent;
+  border-radius: 3px;
   height: 5px;
   margin-bottom: 22px;
   margin-left: 7px;
   margin-top: 10px;
 }
+
 .ui-state-default,
 .ui-widget-content .ui-state-default {
   border-color: transparent;
 }
+
 .ui-slider.ui-slider .ui-slider-handle:nth-child(2) {
   background: #ca4b34;
 }
@@ -424,16 +429,16 @@ h2 {
 .ui-slider .ui-slider-range {
   background: linear-gradient(
     90deg,
-    hsla(9, 59%, 50%, 1) 0%,
-    hsla(359, 73%, 39%, 1) 50%,
-    hsla(32, 97%, 59%, 1) 100%
+    hsl(9deg 59% 50% / 100%) 0%,
+    hsl(359deg 73% 39% / 100%) 50%,
+    hsl(32deg 97% 59% / 100%) 100%
   );
 }
 
 .ui-slider::before {
   color: #02343f;
-  font-family: 'Futura', sans-serif;
   content: attr(data-min);
+  font-family: Futura, sans-serif;
   font-size: 10px;
   left: 0;
   position: absolute;
@@ -442,8 +447,8 @@ h2 {
 
 .ui-slider::after {
   color: #02343f;
-  font-family: 'Futura', sans-serif;
   content: attr(data-max);
+  font-family: Futura, sans-serif;
   font-size: 10px;
   position: absolute;
   right: 0;
@@ -452,10 +457,10 @@ h2 {
 
 .results-container {
   flex: 3;
+  margin-right: 20px;
   max-height: 80vh;
   overflow-x: hidden;
   overflow-y: auto;
-  margin-right: 20px;
 }
 
 #results {
@@ -491,8 +496,8 @@ h2 {
 }
 
 .result-item h2 {
-  font-size: 10px;
   color: white;
+  font-size: 10px;
   font-weight: bold;
   padding: 0;
 }
