@@ -5,6 +5,7 @@ from flask import Blueprint, abort, make_response, redirect, render_template, re
 
 from app import config
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens
+from functools import wraps
 
 bp = Blueprint('auth', __name__)
 
@@ -12,6 +13,16 @@ bp = Blueprint('auth', __name__)
 @bp.route('/')
 def index():
     return render_template('landing.html')
+
+
+def require_spotify_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'tokens' not in session:
+            return redirect(url_for('auth.index'))  # Redirect to the landing page if 'tokens' not in session
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 @bp.route('/<loginout>')

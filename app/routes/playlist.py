@@ -2,6 +2,7 @@ import os
 from flask import Blueprint, render_template, jsonify, session, request
 import json
 
+from app.routes.auth import require_spotify_auth
 from app.util.session_utils import load_user_data
 from app.util.spotify_utils import init_spotify_client
 
@@ -9,6 +10,7 @@ bp = Blueprint('playlist', __name__)
 
 
 @bp.route('/playlist', methods=['GET'])
+@require_spotify_auth
 def playlist():
     user_directory = session["UPLOAD_DIR"]
     json_path = os.path.join(user_directory, 'user_data.json')
@@ -26,6 +28,7 @@ def playlist():
 
 
 @bp.route('/playlist/<string:playlist_id>')
+@require_spotify_auth
 def show_playlist(playlist_id):
     playlist_name = request.args.get('playlist_name', 'Default Name')
 

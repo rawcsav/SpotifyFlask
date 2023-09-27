@@ -2,6 +2,7 @@ import os
 
 from flask import Blueprint, render_template, session, jsonify
 
+from app.routes.auth import require_spotify_auth
 from app.util.session_utils import (
     verify_session,
     fetch_user_data,
@@ -15,6 +16,7 @@ bp = Blueprint("user", __name__)
 
 
 @bp.route("/profile")
+@require_spotify_auth
 def profile():
     # Verify if the session has tokens and fetch access_token
     access_token = verify_session(session)

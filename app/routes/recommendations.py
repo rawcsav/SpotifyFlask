@@ -2,6 +2,7 @@ import json
 import os
 from flask import Blueprint, jsonify, render_template, request, session
 
+from app.routes.auth import require_spotify_auth
 from app.util.spotify_utils import (
     init_session_client,
     get_recommendations,
@@ -22,6 +23,7 @@ def parse_seeds(key):
 
 
 @bp.route("/recommendations", methods=["GET"])
+@require_spotify_auth
 def recommendations():
     user_directory = session.get("UPLOAD_DIR")  # Presumed to be set elsewhere
     json_path = os.path.join(user_directory, "user_data.json")
