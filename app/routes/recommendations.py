@@ -7,9 +7,8 @@ from app.util.spotify_utils import (
     init_session_client,
     get_recommendations,
     format_track_info,
-    init_spotify_client,
 )
-from app.util.session_utils import load_user_data
+from app.util.session_utils import load_from_json
 
 bp = Blueprint("recommendations", __name__)
 
@@ -27,7 +26,7 @@ def parse_seeds(key):
 def recommendations():
     user_directory = session.get("UPLOAD_DIR")  # Presumed to be set elsewhere
     json_path = os.path.join(user_directory, "user_data.json")
-    user_data = load_user_data(json_path)  # Using existing function
+    user_data = load_from_json(json_path)  # Using existing function
     owner_name = session.get("DISPLAY_NAME")
     playlists = [playlist for playlist in user_data["playlists"]
                  if playlist["owner"] is not None
@@ -87,8 +86,9 @@ def get_recommendations_route():
 
 @bp.route("/save_track", methods=["POST"])
 def save_track():
-    access_token = session["tokens"].get("access_token")
-    sp = init_spotify_client(access_token)
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
 
     track_id = request.json["track_id"]
     print(f"track_id: {track_id}")
@@ -99,8 +99,9 @@ def save_track():
 
 @bp.route("/add_to_playlist", methods=["POST"])
 def add_to_playlist():
-    access_token = session["tokens"].get("access_token")
-    sp = init_spotify_client(access_token)
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
 
     track_id = request.json["track_id"]
     playlist_id = request.json["playlist_id"]

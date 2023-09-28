@@ -5,16 +5,21 @@
     href="{{ url_for('static', filename='css/playlist.css') }}"
   />
   <head>
-    <title>Playlist - {{ playlist_id }}</title>
+    <title>Playlist - {{ playlist_data['playlist_id'] }}</title>
   </head>
   <body>
-    <h1>{{ playlist_name }}</h1>
-
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png"
         alt="Homepage"
       />
     </a>
+    <div class="top-right-nav">
+      <a href="https://webstats.rawcsav.com/playlist" class="profile-link"
+        >Back to Playlists</a
+      >
+    </div>
+    <h1>{{ playlist_data['playlist_name'] }}</h1>
   </body>
+  <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>
 </html>

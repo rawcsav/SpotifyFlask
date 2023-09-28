@@ -1,9 +1,9 @@
-import json
 from urllib.parse import urlencode
 
-from flask import Blueprint, abort, make_response, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, make_response, redirect, render_template, request, session, url_for, jsonify
 
 from app import config
+from datetime import datetime, timedelta
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens
 from functools import wraps
 
@@ -40,8 +40,10 @@ def login(loginout):
 def callback():
     state = request.args.get('state')
     stored_state = request.cookies.get('spotify_auth_state')
+
     if state is None or state != stored_state:
-        abort(400)
+        # Implement robust logging here
+        abort(400, description="State mismatch")
 
     code = request.args.get('code')
     payload = {'grant_type': 'authorization_code', 'code': code, 'redirect_uri': config.REDIRECT_URI}
@@ -49,7 +51,15 @@ def callback():
     if error:
         abort(error)
 
-    session['tokens'] = {'access_token': res_data.get('access_token'), 'refresh_token': res_data.get('refresh_token')}
+    # Store tokens and expiration time
+    access_token = res_data.get('access_token')
+    expires_in = res_data.get('expires_in')
+    expiry_time = datetime.now() + timedelta(seconds=expires_in)
+    session['tokens'] = {
+        'access_token': access_token,
+        'refresh_token': res_data.get('refresh_token'),
+        'expiry_time': expiry_time.isoformat()
+    }
     return redirect(url_for('user.profile'))
 
 
@@ -60,5 +70,15 @@ def refresh():
     if error:
         abort(error)
 
-    session['tokens']['access_token'] = res_data.get('access_token')
-    return json.dumps(session['tokens'])
+    # Update access token and possibly refresh token
+    new_access_token = res_data.get('access_token')
+    new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
+    expires_in = res_data.get('expires_in')
+    new_expiry_time = datetime.now() + timedelta(seconds=expires_in)
+
+    session['tokens'].update({
+        'access_token': new_access_token,
+        'refresh_token': new_refresh_token,
+        'expiry_time': new_expiry_time.isoformat()
+    })
+    return jsonify(session['tokens'])

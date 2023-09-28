@@ -3,8 +3,7 @@ from flask import Blueprint, render_template, jsonify, session, request
 import json
 
 from app.routes.auth import require_spotify_auth
-from app.util.session_utils import load_user_data
-from app.util.spotify_utils import init_spotify_client
+from app.util.session_utils import load_from_json, store_to_json
 
 bp = Blueprint('playlist', __name__)
 
@@ -14,15 +13,16 @@ bp = Blueprint('playlist', __name__)
 def playlist():
     user_directory = session["UPLOAD_DIR"]
     json_path = os.path.join(user_directory, 'user_data.json')
-    user_data = load_user_data(json_path)
+    user_data = load_from_json(json_path)
 
     if not user_data:
         return jsonify(error="User data not found"), 404
 
-    access_token = session["tokens"].get("access_token")
-    sp = init_spotify_client(access_token)
-
-    playlists = [playlist for playlist in user_data["playlists"]]
+    owner_name = session.get("DISPLAY_NAME")
+    playlists = [playlist for playlist in user_data["playlists"]
+                 if playlist["owner"] is not None
+                 and playlist["owner"] is not None
+                 and playlist["owner"] == owner_name]
 
     return render_template('playlist.html', playlists=playlists)
 
@@ -31,5 +31,25 @@ def playlist():
 @require_spotify_auth
 def show_playlist(playlist_id):
     playlist_name = request.args.get('playlist_name', 'Default Name')
+    user_directory = session.get('UPLOAD_DIR')
+    json_path = os.path.join(user_directory, 'playlist_data.json')
 
-    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_name=playlist_name)
+    # Step 1 and Step 2
+    if os.path.exists(json_path):
+        playlist_data = load_from_json(json_path)
+    else:
+        playlist_data = {}
+
+    # Step 3 and Step 4
+    if playlist_id in playlist_data:
+        existing_data = playlist_data[playlist_id]
+    else:
+        existing_data = {
+            "playlist_id": playlist_id,
+            "playlist_name": playlist_name,
+        }
+        playlist_data[playlist_id] = existing_data
+        store_to_json(playlist_data, json_path)
+
+    # Step 5
+    return render_template('spec_playlist.html', playlist_data=existing_data)

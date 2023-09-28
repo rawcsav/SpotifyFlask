@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, render_template, jsonify, session
 
 from app.routes.auth import require_spotify_auth
-from app.util.session_utils import load_user_data
+from app.util.session_utils import load_from_json
 from app.util.spotify_utils import calculate_averages_for_period
 
 bp = Blueprint('stats', __name__)
@@ -14,7 +14,7 @@ bp = Blueprint('stats', __name__)
 def stats():
     user_directory = session["UPLOAD_DIR"]
     json_path = os.path.join(user_directory, 'user_data.json')
-    user_data = load_user_data(json_path)
+    user_data = load_from_json(json_path)
 
     if not user_data:
         return jsonify(error="User data not found"), 404

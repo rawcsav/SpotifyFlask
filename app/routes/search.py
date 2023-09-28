@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, json
-from app.util.spotify_utils import init_spotify_client, spotify_search
+from app.util.spotify_utils import init_session_client, spotify_search
 
 bp = Blueprint('search', __name__)
 
@@ -10,7 +10,8 @@ def search():
     type = request.json.get('type')
     if not query:
         return json.dumps({'error': 'No search query provided'}), 400
-    access_token = session['tokens'].get('access_token')
-    sp = init_spotify_client(access_token)
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
     results = spotify_search(sp, query, type)
     return json.dumps(results)

@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-
+from datetime import datetime
 from flask import jsonify
 from spotipy import Spotify
 from spotipy.client import SpotifyException
@@ -11,13 +11,11 @@ from app.routes.auth import refresh
 FEATURES = config.AUDIO_FEATURES
 
 
-def get_top_tracks(access_token, period):
-    sp = Spotify(auth=access_token)
+def get_top_tracks(sp, period):
     return sp.current_user_top_tracks(time_range=period, limit=50)
 
 
-def get_top_artists(access_token, period):
-    sp = Spotify(auth=access_token)
+def get_top_artists(sp, period):
     return sp.current_user_top_artists(time_range=period, limit=50)
 
 
@@ -63,17 +61,13 @@ def get_tracks_for_artists(tracks, artist_ids):
     ]
 
 
-def fetch_and_process_data(access_token, time_periods):
+def fetch_and_process_data(sp, time_periods):
     try:
-        # Initialize the Spotify API client
-        sp = Spotify(auth=access_token)
-
-        # Fetch top tracks and artists for different time periods
         top_tracks = {
-            period: get_top_tracks(access_token, period) for period in time_periods
+            period: get_top_tracks(sp, period) for period in time_periods
         }
         top_artists = {
-            period: get_top_artists(access_token, period) for period in time_periods
+            period: get_top_artists(sp, period) for period in time_periods
         }
 
         # Accumulate artist and track IDs
@@ -221,10 +215,6 @@ def calculate_averages_for_period(tracks, audio_features):
     return averaged_features, min_track, max_track, min_values, max_values
 
 
-def init_spotify_client(access_token):
-    return Spotify(auth=access_token)
-
-
 # Handle Spotify Search
 def spotify_search(sp, query, type, limit=6):
     try:
@@ -234,12 +224,22 @@ def spotify_search(sp, query, type, limit=6):
 
 
 def init_session_client(session):
-    access_token = session["tokens"].get("access_token")
+    access_token = session.get("tokens", {}).get("access_token")
+    expiry_time_str = session.get("tokens", {}).get("expiry_time")
+
+    if expiry_time_str:
+        expiry_time = datetime.fromisoformat(expiry_time_str)
+        if datetime.now() >= expiry_time:
+            access_token = None
+
     if not access_token:
         refresh_response = json.loads(refresh())
         if "error" in refresh_response:
-            return None, {"error": "Failed to refresh token"}
-        access_token = refresh_response["access_token"]
+            return None, jsonify({"error": "Failed to refresh token"})
+
+        # Update access token from session
+        access_token = session["tokens"].get("access_token")
+
     return Spotify(auth=access_token), None
 
 
@@ -270,3 +270,22 @@ def format_track_info(track):
         "trackUrl": track["external_urls"]["spotify"],
         "albumName": track["album"]["name"],
     }
+
+
+def fetch_playlist_details(session, playlist_id: str):
+    # Initialize Spotipy with user credentials
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    # Fetch the specific playlist
+    playlist = sp.playlist(playlist_id)
+
+    # Extract and return basic details
+    playlist_details = {
+        "playlist_name": playlist['name'],
+        "num_of_tracks": playlist['tracks']['total'],
+        "owner": playlist['owner']['display_name']
+    }
+
+    return playlist_details

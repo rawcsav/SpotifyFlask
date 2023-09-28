@@ -46,12 +46,9 @@ def store_to_json(user_data, json_path):
 
 
 # Load User Data from JSON
+
+
 def load_from_json(json_path):
-    with open(json_path, "r") as f:
-        return json.load(f)
-
-
-def load_user_data(json_path):
     if not os.path.exists(json_path):
         return None
     with open(json_path, "r") as f:

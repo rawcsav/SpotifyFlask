@@ -5,6 +5,36 @@ body {
   width: 100%;
 }
 
+/* Top-right navigation */
+.top-right-nav {
+  display: flex;
+  gap: 10px; /* space between the links */
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.profile-link {
+  border: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  width: 100%;
+  background-color: #507494;
+  color: white;
+}
+
+.profile-link:hover {
+  color: white;
+  background-color: #704214;
+  text-decoration: none;
+}
+
 h1 {
   color: #507494;
   font-family: Futura, sans-serif;
