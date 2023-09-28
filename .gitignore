@@ -14,6 +14,7 @@ dist/
 downloads/
 eggs/
 user_data_dir/
+db.webstats
 .eggs/
 lib/
 bin/
@@ -141,6 +142,7 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+webstats.db
 
 # mkdocs documentation
 /site
@@ -170,9 +172,12 @@ pyproject.toml
 stylelint.config.js
 include/
 .eslintrc.json
+app/db.webstats
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 .idea/
 node_modules/
+/app/db.webstats
+/Users/gavinmason/PycharmProjects/BotifyStats/app/db.webstats

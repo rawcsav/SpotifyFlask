@@ -4,7 +4,7 @@ from flask import Flask, session, current_app
 from flask_session import Session
 
 from app import config
-from app.util.session_utils import remove_directory, init_db
+from app.util.session_utils import remove_directory
 from app.util.database_utils import db
 
 

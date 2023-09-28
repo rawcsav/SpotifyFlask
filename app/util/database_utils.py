@@ -42,6 +42,6 @@ class features_sql(db.Model):
     valence = db.Column(db.Float)
     tempo = db.Column(db.Float)
     time_signature = db.Column(db.Integer)
-
+    
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

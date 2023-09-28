@@ -145,19 +145,16 @@ def fetch_and_process_data(sp, time_periods):
                 playlist_info.append(info)
 
             offset += 50  # Move to the next page of playlists
-
-        # Return the processed data
-        return (
-            top_tracks,
-            top_artists,
-            all_artists_info,
-            audio_features,
-            genre_specific_data,
-            sorted_genres_by_period,
-            recent_tracks,
-            playlist_info,
-        )
-
+            return (
+                top_tracks,
+                top_artists,
+                all_artists_info,
+                audio_features,
+                genre_specific_data,
+                sorted_genres_by_period,
+                recent_tracks,
+                playlist_info,
+            )
     except Exception as e:
         print("Exception:", str(e))
         return (None, None, None, None, None, None, None, None)
@@ -326,16 +323,31 @@ def get_or_fetch_audio_features(sp, track_ids):
                 liveness=feature['liveness'],
                 valence=feature['valence'],
                 tempo=feature['tempo'],
-                time_signature=feature['time_signature']
+                time_signature=feature['time_signature'],
             )
             db.session.add(new_feature)
 
         db.session.commit()
 
-        for feature in fetched_features:
-            existing_feature_ids[feature['id']] = feature
+    final_features = {}
+    for track_id in track_ids:
+        feature = existing_feature_ids[track_id]
+        final_features[track_id] = {
+            'id': feature.id,
+            'danceability': feature.danceability,
+            'energy': feature.energy,
+            'key': feature.key,
+            'loudness': feature.loudness,
+            'mode': feature.mode,
+            'speechiness': feature.speechiness,
+            'acousticness': feature.acousticness,
+            'instrumentalness': feature.instrumentalness,
+            'liveness': feature.liveness,
+            'valence': feature.valence,
+            'tempo': feature.tempo,
+            'time_signature': feature.time_signature,
+        }
 
-    final_features = [existing_feature_ids[track_id] for track_id in track_ids]
     return final_features
 
 
@@ -365,7 +377,6 @@ def get_playlist_details(sp, playlist_id):
         track_info = {
             'id': track['id'],
             'name': track['name'],
-            'duration': track['duration_ms'],
             'popularity': track['popularity'],
             'album': track['album']['name'],
             'release_date': track['album']['release_date'],

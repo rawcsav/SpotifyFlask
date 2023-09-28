@@ -19,76 +19,72 @@ bp = Blueprint("user", __name__)
 @bp.route("/profile")
 @require_spotify_auth
 def profile():
-    access_token = verify_session(session)
+    try:
+        access_token = verify_session(session)
 
-    res_data = fetch_user_data(access_token)
-    spotify_user_id = res_data.get("id")
+        res_data = fetch_user_data(access_token)
+        spotify_user_id = res_data.get("id")
 
-    spotify_user_display_name = res_data.get("display_name")
-    session["DISPLAY_NAME"] = spotify_user_display_name
-    sp, error = init_session_client(session)
-    if error:
-        return json.dumps(error), 401
-    manage_user_directory(spotify_user_id, session)
-    user_directory = session["UPLOAD_DIR"]
-    json_path = os.path.join(user_directory, "user_data.json")
+        spotify_user_display_name = res_data.get("display_name")
+        session["DISPLAY_NAME"] = spotify_user_display_name
+        sp, error = init_session_client(session)
+        if error:
+            return json.dumps(error), 401
+        manage_user_directory(spotify_user_id, session)
+        user_directory = session["UPLOAD_DIR"]
+        json_path = os.path.join(user_directory, "user_data.json")
 
-    if os.path.exists(json_path):
-        user_data = load_from_json(json_path)
+        if os.path.exists(json_path):
+            user_data = load_from_json(json_path)
+            return render_template(
+                "profile.html",
+                data=res_data,
+                tokens=session.get("tokens"),
+                user_data=user_data,
+            )
+
+        # Define time periods for Spotify data
+        time_periods = ["short_term", "medium_term", "long_term"]
+
+        # Fetch and process Spotify data
+        (
+            top_tracks,
+            top_artists,
+            all_artists_info,
+            audio_features,
+            genre_specific_data,
+            sorted_genres_by_period,
+            recent_tracks,
+            playlist_info,
+        ) = fetch_and_process_data(sp, time_periods)
+        if all(v is not None and v != [] for v in [
+            top_tracks,
+            top_artists,
+            all_artists_info,
+            audio_features,
+            genre_specific_data,
+            sorted_genres_by_period,
+            recent_tracks,
+            playlist_info,
+        ]):
+            user_data = {
+                "top_tracks": top_tracks,
+                "top_artists": top_artists,
+                "all_artists_info": all_artists_info,
+                "audio_features": audio_features,
+                "sorted_genres": sorted_genres_by_period,
+                "genre_specific_data": genre_specific_data,
+                "recent_tracks": recent_tracks,
+                "playlists": playlist_info,
+            }
+            store_to_json(user_data, json_path)
+
         return render_template(
-            "profile.html",
-            data=res_data,
-            tokens=session.get("tokens"),
-            user_data=user_data,
+            "profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data
         )
-
-    # Define time periods for Spotify data
-    time_periods = ["short_term", "medium_term", "long_term"]
-
-    # Fetch and process Spotify data
-    (
-        top_tracks,
-        top_artists,
-        all_artists_info,
-        audio_features,
-        genre_specific_data,
-        sorted_genres_by_period,
-        recent_tracks,
-        playlist_info,
-    ) = fetch_and_process_data(sp, time_periods)
-    print(top_tracks,
-          top_artists,
-          all_artists_info,
-          audio_features,
-          genre_specific_data,
-          sorted_genres_by_period,
-          recent_tracks,
-          playlist_info, )
-    if all(v is not None and v != [] for v in [
-        top_tracks,
-        top_artists,
-        all_artists_info,
-        audio_features,
-        genre_specific_data,
-        sorted_genres_by_period,
-        recent_tracks,
-        playlist_info,
-    ]):
-        user_data = {
-            "top_tracks": top_tracks,
-            "top_artists": top_artists,
-            "all_artists_info": all_artists_info,
-            "audio_features": audio_features,
-            "sorted_genres": sorted_genres_by_period,
-            "genre_specific_data": genre_specific_data,
-            "recent_tracks": recent_tracks,
-            "playlists": playlist_info,
-        }
-        store_to_json(user_data, json_path)
-
-    return render_template(
-        "profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data
-    )
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return str(e), 500
 
 
 @bp.route('/refresh-data', methods=['POST'])
