@@ -5,7 +5,7 @@
     href="{{ url_for('static', filename='css/playlist.css') }}"
   />
   <head>
-    <title>Playlist - {{ playlist_data['playlist_id'] }}</title>
+    <title>Playlist - {{ playlist_data['id'] }}</title>
   </head>
   <body>
     <a href="https://rawcsav.com" class="homepage-link">
@@ -19,7 +19,7 @@
         >Back to Playlists</a
       >
     </div>
-    <h1>{{ playlist_data['playlist_name'] }}</h1>
+    <h1>{{ playlist_data['name'] }}</h1>
   </body>
   <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>
 </html>

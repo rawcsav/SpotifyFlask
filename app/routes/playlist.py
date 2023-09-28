@@ -30,26 +30,36 @@ def playlist():
 @bp.route('/playlist/<string:playlist_id>')
 @require_spotify_auth
 def show_playlist(playlist_id):
-    playlist_name = request.args.get('playlist_name', 'Default Name')
-    user_directory = session.get('UPLOAD_DIR')
-    json_path = os.path.join(user_directory, 'playlist_data.json')
+    user_directory = session["UPLOAD_DIR"]
+    playlist_data_json_path = os.path.join(user_directory, 'playlist_data.json')
+    user_data_json_path = os.path.join(user_directory, 'user_data.json')
 
-    # Step 1 and Step 2
-    if os.path.exists(json_path):
-        playlist_data = load_from_json(json_path)
-    else:
-        playlist_data = {}
+    # Initialize playlist_data as an empty dict ---- MODIFIED (Added Initialization)
+    playlist_data = {}
 
-    # Step 3 and Step 4
+    if os.path.exists(playlist_data_json_path):
+        playlist_data = load_from_json(playlist_data_json_path)
+
+    # Check if the specific playlist exists in playlist_data
     if playlist_id in playlist_data:
-        existing_data = playlist_data[playlist_id]
-    else:
-        existing_data = {
-            "playlist_id": playlist_id,
-            "playlist_name": playlist_name,
-        }
-        playlist_data[playlist_id] = existing_data
-        store_to_json(playlist_data, json_path)
+        return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
 
-    # Step 5
-    return render_template('spec_playlist.html', playlist_data=existing_data)
+    user_data = load_from_json(user_data_json_path)
+
+    for playlist in user_data["playlists"]:
+        if playlist['id'] == playlist_id:
+            playlist_data[playlist_id] = {
+                'id': playlist['id'],
+                'name': playlist['name'],
+                'owner': playlist['owner'],
+                'cover_art': playlist["cover_art"],
+                'public': playlist['public'],
+                'collaborative': playlist['collaborative'],
+                'total_tracks': playlist["total_tracks"],
+            }
+            # Save the updated playlist_data back to playlist_data.json ---- MODIFIED (Save Update)
+            store_to_json(playlist_data, playlist_data_json_path)
+            return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
+
+    # If we reach here, the playlist was not found in either JSON files
+    return jsonify({'error': 'Playlist not found'}), 404

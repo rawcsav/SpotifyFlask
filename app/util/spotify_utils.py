@@ -272,20 +272,12 @@ def format_track_info(track):
     }
 
 
-def fetch_playlist_details(session, playlist_id: str):
-    # Initialize Spotipy with user credentials
-    sp, error = init_session_client(session)
-    if error:
-        return json.dumps(error), 401
-
+def fetch_playlist_details(sp, playlist_id: str):
     # Fetch the specific playlist
     playlist = sp.playlist(playlist_id)
 
-    # Extract and return basic details
-    playlist_details = {
-        "playlist_name": playlist['name'],
-        "num_of_tracks": playlist['tracks']['total'],
-        "owner": playlist['owner']['display_name']
-    }
+    playlist_name: playlist['name']
+    num_of_tracks: playlist['tracks']['total']
+    owner: playlist['owner']['display_name']
 
-    return playlist_details
+    return playlist_name, num_of_tracks, owner
