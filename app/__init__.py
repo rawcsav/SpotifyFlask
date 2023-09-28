@@ -4,11 +4,13 @@ from flask import Flask, session, current_app
 from flask_session import Session
 
 from app import config
-from app.util.session_utils import remove_directory
+from app.util.session_utils import remove_directory, init_db
+from app.util.database_utils import db
 
 
 def create_app():
     app = Flask(__name__)
+
     app.secret_key = config.SECRET_KEY
     app.config["SESSION_TYPE"] = config.SESSION_TYPE
     app.config["SESSION_PERMANENT"] = config.SESSION_PERMANENT
@@ -17,9 +19,9 @@ def create_app():
     app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
 
-    Session(app)
+    app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
-    app.app_context().push()
+    Session(app)
 
     @app.before_request
     def before_request():
@@ -36,13 +38,20 @@ def create_app():
         session["last_activity"] = datetime.utcnow()
 
     # Register blueprints
-    from .routes import auth, user, stats, search, recommendations, playlist
+    from .routes import auth, user, stats, search, recommendations, playlist, database
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(database.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
     app.register_blueprint(playlist.bp)
+
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+        print("Database initialized")
 
     return app

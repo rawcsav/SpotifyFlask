@@ -7,6 +7,7 @@ from spotipy.client import SpotifyException
 
 from app import config
 from app.routes.auth import refresh
+from app.util.database_utils import db, artist_sql, features_sql
 
 FEATURES = config.AUDIO_FEATURES
 
@@ -39,8 +40,11 @@ def get_genre_counts_from_artists_and_tracks(top_artists, top_tracks, all_artist
 
     for track in top_tracks["items"]:
         for artist in track["artists"]:
-            for genre in all_artists_info[artist["id"]]["genres"]:
-                genre_counts[genre] += 1
+            artist_info = all_artists_info.get(artist["id"])
+            if artist_info:
+                genres = artist_info["genres"]  # genres is a list
+                for genre in genres:
+                    genre_counts[genre] += 1
 
     return sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:20]
 
@@ -63,54 +67,36 @@ def get_tracks_for_artists(tracks, artist_ids):
 
 def fetch_and_process_data(sp, time_periods):
     try:
-        top_tracks = {
-            period: get_top_tracks(sp, period) for period in time_periods
-        }
-        top_artists = {
-            period: get_top_artists(sp, period) for period in time_periods
-        }
+        top_tracks = {period: get_top_tracks(sp, period) for period in time_periods}
 
-        # Accumulate artist and track IDs
+        top_artists = {period: get_top_artists(sp, period) for period in time_periods}
+
         all_artist_ids = []
         all_track_ids = []
         for period in time_periods:
+            all_artist_ids.extend([artist["id"] for artist in top_artists[period]["items"]])
+
             all_artist_ids.extend(
-                [artist["id"] for artist in top_artists[period]["items"]]
-            )
-            all_artist_ids.extend(
-                [
-                    artist["id"]
-                    for track in top_tracks[period]["items"]
-                    for artist in track["artists"]
-                ]
-            )
+                [artist["id"] for track in top_tracks[period]["items"] for artist in track["artists"]])
+
             all_track_ids.extend([track["id"] for track in top_tracks[period]["items"]])
 
-        # Remove duplicate IDs
         unique_artist_ids = list(set(all_artist_ids))
+
         unique_track_ids = list(set(all_track_ids))
 
-        # Fetch detailed artist info
-        all_artists_info = {}
-        for i in range(
-                0, len(unique_artist_ids), 50
-        ):  # Spotify's API allows max 50 at a time
-            batch_ids = unique_artist_ids[i: i + 50]
-            artists_data = sp.artists(batch_ids)
-            for artist in artists_data["artists"]:
-                all_artists_info[artist["id"]] = artist
+        all_artists_info = get_or_fetch_artist_info(sp, unique_artist_ids)
 
-        # Fetch audio features for tracks
-        audio_features = get_audio_features_for_tracks(sp, unique_track_ids)
+        audio_features = get_or_fetch_audio_features(sp, unique_track_ids)
 
-        # Initialize genre counts and genre-specific data
         genre_specific_data = {period: {} for period in time_periods}
-        sorted_genres_by_period = {}  # Added this line to store sorted genres by period
+
+        sorted_genres_by_period = {}
 
         for period in time_periods:
-            sorted_genres = get_genre_counts_from_artists_and_tracks(
-                top_artists[period], top_tracks[period], all_artists_info
-            )
+            sorted_genres = get_genre_counts_from_artists_and_tracks(top_artists[period], top_tracks[period],
+                                                                     all_artists_info)
+
             sorted_genres_by_period[period] = sorted_genres
 
             artist_ids_for_period = {
@@ -129,21 +115,19 @@ def fetch_and_process_data(sp, time_periods):
                     top_tracks[period]["items"],
                     [artist["id"] for artist in top_genre_artists],
                 )
-
                 genre_specific_data[period][genre] = {
                     "top_artists": top_genre_artists,
                     "top_tracks": top_genre_tracks,
                 }
-
-            # More processing logic can be added here if needed...
         recent_tracks = sp.current_user_recently_played(limit=50)["items"]
 
         playlist_info = []
         offset = 0
         while True:
             playlists = sp.current_user_playlists(limit=50, offset=offset)
+
             if not playlists["items"]:
-                break  # Exit the loop if no more playlists are found
+                break
 
             for playlist in playlists["items"]:
                 info = {
@@ -175,8 +159,8 @@ def fetch_and_process_data(sp, time_periods):
         )
 
     except Exception as e:
-        # Handle exceptions and return an error response
-        return jsonify(error=str(e)), 500
+        print("Exception:", str(e))
+        return (None, None, None, None, None, None, None, None)
 
 
 def calculate_averages_for_period(tracks, audio_features):
@@ -272,16 +256,90 @@ def format_track_info(track):
     }
 
 
-def get_or_fetch_artist_info(sp, artist_id, all_artists_info):
-    if artist_id in all_artists_info:
-        return all_artists_info[artist_id]
-    else:
-        artist_info = sp.artist(artist_id)
-        all_artists_info[artist_id] = artist_info  # Save all information about the artist
-        return artist_info
+def get_or_fetch_artist_info(sp, artist_ids):
+    existing_artists = artist_sql.query.filter(artist_sql.id.in_(artist_ids)).all()
+    existing_artist_ids = {artist.id: artist for artist in existing_artists}
+
+    to_fetch = [artist_id for artist_id in artist_ids if artist_id not in existing_artist_ids]
+
+    batch_size = 50  # Set the batch size limit for the Spotify API
+
+    for i in range(0, len(to_fetch), batch_size):
+        batch = to_fetch[i:i + batch_size]
+        fetched_artists = sp.artists(batch)['artists']
+
+        for artist in fetched_artists:
+            new_artist = artist_sql(
+                id=artist['id'],
+                name=artist['name'],
+                external_url=json.dumps(artist['external_urls']),
+                followers=artist['followers']['total'],
+                genres=json.dumps(artist['genres']),
+                href=artist['href'],
+                images=json.dumps(artist['images']),
+                popularity=artist['popularity'],
+            )
+            db.session.add(new_artist)
+
+        db.session.commit()
+
+    final_artists = {}
+    for artist_id in artist_ids:
+        artist = existing_artist_ids[artist_id]
+        final_artists[artist_id] = {
+            'id': artist.id,
+            'name': artist.name,
+            'external_url': json.loads(artist.external_url),
+            'followers': artist.followers,
+            'genres': json.loads(artist.genres or '[]'),  # convert genres to a list
+            'href': artist.href,
+            'images': json.loads(artist.images),
+            'popularity': artist.popularity,
+        }
+
+    return final_artists
 
 
-def get_playlist_details(sp, playlist_id, all_artists_info):
+def get_or_fetch_audio_features(sp, track_ids):
+    existing_features = features_sql.query.filter(features_sql.id.in_(track_ids)).all()
+    existing_feature_ids = {feature.id: feature for feature in existing_features}
+
+    to_fetch = [track_id for track_id in track_ids if track_id not in existing_feature_ids]
+
+    batch_size = 100  # Set the batch size limit for the Spotify API
+
+    for i in range(0, len(to_fetch), batch_size):
+        batch = to_fetch[i:i + batch_size]
+        fetched_features = sp.audio_features(batch)
+
+        for feature in fetched_features:
+            new_feature = features_sql(
+                id=feature['id'],
+                danceability=feature['danceability'],
+                energy=feature['energy'],
+                key=feature['key'],
+                loudness=feature['loudness'],
+                mode=feature['mode'],
+                speechiness=feature['speechiness'],
+                acousticness=feature['acousticness'],
+                instrumentalness=feature['instrumentalness'],
+                liveness=feature['liveness'],
+                valence=feature['valence'],
+                tempo=feature['tempo'],
+                time_signature=feature['time_signature']
+            )
+            db.session.add(new_feature)
+
+        db.session.commit()
+
+        for feature in fetched_features:
+            existing_feature_ids[feature['id']] = feature
+
+    final_features = [existing_feature_ids[track_id] for track_id in track_ids]
+    return final_features
+
+
+def get_playlist_details(sp, playlist_id):
     results = sp.playlist_tracks(playlist_id)
     tracks = results['items']
     next_page = results['next']
@@ -301,7 +359,7 @@ def get_playlist_details(sp, playlist_id, all_artists_info):
         artist_info = []
         for artist in artists:
             artist_id = artist['id']
-            artist_data = get_or_fetch_artist_info(sp, artist_id, all_artists_info)
+            artist_data = get_or_fetch_artist_info(sp, artist_id)
             artist_info.append(artist_data)  # Add all saved artist information
 
         track_info = {

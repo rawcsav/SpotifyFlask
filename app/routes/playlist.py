@@ -64,9 +64,7 @@ def show_playlist(playlist_id):
             if error:
                 return json.dumps(error), 401
 
-            all_artists_info = user_data['all_artists_info']
-
-            all_track_data = get_playlist_details(sp, playlist_id, all_artists_info)
+            all_track_data = get_playlist_details(sp, playlist_id)
             playlist_data[playlist_id]['tracks'] = all_track_data
 
             # Save the updated playlist_data back to playlist_data.json

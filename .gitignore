@@ -168,6 +168,7 @@ package.json
 package-lock.json
 pyproject.toml
 stylelint.config.js
+include/
 .eslintrc.json
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

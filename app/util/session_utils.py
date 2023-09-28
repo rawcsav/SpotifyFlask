@@ -4,6 +4,7 @@ import secrets
 import shutil
 import string
 from flask import abort
+import sqlite3
 
 import requests
 
@@ -80,3 +81,51 @@ def request_tokens(payload, client_id, client_secret):
     if res_data.get("error") or res.status_code != 200:
         return None, res.status_code
     return res_data, None
+
+
+def init_db():
+    conn = sqlite3.connect('your_database_name.db')
+    c = conn.cursor()
+
+    # Create artists table
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS artists (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        external_url TEXT,
+        followers INTEGER,
+        genres TEXT,
+        href TEXT,
+        images TEXT,
+        popularity INTEGER,
+        type TEXT,
+        uri TEXT
+    )
+    """)
+
+    # Create audio_features table
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS audio_features (
+        id TEXT PRIMARY KEY,
+        danceability REAL,
+        energy REAL,
+        key INTEGER,
+        loudness REAL,
+        mode INTEGER,
+        speechiness REAL,
+        acousticness REAL,
+        instrumentalness REAL,
+        liveness REAL,
+        valence REAL,
+        tempo REAL,
+        type TEXT,
+        uri TEXT,
+        track_href TEXT,
+        analysis_url TEXT,
+        duration_ms INTEGER,
+        time_signature INTEGER
+    )
+    """)
+
+    conn.commit()
+    conn.close()
