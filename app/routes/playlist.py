@@ -4,6 +4,7 @@ import json
 
 from app.routes.auth import require_spotify_auth
 from app.util.session_utils import load_from_json, store_to_json
+from app.util.spotify_utils import init_session_client, get_playlist_details
 
 bp = Blueprint('playlist', __name__)
 
@@ -57,8 +58,20 @@ def show_playlist(playlist_id):
                 'collaborative': playlist['collaborative'],
                 'total_tracks': playlist["total_tracks"],
             }
-            # Save the updated playlist_data back to playlist_data.json ---- MODIFIED (Save Update)
+
+            # Fetch track and artist details
+            sp, error = init_session_client(session)
+            if error:
+                return json.dumps(error), 401
+
+            all_artists_info = user_data['all_artists_info']
+
+            all_track_data = get_playlist_details(sp, playlist_id, all_artists_info)
+            playlist_data[playlist_id]['tracks'] = all_track_data
+
+            # Save the updated playlist_data back to playlist_data.json
             store_to_json(playlist_data, playlist_data_json_path)
+
             return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
 
     # If we reach here, the playlist was not found in either JSON files

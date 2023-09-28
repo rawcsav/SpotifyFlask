@@ -272,12 +272,49 @@ def format_track_info(track):
     }
 
 
-def fetch_playlist_details(sp, playlist_id: str):
-    # Fetch the specific playlist
-    playlist = sp.playlist(playlist_id)
+def get_or_fetch_artist_info(sp, artist_id, all_artists_info):
+    if artist_id in all_artists_info:
+        return all_artists_info[artist_id]
+    else:
+        artist_info = sp.artist(artist_id)
+        all_artists_info[artist_id] = artist_info  # Save all information about the artist
+        return artist_info
 
-    playlist_name: playlist['name']
-    num_of_tracks: playlist['tracks']['total']
-    owner: playlist['owner']['display_name']
 
-    return playlist_name, num_of_tracks, owner
+def get_playlist_details(sp, playlist_id, all_artists_info):
+    results = sp.playlist_tracks(playlist_id)
+    tracks = results['items']
+    next_page = results['next']
+
+    # Pagination loop
+    while next_page:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+        next_page = results['next']
+
+    track_info_list = []
+
+    for track_data in tracks:
+        track = track_data['track']
+        artists = track['artists']
+
+        artist_info = []
+        for artist in artists:
+            artist_id = artist['id']
+            artist_data = get_or_fetch_artist_info(sp, artist_id, all_artists_info)
+            artist_info.append(artist_data)  # Add all saved artist information
+
+        track_info = {
+            'id': track['id'],
+            'name': track['name'],
+            'duration': track['duration_ms'],
+            'popularity': track['popularity'],
+            'album': track['album']['name'],
+            'release_date': track['album']['release_date'],
+            'explicit': track['explicit'],
+            'artists': artist_info  # Store all artist information
+        }
+
+        track_info_list.append(track_info)
+
+    return track_info_list
