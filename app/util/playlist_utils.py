@@ -1,5 +1,9 @@
 from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
-from statistics import mean
+from datetime import datetime
+import matplotlib.pyplot as plt
+from collections import defaultdict
+from flask import session
+import os
 
 
 def get_playlist_tracks(sp, playlist_id):
@@ -30,6 +34,11 @@ def get_track_info_list(sp, tracks):
         track = track_data['track']
         track_id = track['id']
         artists = track['artists']
+        image = track['album'].get('images', [])
+        cover_art = None
+
+        if image:
+            cover_art = image[0].get('url')
 
         artist_info = []
         for artist in artists:
@@ -45,6 +54,7 @@ def get_track_info_list(sp, tracks):
             'album': track['album']['name'],
             'release_date': track['album']['release_date'],
             'explicit': track['explicit'],
+            'cover_art': cover_art,
             'artists': artist_info,
             'audio_features': audio_features
         }
@@ -83,7 +93,6 @@ def get_genre_artists_count(track_info_list, top_n=10):
     return genre_counts, top_artists
 
 
-#
 def get_audio_features_stats(track_info_list):
     audio_feature_stats = {feature: {'min': None, 'max': None, 'total': 0} for feature in
                            track_info_list[0]['audio_features'].keys() if feature != 'id'}
@@ -103,10 +112,53 @@ def get_audio_features_stats(track_info_list):
     return audio_feature_stats
 
 
+def get_temporal_stats(track_info_list, playlist_id):
+    if not track_info_list:
+        return {}  # return empty dict if track_info_list is empty
+
+    def parse_date_or_default(track, default):
+        release_date = track['release_date']
+        if release_date:
+            return datetime.strptime(release_date, "%Y") if len(release_date) == 4 \
+                else datetime.strptime(release_date, "%Y-%m-%d")
+        return default
+
+    valid_tracks = [track for track in track_info_list if track.get('id') and not track.get('is_local')]
+
+    if not valid_tracks:
+        return {}  # return empty dict if no valid tracks
+
+    oldest_track = min(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.min))
+    newest_track = max(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.max))
+    print(oldest_track)
+    print(newest_track)
+
+    year_count = defaultdict(int)
+
+    for track in track_info_list:
+        if track['release_date']:
+            year = track['release_date'].split('-')[0]
+            year_count[year] += 1
+
+    temporal_stats = {
+        'oldest_track': oldest_track['name'],
+        'newest_track': newest_track['name'],
+        'oldest_track_date': oldest_track['release_date'],
+        'newest_track_date': newest_track['release_date'],
+        'oldest_track_image': oldest_track["cover_art"],
+        'newest_track_image': newest_track["cover_art"],
+        'oldest_track_artist': oldest_track['artists'][0]['name'] if oldest_track['artists'] else 'Unknown',
+        'newest_track_artist': newest_track['artists'][0]['name'] if newest_track['artists'] else 'Unknown',
+        "year_count": year_count
+    }
+    return temporal_stats
+
+
 def get_playlist_details(sp, playlist_id):
     tracks = get_playlist_tracks(sp, playlist_id)
     track_info_list = get_track_info_list(sp, tracks)
     genre_counts, top_artists = get_genre_artists_count(track_info_list)
     audio_feature_stats = get_audio_features_stats(track_info_list)
+    temporal_stats = get_temporal_stats(track_info_list, playlist_id)
 
-    return track_info_list, genre_counts, top_artists, audio_feature_stats
+    return track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats

@@ -49,6 +49,21 @@ class features_sql(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+class playlist_sql(db.Model):
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String)
+    owner = db.Column(db.String)
+    cover_art = db.Column(db.String)
+    public = db.Column(db.Boolean)
+    collaborative = db.Column(db.Boolean)
+    total_tracks = db.Column(db.Integer)
+    tracks = db.Column(db.PickleType)
+    genre_counts = db.Column(db.PickleType)
+    top_artists = db.Column(db.PickleType)
+    feature_stats = db.Column(db.PickleType)
+    temporal_stats = db.Column(db.PickleType)
+
+
 def add_artist_to_db(artist_data):
     new_artist = artist_sql(
         id=artist_data['id'],

@@ -1,13 +1,22 @@
 import os
-from flask import Blueprint, render_template, jsonify, session, request
+from flask import Blueprint, render_template, jsonify, session, \
+    request, send_file
 import json
 
 from app.routes.auth import require_spotify_auth
-from app.util.session_utils import load_from_json, update_json
+from app.util.database_utils import db, playlist_sql
+from app.util.session_utils import load_from_json
 from app.util.spotify_utils import init_session_client
 from app.util.playlist_utils import get_playlist_details
 
 bp = Blueprint('playlist', __name__)
+
+
+@bp.route('/user_chart/<string:playlist_id>')
+def serve_pie_chart(playlist_id):
+    user_directory = session["UPLOAD_DIR"]
+    pie_chart_path = os.path.join(user_directory, f'pie_chart_{playlist_id}.png')
+    return send_file(pie_chart_path, mimetype='image/png')
 
 
 @bp.route('/playlist', methods=['GET'])
@@ -33,22 +42,32 @@ def playlist():
 @require_spotify_auth
 def show_playlist(playlist_id):
     user_directory = session["UPLOAD_DIR"]
-    playlist_data_json_path = os.path.join(user_directory, 'playlist_data.json')
     user_data_json_path = os.path.join(user_directory, 'user_data.json')
 
-    playlist_data = {}
+    # Try to retrieve the playlist from the SQL database
+    playlist = playlist_sql.query.get(playlist_id)
 
-    if os.path.exists(playlist_data_json_path):
-        playlist_data = load_from_json(playlist_data_json_path)
+    if playlist:
+        print("Playlist found in SQL database")
+        playlist_data = playlist.__dict__
+        owner_name = playlist_data['owner']
+        total_tracks = playlist_data['total_tracks']
+        is_collaborative = playlist_data['collaborative']
+        is_public = playlist_data['public']
+        temporal_stats = playlist_data.get('temporal_stats', {})
+        year_count = temporal_stats.get('year_count', {})
 
-    if playlist_id in playlist_data:
-        return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
+        return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_data=playlist_data,
+                               year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
+                               is_collaborative=is_collaborative, is_public=is_public)
 
+    # If the playlist wasn't in the SQL database, get the basic details from the JSON file
     user_data = load_from_json(user_data_json_path)
+    playlist_details = {}
 
     for playlist in user_data["playlists"]:
         if playlist['id'] == playlist_id:
-            playlist_data[playlist_id] = {
+            playlist_details = {
                 'id': playlist['id'],
                 'name': playlist['name'],
                 'owner': playlist['owner'],
@@ -58,21 +77,41 @@ def show_playlist(playlist_id):
                 'total_tracks': playlist["total_tracks"],
             }
 
-            sp, error = init_session_client(session)
-            if error:
-                return json.dumps(error), 401
+    # Get the additional details from the Spotify API
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
 
-            pl_track_data, pl_genre_counts, pl_top_artists, pl_feature_stats = \
-                get_playlist_details(sp, playlist_id)
+    pl_track_data, pl_genre_counts, pl_top_artists, \
+        pl_feature_stats, pl_temporal_stats, = \
+        get_playlist_details(sp, playlist_id)
 
-            playlist_data[playlist_id]['tracks'] = pl_track_data
-            playlist_data[playlist_id]['genre_counts'] = pl_genre_counts
-            playlist_data[playlist_id]['top_artists'] = pl_top_artists
-            playlist_data[playlist_id]['feature_stats'] = pl_feature_stats
+    # Create a new playlist_sql object and save it to the SQL database
+    new_playlist = playlist_sql(id=playlist_details['id'],
+                                name=playlist_details['name'],
+                                owner=playlist_details['owner'],
+                                cover_art=playlist_details['cover_art'],
+                                public=playlist_details['public'],
+                                collaborative=playlist_details['collaborative'],
+                                total_tracks=playlist_details['total_tracks'],
+                                tracks=pl_track_data,
+                                genre_counts=pl_genre_counts,
+                                top_artists=pl_top_artists,
+                                feature_stats=pl_feature_stats,
+                                temporal_stats=pl_temporal_stats, )
 
-            update_json(playlist_data, playlist_data_json_path)
+    db.session.merge(new_playlist)
+    db.session.commit()
+    playlist_data = new_playlist.__dict__
 
-            return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
+    temporal_stats = playlist_data.get('temporal_stats', {})
+    year_count = temporal_stats.get('year_count', {})
+    owner_name = playlist_data['owner']
+    total_tracks = playlist_data['total_tracks']
+    is_collaborative = playlist_data['collaborative']
+    is_public = playlist_data['public']
+    temporal_stats = playlist_data.get('temporal_stats', {})
 
-    # If we reach here, the playlist was not found in either JSON files
-    return jsonify({'error': 'Playlist not found'}), 404
+    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_data=playlist_data,
+                           year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
+                           is_collaborative=is_collaborative, is_public=is_public)

@@ -18,9 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="overlay-text">${playlist.name}</div>
       </div>
     </a>
-    <p>${playlist.owner}</p>
-    <p>${playlist.total_tracks} Tracks</p>
-    <p>${securityLabel} ${collaborativeLabel}</p>
   </div>`;
   });
 });

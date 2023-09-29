@@ -1,39 +1,45 @@
 <!doctype html>
 <html>
-  <link
-    rel="apple-touch-icon"
-    sizes="180x180"
-    href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
-  />
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="32x32"
-    href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
-  />
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="16x16"
-    href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
-  />
-  <link
-    rel="manifest"
-    href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
-  />
-  <link
-    rel="mask-icon"
-    href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
-    color="#5bbad5"
-  />
-  <meta name="msapplication-TileColor" content="#da532c" />
-  <meta name="theme-color" content="#ffffff" />
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/spec_playlist.css') }}"
-  />
   <head>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
+    />
+    <link
+      rel="mask-icon"
+      href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
+      color="#5bbad5"
+    />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
     <title>Playlist - {{ playlist_data['id'] }}</title>
+    <script>
+      var yearCountData = JSON.parse('{{ year_count | safe }}');
+    </script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/spec_playlist.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body>
     <a href="https://rawcsav.com" class="homepage-link">
@@ -43,47 +49,85 @@
       />
     </a>
     <div class="top-right-nav">
-      <a href="https://webstats.rawcsav.com/playlist" class="profile-link"
-        >Back to Playlists</a
-      >
+      <a href="https://webstats.rawcsav.com/playlist" class="profile-link">
+        Back to Playlists
+      </a>
     </div>
     <h1>{{ playlist_data['name'] }}</h1>
-    <h2>Genre Counts</h2>
-    <ul>
-      {% for genre, count in playlist_data.genre_counts|dictsort(reverse=True,
-      by='value') %}
-      <li>{{ genre }}: {{ count }}</li>
-      {% endfor %}
-    </ul>
+    <div class="button-group">
+      <button class="data-view-btn active" id="summary-stats-btn">
+        Summary Stats
+      </button>
+      <button class="data-view-btn" id="genre-counts-btn">Genre Stats</button>
+      <button class="data-view-btn" id="feature-stats-btn">
+        Feature Stats
+      </button>
+    </div>
 
-    <h2>Top Artists</h2>
-    <ul>
-      {% for artist, count, image_url in playlist_data.top_artists %}
-      <li>
-        <img
-          src="{{ image_url }}"
-          alt="{{ artist }}'s picture"
-          width="100"
-          height="100"
-        />
-        {{ artist }}: {{ count }}
-      </li>
-      {% endfor %}
-    </ul>
-
-    <h2>Feature Stats</h2>
-    <ul>
-      {% for feature, stats in playlist_data.feature_stats.items() %}
-      <li>
-        {{ feature }}:
-        <ul>
-          <li>Min: {{ stats['min'][1] }} ({{ stats['min'][0] }})</li>
-          <li>Max: {{ stats['max'][1] }} ({{ stats['max'][0] }})</li>
-          <li>Avg: {{ stats['avg'] }}</li>
-        </ul>
-      </li>
-      {% endfor %}
-    </ul>
+    <div id="summary-stats" class="data-view">
+      <h2 class="summary-title">Summary Stats</h2>
+      <ul class="artist-list">
+        {% for artist, count, image_url in playlist_data.top_artists %}
+        <li class="artist-item">
+          <img
+            class="artist-image"
+            src="{{ image_url }}"
+            alt="{{ artist }}'s picture"
+            width="100"
+            height="100"
+          />
+          <span class="artist-name">{{ artist }}</span>:
+          <span class="artist-count">{{ count }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <canvas
+        id="YrPieChart"
+        class="year-pie-chart"
+        width="400"
+        height="400"
+      ></canvas>
+      <p class="owner-name">Owner: {{ owner_name }}</p>
+      <p class="total-tracks">Total tracks: {{ total_tracks }}</p>
+      <p class="is-collaborative">
+        Collaborative: {{ "Yes" if is_collaborative else "No" }}
+      </p>
+      <p class="is-public">Public: {{ "Yes" if is_public else "No" }}</p>
+      <p class="oldest-track">
+        Oldest track: {{ playlist_data['temporal_stats']['oldest_track'] }} by
+        {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
+        playlist_data['temporal_stats']['oldest_track_date'] }})
+      </p>
+      <p class="newest-track">
+        Newest track: {{ playlist_data['temporal_stats']['newest_track'] }} by
+        {{ playlist_data['temporal_stats']['newest_track_artist'] }} ({{
+        playlist_data['temporal_stats']['newest_track_date'] }})
+      </p>
+    </div>
+    <div id="genre-counts" class="data-view" style="display: none">
+      <h2>Genre Counts</h2>
+      <ul>
+        {% for genre, count in playlist_data.genre_counts|dictsort(reverse=True,
+        by='value') %}
+        <li>{{ genre }}: {{ count }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div id="feature-stats" class="data-view" style="display: none">
+      <h2>Feature Stats</h2>
+      <ul>
+        {% for feature, stats in playlist_data.feature_stats.items() %}
+        <li>
+          {{ feature }}:
+          <ul>
+            <li>Min: {{ stats['min'][1] }} ({{ stats['min'][0] }})</li>
+            <li>Max: {{ stats['max'][1] }} ({{ stats['max'][0] }})</li>
+            <li>Avg: {{ stats['avg'] }}</li>
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </body>
   <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>
 </html>
