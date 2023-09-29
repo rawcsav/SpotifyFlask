@@ -4,7 +4,8 @@ import json
 
 from app.routes.auth import require_spotify_auth
 from app.util.session_utils import load_from_json, store_to_json
-from app.util.spotify_utils import init_session_client, get_playlist_details
+from app.util.spotify_utils import init_session_client
+from app.util.playlist_utils import get_playlist_details
 
 bp = Blueprint('playlist', __name__)
 

@@ -89,37 +89,49 @@ def profile():
 
 @bp.route('/refresh-data', methods=['POST'])
 def refresh_data():
-    access_token = verify_session(session)
-    spotify_user_id = fetch_user_data(access_token).get("id")
-    sp, error = init_session_client(session)
-    if error:
-        return json.dumps(error), 401
-    manage_user_directory(spotify_user_id, session)
-    user_directory = session["UPLOAD_DIR"]
+    try:
+        access_token = verify_session(session)
+        user_data = fetch_user_data(access_token)
+        spotify_user_id = user_data.get("id")
+        sp, error = init_session_client(session)
+        if error:
+            return json.dumps(error), 401
 
-    # Define time periods for Spotify data
-    time_periods = ["short_term", "medium_term", "long_term"]
+        manage_user_directory(spotify_user_id, session)
+        user_directory = session["UPLOAD_DIR"]
+        json_path = os.path.join(user_directory, "user_data.json")
 
-    (
-        top_tracks,
-        top_artists,
-        all_artists_info,
-        audio_features,
-        genre_specific_data,
-        sorted_genres_by_period,
-        recent_tracks,
-        playlist_info,
-    ) = fetch_and_process_data(sp, time_periods)
+        # Define time periods for Spotify data
+        time_periods = ["short_term", "medium_term", "long_term"]
 
-    # Aggregate user data
-    user_data = {
-        "top_tracks": top_tracks,
-        "top_artists": top_artists,
-        "all_artists_info": all_artists_info,
-        "audio_features": audio_features,
-        "sorted_genres": sorted_genres_by_period,
-        "genre_specific_data": genre_specific_data,
-        "recent_tracks": recent_tracks,
-        "playlists": playlist_info,
-    }
-    return jsonify(user_data), 200
+        (
+            top_tracks,
+            top_artists,
+            all_artists_info,
+            audio_features,
+            genre_specific_data,
+            sorted_genres_by_period,
+            recent_tracks,
+            playlist_info,
+        ) = fetch_and_process_data(sp, time_periods)
+
+        recent_tracks = sp.current_user_recently_played(limit=50)["items"]
+
+        # Aggregate user data
+        user_data = {
+            "top_tracks": top_tracks,
+            "top_artists": top_artists,
+            "all_artists_info": all_artists_info,
+            "audio_features": audio_features,
+            "sorted_genres": sorted_genres_by_period,
+            "genre_specific_data": genre_specific_data,
+            "recent_tracks": recent_tracks,
+            "playlists": playlist_info,
+        }
+
+        store_to_json(user_data, json_path)
+
+        return jsonify(user_data), 200
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return str(e), 500

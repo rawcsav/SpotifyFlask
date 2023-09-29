@@ -4,8 +4,6 @@ import secrets
 import shutil
 import string
 from flask import abort
-import sqlite3
-
 import requests
 
 from app import config
@@ -40,13 +38,9 @@ def manage_user_directory(spotify_user_id, session):
     return session_dir
 
 
-# Store User Data to JSON
 def store_to_json(user_data, json_path):
     with open(json_path, "w") as f:
         json.dump(user_data, f, ensure_ascii=False, indent=4)
-
-
-# Load User Data from JSON
 
 
 def load_from_json(json_path):
