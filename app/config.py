@@ -31,7 +31,6 @@ SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 AUDIO_FEATURES = [
     "acousticness",
     "danceability",
-    "duration_ms",
     "energy",
     "instrumentalness",
     "liveness",

@@ -1,3 +1,6 @@
+import json
+from sqlalchemy.exc import IntegrityError
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -42,6 +45,21 @@ class features_sql(db.Model):
     valence = db.Column(db.Float)
     tempo = db.Column(db.Float)
     time_signature = db.Column(db.Integer)
-    
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+def add_artist_to_db(artist_data):
+    new_artist = artist_sql(
+        id=artist_data['id'],
+        name=artist_data['name'],
+        external_url=json.dumps(artist_data['external_urls']),
+        followers=artist_data.get('followers', {'total': 0})['total'],
+        genres=json.dumps(artist_data['genres']),
+        href=artist_data['href'],
+        images=json.dumps(artist_data['images']),
+        popularity=artist_data['popularity'],
+    )
+    db.session.merge(new_artist)
+    db.session.commit()

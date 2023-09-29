@@ -7,7 +7,9 @@ from spotipy.client import SpotifyException
 
 from app import config
 from app.routes.auth import refresh
-from app.util.database_utils import db, artist_sql, features_sql
+from app.util.database_utils import db, artist_sql, features_sql, add_artist_to_db
+
+from sqlalchemy.exc import IntegrityError
 
 FEATURES = config.AUDIO_FEATURES
 
@@ -199,7 +201,12 @@ def calculate_averages_for_period(tracks, audio_features):
 # Handle Spotify Search
 def spotify_search(sp, query, type, limit=6):
     try:
-        return sp.search(q=query, type=type, limit=limit)
+        results = sp.search(q=query, type=type, limit=limit)
+        if results.get('artists', {}).get('items'):
+            for artist_data in results['artists']['items']:
+                add_artist_to_db(artist_data)
+
+        return results
     except SpotifyException as e:
         return {"error": str(e)}
 
@@ -254,15 +261,16 @@ def format_track_info(track):
 
 
 def get_or_fetch_artist_info(sp, artist_ids):
+    # Fetch existing artists from the DB
     existing_artists = artist_sql.query.filter(artist_sql.id.in_(artist_ids)).all()
     existing_artist_ids = {artist.id: artist for artist in existing_artists}
 
     to_fetch = [artist_id for artist_id in artist_ids if artist_id not in existing_artist_ids]
 
-    batch_size = 50  # Set the batch size limit for the Spotify API
+    batch_size = 50
 
     for i in range(0, len(to_fetch), batch_size):
-        batch = to_fetch[i:i + batch_size]
+        batch = [x for x in to_fetch[i:i + batch_size] if x is not None]
         fetched_artists = sp.artists(batch)['artists']
 
         for artist in fetched_artists:
@@ -276,37 +284,37 @@ def get_or_fetch_artist_info(sp, artist_ids):
                 images=json.dumps(artist['images']),
                 popularity=artist['popularity'],
             )
-            db.session.add(new_artist)
+            existing_artist_ids[new_artist.id] = new_artist  # Update the existing artists dict
+            db.session.merge(new_artist)
+            db.session.commit()
 
-        db.session.commit()
-
+    # Create the final dictionary
     final_artists = {}
     for artist_id in artist_ids:
-        artist = existing_artist_ids[artist_id]
-        final_artists[artist_id] = {
-            'id': artist.id,
-            'name': artist.name,
-            'external_url': json.loads(artist.external_url),
-            'followers': artist.followers,
-            'genres': json.loads(artist.genres or '[]'),  # convert genres to a list
-            'href': artist.href,
-            'images': json.loads(artist.images),
-            'popularity': artist.popularity,
-        }
-
+        artist = existing_artist_ids.get(artist_id)  # Use .get() to avoid KeyError
+        if artist:  # Check if artist exists in the dict
+            final_artists[artist_id] = {
+                'id': artist.id,
+                'name': artist.name,
+                'external_url': json.loads(artist.external_url),
+                'followers': artist.followers,
+                'genres': json.loads(artist.genres or '[]'),  # Handle null genres
+                'href': artist.href,
+                'images': json.loads(artist.images),
+                'popularity': artist.popularity,
+            }
     return final_artists
 
 
 def get_or_fetch_audio_features(sp, track_ids):
     existing_features = features_sql.query.filter(features_sql.id.in_(track_ids)).all()
     existing_feature_ids = {feature.id: feature for feature in existing_features}
-
+    print(existing_feature_ids)
     to_fetch = [track_id for track_id in track_ids if track_id not in existing_feature_ids]
-
-    batch_size = 100  # Set the batch size limit for the Spotify API
+    batch_size = 100
 
     for i in range(0, len(to_fetch), batch_size):
-        batch = to_fetch[i:i + batch_size]
+        batch = [x for x in to_fetch[i:i + batch_size] if x is not None]
         fetched_features = sp.audio_features(batch)
 
         for feature in fetched_features:
@@ -325,9 +333,8 @@ def get_or_fetch_audio_features(sp, track_ids):
                 tempo=feature['tempo'],
                 time_signature=feature['time_signature'],
             )
-            db.session.add(new_feature)
-
-        db.session.commit()
+            db.session.merge(new_feature)
+            db.session.commit()
 
     final_features = {}
     for track_id in track_ids:
@@ -356,13 +363,22 @@ def get_playlist_details(sp, playlist_id):
     tracks = results['items']
     next_page = results['next']
 
-    # Pagination loop
     while next_page:
         results = sp.next(results)
         tracks.extend(results['items'])
         next_page = results['next']
 
     track_info_list = []
+    artist_ids = []
+    for track_data in tracks:
+        track = track_data['track']
+        artists = track['artists']
+
+        for artist in artists:
+            artist_ids.append(artist['id'])
+
+    # Fetch data for all artists at once
+    artist_info_dict = get_or_fetch_artist_info(sp, artist_ids)  # Assuming this function now returns a dictionary
 
     for track_data in tracks:
         track = track_data['track']
@@ -371,8 +387,8 @@ def get_playlist_details(sp, playlist_id):
         artist_info = []
         for artist in artists:
             artist_id = artist['id']
-            artist_data = get_or_fetch_artist_info(sp, artist_id)
-            artist_info.append(artist_data)  # Add all saved artist information
+            artist_data = artist_info_dict[artist_id]  # Get the artist data from the dictionary
+            artist_info.append(artist_data)
 
         track_info = {
             'id': track['id'],

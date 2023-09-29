@@ -7,9 +7,10 @@ bp = Blueprint('database', __name__)
 
 
 @bp.route('/add_artist', methods=['POST'])
-def add_artist():
+def add_artist(artist_data=None):
     try:
-        artist_data = request.json
+        if not artist_data:
+            artist_data = request.json
         if not validate_artist_data(artist_data):
             return jsonify({'message': 'Missing required fields'}), 400
 
@@ -26,7 +27,6 @@ def add_artist():
         db.session.add(new_artist)
         db.session.commit()
         return jsonify({'message': 'Artist added successfully'}), 200
-
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'An error occurred: {}'.format(e)}), 500
