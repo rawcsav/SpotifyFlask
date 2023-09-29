@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, jsonify, session, request
 import json
 
 from app.routes.auth import require_spotify_auth
-from app.util.session_utils import load_from_json, store_to_json
+from app.util.session_utils import load_from_json, update_json
 from app.util.spotify_utils import init_session_client
 from app.util.playlist_utils import get_playlist_details
 
@@ -36,13 +36,11 @@ def show_playlist(playlist_id):
     playlist_data_json_path = os.path.join(user_directory, 'playlist_data.json')
     user_data_json_path = os.path.join(user_directory, 'user_data.json')
 
-    # Initialize playlist_data as an empty dict ---- MODIFIED (Added Initialization)
     playlist_data = {}
 
     if os.path.exists(playlist_data_json_path):
         playlist_data = load_from_json(playlist_data_json_path)
 
-    # Check if the specific playlist exists in playlist_data
     if playlist_id in playlist_data:
         return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
 
@@ -60,16 +58,19 @@ def show_playlist(playlist_id):
                 'total_tracks': playlist["total_tracks"],
             }
 
-            # Fetch track and artist details
             sp, error = init_session_client(session)
             if error:
                 return json.dumps(error), 401
 
-            all_track_data = get_playlist_details(sp, playlist_id)
-            playlist_data[playlist_id]['tracks'] = all_track_data
+            pl_track_data, pl_genre_counts, pl_top_artists, pl_feature_stats = \
+                get_playlist_details(sp, playlist_id)
 
-            # Save the updated playlist_data back to playlist_data.json
-            store_to_json(playlist_data, playlist_data_json_path)
+            playlist_data[playlist_id]['tracks'] = pl_track_data
+            playlist_data[playlist_id]['genre_counts'] = pl_genre_counts
+            playlist_data[playlist_id]['top_artists'] = pl_top_artists
+            playlist_data[playlist_id]['feature_stats'] = pl_feature_stats
+
+            update_json(playlist_data, playlist_data_json_path)
 
             return render_template('spec_playlist.html', playlist_data=playlist_data[playlist_id])
 

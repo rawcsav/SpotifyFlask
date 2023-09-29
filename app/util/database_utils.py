@@ -116,48 +116,50 @@ def get_or_fetch_audio_features(sp, track_ids):
     existing_feature_ids = {feature.id: feature for feature in existing_features}
 
     to_fetch = [track_id for track_id in track_ids if track_id not in existing_feature_ids]
+
+    batch_size = 100  # Number of items to fetch in one API call
+
     if to_fetch:
-        fetched_features = sp.audio_features(to_fetch)
-        for feature in fetched_features:
-            if feature:
-                new_feature = features_sql(
-                    id=feature['id'],
-                    danceability=feature['danceability'],
-                    energy=feature['energy'],
-                    key=feature['key'],
-                    loudness=feature['loudness'],
-                    mode=feature['mode'],
-                    speechiness=feature['speechiness'],
-                    acousticness=feature['acousticness'],
-                    instrumentalness=feature['instrumentalness'],
-                    liveness=feature['liveness'],
-                    valence=feature['valence'],
-                    tempo=feature['tempo'],
-                    time_signature=feature['time_signature'],
-                )
-                db.session.merge(new_feature)
-                existing_feature_ids[feature['id']] = new_feature
+        for i in range(0, len(to_fetch), batch_size):
+            batch = to_fetch[i:i + batch_size]
+            fetched_features = sp.audio_features(batch)
 
-        db.session.commit()
+            for feature in fetched_features:
+                if feature:
+                    new_feature = features_sql(
+                        id=feature['id'],
+                        danceability=feature['danceability'],
+                        energy=feature['energy'],
+                        key=feature['key'],
+                        loudness=feature['loudness'],
+                        mode=feature['mode'],
+                        speechiness=feature['speechiness'],
+                        acousticness=feature['acousticness'],
+                        instrumentalness=feature['instrumentalness'],
+                        liveness=feature['liveness'],
+                        valence=feature['valence'],
+                        tempo=feature['tempo'],
+                        time_signature=feature['time_signature'],
+                    )
+                    db.session.merge(new_feature)
+                    existing_feature_ids[feature['id']] = new_feature
 
-    final_features = {}
-    for track_id in track_ids:
-        feature = existing_feature_ids.get(track_id)
-        if feature:
-            final_features[track_id] = {
-                'id': feature.id,
-                'danceability': feature.danceability,
-                'energy': feature.energy,
-                'key': feature.key,
-                'loudness': feature.loudness,
-                'mode': feature.mode,
-                'speechiness': feature.speechiness,
-                'acousticness': feature.acousticness,
-                'instrumentalness': feature.instrumentalness,
-                'liveness': feature.liveness,
-                'valence': feature.valence,
-                'tempo': feature.tempo,
-                'time_signature': feature.time_signature,
-            }
+            db.session.commit()
+
+    final_features = {track_id: {
+        'id': feature.id,
+        'danceability': feature.danceability,
+        'energy': feature.energy,
+        'key': feature.key,
+        'loudness': feature.loudness,
+        'mode': feature.mode,
+        'speechiness': feature.speechiness,
+        'acousticness': feature.acousticness,
+        'instrumentalness': feature.instrumentalness,
+        'liveness': feature.liveness,
+        'valence': feature.valence,
+        'tempo': feature.tempo,
+        'time_signature': feature.time_signature
+    } for track_id, feature in existing_feature_ids.items()}
 
     return final_features

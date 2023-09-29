@@ -50,6 +50,19 @@ def load_from_json(json_path):
         return json.load(f)
 
 
+def update_json(user_data, json_path):
+    try:
+        with open(json_path, "r") as f:
+            existing_data = json.load(f)
+    except FileNotFoundError:
+        existing_data = {}
+
+    existing_data.update(user_data)
+
+    with open(json_path, "w") as f:
+        json.dump(existing_data, f, ensure_ascii=False, indent=4)
+
+
 def generate_state():
     return "".join(
         secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)

@@ -43,10 +43,8 @@ def profile():
                 user_data=user_data,
             )
 
-        # Define time periods for Spotify data
         time_periods = ["short_term", "medium_term", "long_term"]
 
-        # Fetch and process Spotify data
         (
             top_tracks,
             top_artists,
@@ -57,6 +55,7 @@ def profile():
             recent_tracks,
             playlist_info,
         ) = fetch_and_process_data(sp, time_periods)
+
         if all(v is not None and v != [] for v in [
             top_tracks,
             top_artists,
@@ -117,7 +116,6 @@ def refresh_data():
 
         recent_tracks = sp.current_user_recently_played(limit=50)["items"]
 
-        # Aggregate user data
         user_data = {
             "top_tracks": top_tracks,
             "top_artists": top_artists,
