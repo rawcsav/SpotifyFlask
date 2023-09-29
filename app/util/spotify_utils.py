@@ -9,8 +9,6 @@ from app import config
 from app.routes.auth import refresh
 from app.util.database_utils import db, artist_sql, features_sql, add_artist_to_db
 
-from sqlalchemy.exc import IntegrityError
-
 FEATURES = config.AUDIO_FEATURES
 
 
@@ -20,17 +18,6 @@ def get_top_tracks(sp, period):
 
 def get_top_artists(sp, period):
     return sp.current_user_top_artists(time_range=period, limit=50)
-
-
-def get_audio_features_for_tracks(sp, track_ids):
-    features = {}
-    for i in range(0, len(track_ids), 100):
-        batch = track_ids[i: i + 100]
-        batch_features = sp.audio_features(batch)
-        for feature in batch_features:
-            if feature:
-                features[feature["id"]] = feature
-    return features
 
 
 def get_genre_counts_from_artists_and_tracks(top_artists, top_tracks, all_artists_info):
@@ -96,8 +83,10 @@ def fetch_and_process_data(sp, time_periods):
         sorted_genres_by_period = {}
 
         for period in time_periods:
-            sorted_genres = get_genre_counts_from_artists_and_tracks(top_artists[period], top_tracks[period],
-                                                                     all_artists_info)
+            sorted_genres = get_genre_counts_from_artists_and_tracks(
+                top_artists[period], top_tracks[period],
+                all_artists_info
+            )
 
             sorted_genres_by_period[period] = sorted_genres
 
@@ -261,6 +250,8 @@ def format_track_info(track):
 
 
 def get_or_fetch_artist_info(sp, artist_ids):
+    if isinstance(artist_ids, str):
+        artist_ids = [artist_ids]
     existing_artists = artist_sql.query.filter(artist_sql.id.in_(artist_ids)).all()
     existing_artist_ids = {artist.id: artist for artist in existing_artists}
 
