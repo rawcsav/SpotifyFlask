@@ -39,6 +39,7 @@ def show_playlist(playlist_id):
 
     # Try to retrieve the playlist from the SQL database
     playlist = playlist_sql.query.get(playlist_id)
+    playlist_url = f"https://open.spotify.com/playlist/{playlist_id}"
 
     if playlist:
         playlist_data = playlist.__dict__
@@ -49,7 +50,8 @@ def show_playlist(playlist_id):
         temporal_stats = playlist_data.get('temporal_stats', {})
         year_count = temporal_stats.get('year_count', {})
 
-        return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_data=playlist_data,
+        return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_url=playlist_url,
+                               playlist_data=playlist_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public)
 
@@ -103,6 +105,7 @@ def show_playlist(playlist_id):
     is_collaborative = playlist_data['collaborative']
     is_public = playlist_data['public']
 
-    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_data=playlist_data,
+    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_url=playlist_url,
+                           playlist_data=playlist_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public)

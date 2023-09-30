@@ -58,11 +58,18 @@
     <div id="summary-stats" class="data-view">
       <div class="top-section">
         <div class="playlist-container">
-          <img
-            class="playlist-cover"
-            src="{{ playlist_data['cover_art'] }}"
-            alt="Playlist Cover"
-          />
+          <!-- Wrap the playlist cover in an anchor tag using the provided playlist_url -->
+          <a
+            href="{{ playlist_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              class="playlist-cover"
+              src="{{ playlist_data['cover_art'] }}"
+              alt="Playlist Cover"
+            />
+          </a>
           <div class="playlist-desc">
             <p class="total-tracks">{{ total_tracks }} Tracks</p>
             <p class="is-collaborative">

@@ -132,9 +132,27 @@ p {
 }
 
 .playlist-cover {
-  max-height: 200px;
   border-radius: 10%;
+  cursor: pointer;
+  max-height: 200px;
   max-width: 200px;
+}
+
+.playlist-container a {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Add hover effect for the clickable playlist cover */
+.playlist-container a:hover {
+  transform: scale(1.05);
+}
+
+/* Remove any default styles the browser might apply to the anchor tags */
+.playlist-container a:link,
+.playlist-container a:visited {
+  color: inherit;
+  text-decoration: none;
 }
 
 .playlist-desc {
@@ -201,10 +219,11 @@ canvas#YrPieChart {
     3,
     1fr
   ); /* or repeat(2, 1fr) based on the number of images */
+
+  height: 300px;
   justify-content: space-around;
   list-style: none;
   max-height: 300px;
-  height: 300px;
   position: relative;
 }
 
@@ -214,10 +233,6 @@ canvas#YrPieChart {
   overflow: hidden; /* Important to clip any overflowing content */
   position: relative;
   width: 125px;
-}
-
-.artist-container:hover .overlay {
-  opacity: 1;
 }
 
 .artist-image {
@@ -230,13 +245,22 @@ canvas#YrPieChart {
   max-width: 125px;
 }
 
-.artist-container:hover {
-  transform: scale(1.05);
+/* Artist Image Container */
+.artist-container a {
+  display: block;
   transition: transform 0.3s ease;
 }
 
-.artist-container:hover .overlay {
-  opacity: 0.8;
+/* Hover effect for the clickable artist image */
+.artist-container a:hover {
+  transform: scale(1.05);
+}
+
+/* Remove any default styles the browser might apply to the anchor tags around artist images */
+.artist-container a:link,
+.artist-container a:visited {
+  text-decoration: none;
+  color: inherit;
 }
 
 .overlay {
@@ -247,6 +271,7 @@ canvas#YrPieChart {
   color: white;
   display: flex;
   flex-flow: column wrap;
+  pointer-events: none;
   font-size: 10px;
   justify-content: space-around;
   opacity: 1;
