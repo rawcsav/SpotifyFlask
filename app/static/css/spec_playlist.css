@@ -233,6 +233,8 @@ canvas#YrPieChart {
   overflow: hidden; /* Important to clip any overflowing content */
   position: relative;
   width: 125px;
+  display: block;
+  transition: transform 0.3s ease;
 }
 
 .artist-image {
@@ -245,14 +247,8 @@ canvas#YrPieChart {
   max-width: 125px;
 }
 
-/* Artist Image Container */
-.artist-container a {
-  display: block;
-  transition: transform 0.3s ease;
-}
-
 /* Hover effect for the clickable artist image */
-.artist-container a:hover {
+.artist-container:hover {
   transform: scale(1.05);
 }
 
