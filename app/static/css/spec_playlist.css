@@ -15,8 +15,10 @@ body {
 }
 
 .profile-link {
+  background-color: #507494;
   border: transparent;
   border-radius: 5px;
+  color: white;
   cursor: pointer;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 10px;
@@ -25,13 +27,11 @@ body {
   text-decoration: none;
   transition: background-color 0.3s;
   width: 100%;
-  background-color: #507494;
-  color: white;
 }
 
 .profile-link:hover {
-  color: white;
   background-color: #704214;
+  color: white;
   text-decoration: none;
 }
 
@@ -46,22 +46,22 @@ h1 {
 
 .button-group {
   display: flex;
-  justify-content: center;
   gap: 10px;
+  justify-content: center;
   padding: 20px;
 }
 
 .button-group button {
+  background-color: #4a314d;
   border: transparent;
   border-radius: 5px;
+  color: white;
   cursor: pointer;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 10px;
   font-weight: bold;
   padding: 4px 8px;
   transition: background-color 0.3s;
-  background-color: #4a314d;
-  color: white;
 }
 
 .button-group button:hover {
@@ -103,4 +103,62 @@ p {
 .data-view-btn.active {
   background-color: #5bbad5;
   color: white;
+}
+
+.artist-container {
+  height: 150px;
+  position: relative;
+  width: 150px;
+}
+
+.artist-image {
+  height: 100%;
+  width: 100%;
+}
+
+.overlay {
+  align-content: space-around;
+  align-items: center;
+  background: rgb(0 0 0 / 60%);
+  bottom: 0;
+  color: white;
+  display: flex;
+  flex-flow: column wrap;
+  font-size: 12px;
+  justify-content: space-around;
+  opacity: 1;
+  overflow-x: hidden;
+  position: absolute;
+  transition: 0.5s ease;
+  width: 100%;
+}
+
+.artist-name {
+  font-weight: bold;
+}
+
+.artist-container:hover .overlay {
+  opacity: 1;
+}
+
+.artist-list {
+  align-items: center; /* This centers the items vertically */
+  display: flex;
+  flex-flow: row wrap; /* Items will be arranged in a row */ /* Items will wrap onto multiple lines if they run out of space */
+  justify-content: center; /* This centers the items horizontally */
+  list-style: none; /* This removes the bullet points */
+}
+
+.artist-item {
+  margin: 10px; /* Adds some space around each item */
+}
+
+#YrPieChart {
+  max-height: 300px; /* Adjust as needed */
+  max-width: 300px; /* Adjust as needed */
+}
+
+.playlist-cover {
+  height: 400px;
+  width: 400px;
 }

@@ -65,34 +65,40 @@
     </div>
 
     <div id="summary-stats" class="data-view">
-      <h2 class="summary-title">Summary Stats</h2>
-      <ul class="artist-list">
-        {% for artist, count, image_url in playlist_data.top_artists %}
-        <li class="artist-item">
-          <img
-            class="artist-image"
-            src="{{ image_url }}"
-            alt="{{ artist }}'s picture"
-            width="100"
-            height="100"
-          />
-          <span class="artist-name">{{ artist }}</span>:
-          <span class="artist-count">{{ count }}</span>
-        </li>
-        {% endfor %}
-      </ul>
-      <canvas
-        id="YrPieChart"
-        class="year-pie-chart"
-        width="400"
-        height="400"
-      ></canvas>
+      <img
+        class="playlist-cover"
+        src="{{ playlist_data['cover_art'] }}"
+        alt="Playlist Cover"
+      />
+
       <p class="owner-name">Owner: {{ owner_name }}</p>
       <p class="total-tracks">Total tracks: {{ total_tracks }}</p>
       <p class="is-collaborative">
         Collaborative: {{ "Yes" if is_collaborative else "No" }}
       </p>
       <p class="is-public">Public: {{ "Yes" if is_public else "No" }}</p>
+      <ul class="artist-list">
+        {% for artist, count, image_url in playlist_data.top_artists %}
+        <li class="artist-item">
+          <div class="artist-container">
+            <img
+              class="artist-image"
+              src="{{ image_url }}"
+              alt="{{ artist }}'s picture"
+              width="100"
+              height="100"
+            />
+            <div class="overlay">
+              <span class="artist-name">{{ artist }}</span>
+              <span class="artist-count">{{ count }} Tracks</span>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="chart-container">
+        <canvas id="YrPieChart" class="year-pie-chart"></canvas>
+      </div>
       <p class="oldest-track">
         Oldest track: {{ playlist_data['temporal_stats']['oldest_track'] }} by
         {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
