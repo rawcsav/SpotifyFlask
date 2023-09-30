@@ -1,17 +1,40 @@
+html,
 body {
-  background-color: #edc9af;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(120deg, #edc9af, #f3e0c3);
   font-family: Futura, sans-serif;
-  overflow-x: hidden;
+  margin: 0;
+  overflow: hidden;
+  padding: 10px;
   width: 100%;
 }
 
-/* Top-right navigation */
 .top-right-nav {
   display: flex;
-  gap: 10px; /* space between the links */
+  gap: 10px;
   position: absolute;
   right: 10px;
   top: 10px;
+}
+
+.homepage-link {
+  cursor: pointer;
+  left: 3px;
+  position: absolute;
+  top: 1px;
+}
+
+.homepage-link img {
+  height: 60px;
+  transition: transform 0.3s;
+  width: auto;
+}
+
+.homepage-link:hover img {
+  transform: scale(1.05);
 }
 
 .profile-link {
@@ -35,17 +58,11 @@ body {
   text-decoration: none;
 }
 
-h1 {
-  color: #507494;
-  font-family: Futura, sans-serif;
-  font-size: 45px;
-  font-weight: bold;
-  margin-top: 20px;
-  text-align: center;
-}
-
 .button-group {
+  align-items: flex-end;
   display: flex;
+  flex: 1;
+  flex-direction: column;
   gap: 10px;
   justify-content: center;
   padding: 20px;
@@ -68,6 +85,20 @@ h1 {
   background-color: #5bbad5;
 }
 
+.data-view-btn.active {
+  background-color: #5bbad5;
+  color: white;
+}
+
+h1 {
+  color: #507494;
+  font-family: Futura, sans-serif;
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+}
+
 h2 {
   color: #507494;
   font-family: Futura, sans-serif;
@@ -78,37 +109,115 @@ h2 {
 
 p {
   color: #507494;
+  font-size: 15px;
   font-weight: 500;
   margin: 0;
   text-decoration: none;
 }
 
-.homepage-link {
-  cursor: pointer;
-  left: 3px;
-  position: absolute;
-  top: 1px;
+.top-section {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.homepage-link img {
-  height: 60px;
-  transition: transform 0.3s;
-  width: auto;
+.playlist-container {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: flex-start;
 }
 
-.homepage-link:hover img {
-  transform: scale(1.05);
+.playlist-cover {
+  max-height: 200px;
+  border-radius: 10%;
+  max-width: 200px;
 }
 
-.data-view-btn.active {
-  background-color: #5bbad5;
-  color: white;
+.playlist-desc {
+  margin-right: 10px;
+  text-decoration: none;
+  white-space: normal;
+}
+
+.playlist-desc p {
+  font-size: 18px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: normal;
+}
+
+.chart-container {
+  align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  max-height: 300px;
+  position: relative;
+}
+
+canvas#YrPieChart {
+  max-height: 300px;
+  max-width: 300px;
+}
+
+.bottom-section {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 20px;
+}
+
+.oldest-newest-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.artist-flex {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.chart-flex {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.artist-list {
+  display: grid;
+  flex-wrap: wrap;
+  gap: 10px;
+  grid-template-columns: repeat(
+    3,
+    1fr
+  ); /* or repeat(2, 1fr) based on the number of images */
+  justify-content: space-around;
+  list-style: none;
+  max-height: 300px;
+  height: 300px;
+  position: relative;
 }
 
 .artist-container {
-  height: 150px;
+  border-radius: 50%; /* This will make them circles */
+  height: 125px;
+  overflow: hidden; /* Important to clip any overflowing content */
   position: relative;
-  width: 150px;
+  width: 125px;
+}
+
+.artist-container:hover .overlay {
+  opacity: 1;
 }
 
 .artist-image {
@@ -116,49 +225,50 @@ p {
   width: 100%;
 }
 
+.artist-list img {
+  max-height: 125px;
+  max-width: 125px;
+}
+
+.artist-container:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.artist-container:hover .overlay {
+  opacity: 0.8;
+}
+
 .overlay {
   align-content: space-around;
   align-items: center;
-  background: rgb(0 0 0 / 60%);
+  background-color: rgb(0 0 0 / 60%); /* Black with 60% opacity */
   bottom: 0;
   color: white;
   display: flex;
   flex-flow: column wrap;
-  font-size: 12px;
+  font-size: 10px;
   justify-content: space-around;
   opacity: 1;
   overflow-x: hidden;
+  padding-bottom: 10px;
   position: absolute;
   transition: 0.5s ease;
   width: 100%;
 }
 
+.decade-title,
+.top-artists-title {
+  color: #507494;
+  font-family: Futura, sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 20px; /* Adjust as needed for desired spacing from top */
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+}
+
 .artist-name {
   font-weight: bold;
-}
-
-.artist-container:hover .overlay {
-  opacity: 1;
-}
-
-.artist-list {
-  align-items: center; /* This centers the items vertically */
-  display: flex;
-  flex-flow: row wrap; /* Items will be arranged in a row */ /* Items will wrap onto multiple lines if they run out of space */
-  justify-content: center; /* This centers the items horizontally */
-  list-style: none; /* This removes the bullet points */
-}
-
-.artist-item {
-  margin: 10px; /* Adds some space around each item */
-}
-
-#YrPieChart {
-  max-height: 300px; /* Adjust as needed */
-  max-width: 300px; /* Adjust as needed */
-}
-
-.playlist-cover {
-  height: 400px;
-  width: 400px;
 }

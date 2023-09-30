@@ -64,16 +64,21 @@ def get_track_info_list(sp, tracks):
     return track_info_list
 
 
-def get_genre_artists_count(track_info_list, top_n=10):
+def get_genre_artists_count(track_info_list, top_n=6):
     genre_counts = {}
     artist_counts = {}
     artist_images = {}
+    artist_urls = {}  # Dictionary to save artist URLs or URIs
 
     for track_info in track_info_list:
         for artist_dict in track_info['artists']:
             artist_id = artist_dict.get('id')
             artist_name = artist_dict.get('name')
             artist_genres = artist_dict.get('genres', [])
+
+            # Build the Spotify URL using the artist's ID
+            spotify_url = f"https://open.spotify.com/artist/{artist_id}"
+
             try:
                 artist_image_url = artist_dict.get('images', [{}])[0].get('url')
             except IndexError:
@@ -87,8 +92,12 @@ def get_genre_artists_count(track_info_list, top_n=10):
             if artist_image_url:
                 artist_images[artist_name] = artist_image_url
 
+            # Save the constructed URL in the dictionary
+            artist_urls[artist_name] = spotify_url
+
     sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
-    top_artists = [(name, count, artist_images.get(name, None)) for name, count in sorted_artists[:top_n]]
+    top_artists = [(name, count, artist_images.get(name, None), artist_urls.get(name)) for name, count in
+                   sorted_artists[:top_n]]
 
     return genre_counts, top_artists
 
@@ -114,7 +123,7 @@ def get_audio_features_stats(track_info_list):
 
 def get_temporal_stats(track_info_list, playlist_id):
     if not track_info_list:
-        return {}  # return empty dict if track_info_list is empty
+        return {}
 
     def parse_date_or_default(track, default):
         release_date = track['release_date']
@@ -138,7 +147,8 @@ def get_temporal_stats(track_info_list, playlist_id):
     for track in track_info_list:
         if track['release_date']:
             year = track['release_date'].split('-')[0]
-            year_count[year] += 1
+            decade = year[:-1] + "0s"  # truncate the last digit and append "0s" for the decade representation
+            year_count[decade] += 1
 
     temporal_stats = {
         'oldest_track': oldest_track['name'],

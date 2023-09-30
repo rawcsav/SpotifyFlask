@@ -12,13 +12,6 @@ from app.util.playlist_utils import get_playlist_details
 bp = Blueprint('playlist', __name__)
 
 
-@bp.route('/user_chart/<string:playlist_id>')
-def serve_pie_chart(playlist_id):
-    user_directory = session["UPLOAD_DIR"]
-    pie_chart_path = os.path.join(user_directory, f'pie_chart_{playlist_id}.png')
-    return send_file(pie_chart_path, mimetype='image/png')
-
-
 @bp.route('/playlist', methods=['GET'])
 @require_spotify_auth
 def playlist():
@@ -48,7 +41,6 @@ def show_playlist(playlist_id):
     playlist = playlist_sql.query.get(playlist_id)
 
     if playlist:
-        print("Playlist found in SQL database")
         playlist_data = playlist.__dict__
         owner_name = playlist_data['owner']
         total_tracks = playlist_data['total_tracks']
@@ -110,7 +102,6 @@ def show_playlist(playlist_id):
     total_tracks = playlist_data['total_tracks']
     is_collaborative = playlist_data['collaborative']
     is_public = playlist_data['public']
-    temporal_stats = playlist_data.get('temporal_stats', {})
 
     return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_data=playlist_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,

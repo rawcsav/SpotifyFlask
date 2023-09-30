@@ -192,7 +192,6 @@ def fetch_and_process_data(sp, time_periods):
                     "public": playlist["public"],
                     "collaborative": playlist["collaborative"],
                     "total_tracks": playlist["tracks"]["total"],
-
                 }
                 playlist_info.append(info)
 

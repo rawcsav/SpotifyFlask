@@ -54,62 +54,85 @@
       </a>
     </div>
     <h1>{{ playlist_data['name'] }}</h1>
-    <div class="button-group">
-      <button class="data-view-btn active" id="summary-stats-btn">
-        Summary Stats
-      </button>
-      <button class="data-view-btn" id="genre-counts-btn">Genre Stats</button>
-      <button class="data-view-btn" id="feature-stats-btn">
-        Feature Stats
-      </button>
-    </div>
 
     <div id="summary-stats" class="data-view">
-      <img
-        class="playlist-cover"
-        src="{{ playlist_data['cover_art'] }}"
-        alt="Playlist Cover"
-      />
-
-      <p class="owner-name">Owner: {{ owner_name }}</p>
-      <p class="total-tracks">Total tracks: {{ total_tracks }}</p>
-      <p class="is-collaborative">
-        Collaborative: {{ "Yes" if is_collaborative else "No" }}
-      </p>
-      <p class="is-public">Public: {{ "Yes" if is_public else "No" }}</p>
-      <ul class="artist-list">
-        {% for artist, count, image_url in playlist_data.top_artists %}
-        <li class="artist-item">
-          <div class="artist-container">
-            <img
-              class="artist-image"
-              src="{{ image_url }}"
-              alt="{{ artist }}'s picture"
-              width="100"
-              height="100"
-            />
-            <div class="overlay">
-              <span class="artist-name">{{ artist }}</span>
-              <span class="artist-count">{{ count }} Tracks</span>
+      <div class="top-section">
+        <div class="playlist-container">
+          <img
+            class="playlist-cover"
+            src="{{ playlist_data['cover_art'] }}"
+            alt="Playlist Cover"
+          />
+          <div class="playlist-desc">
+            <p class="total-tracks">{{ total_tracks }} Tracks</p>
+            <p class="is-collaborative">
+              {% if is_collaborative %} Collaborative: Yes {% endif %}
+            </p>
+            <p class="is-public">{{ "Public" if is_public else "Private" }}</p>
+          </div>
+        </div>
+        <div class="button-group">
+          <button class="data-view-btn active" id="summary-stats-btn">
+            Summary Stats
+          </button>
+          <button class="data-view-btn" id="genre-counts-btn">
+            Genre Stats
+          </button>
+          <button class="data-view-btn" id="feature-stats-btn">
+            Feature Stats
+          </button>
+        </div>
+      </div>
+      <div class="bottom-section">
+        <div class="chart-flex">
+          <h3 class="decade-title">Tracks by Decade</h3>
+          <div class="chart-container">
+            <canvas id="YrPieChart" class="year-pie-chart"></canvas>
+            <div class="oldest-newest-tracks">
+              <p class="oldest-track">
+                Oldest: {{ playlist_data['temporal_stats']['oldest_track'] }} by
+                {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
+                playlist_data['temporal_stats']['oldest_track_date'] }})
+              </p>
+              <p class="newest-track">
+                Newest: {{ playlist_data['temporal_stats']['newest_track'] }} by
+                {{ playlist_data['temporal_stats']['newest_track_artist'] }} ({{
+                playlist_data['temporal_stats']['newest_track_date'] }})
+              </p>
             </div>
           </div>
-        </li>
-        {% endfor %}
-      </ul>
-      <div class="chart-container">
-        <canvas id="YrPieChart" class="year-pie-chart"></canvas>
+        </div>
+        <div class="artist-flex">
+          <h3 class="top-artists-title">Top Artists</h3>
+          <div class="artist-list">
+            {% for artist, count, image_url, spotify_url in
+            playlist_data.top_artists %}
+            <li class="artist-item">
+              <div class="artist-container">
+                <!-- Use the artist's Spotify URL to create the clickable link for the image -->
+                <a
+                  href="{{ spotify_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    class="artist-image"
+                    src="{{ image_url }}"
+                    alt="{{ artist }}'s picture"
+                  />
+                </a>
+                <div class="overlay">
+                  <span class="artist-name">{{ artist }}</span>
+                  <span class="artist-count">{{ count }} Tracks</span>
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+          </div>
+        </div>
       </div>
-      <p class="oldest-track">
-        Oldest track: {{ playlist_data['temporal_stats']['oldest_track'] }} by
-        {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
-        playlist_data['temporal_stats']['oldest_track_date'] }})
-      </p>
-      <p class="newest-track">
-        Newest track: {{ playlist_data['temporal_stats']['newest_track'] }} by
-        {{ playlist_data['temporal_stats']['newest_track_artist'] }} ({{
-        playlist_data['temporal_stats']['newest_track_date'] }})
-      </p>
     </div>
+
     <div id="genre-counts" class="data-view" style="display: none">
       <h2>Genre Counts</h2>
       <ul>

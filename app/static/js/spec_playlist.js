@@ -1,8 +1,6 @@
 $('.data-view-btn').click(function () {
-  // Get the ID of the button that was clicked
   var btnId = $(this).attr('id');
 
-  // Determine which data view to show based on the button clicked
   var dataViewToShow;
   switch (btnId) {
     case 'summary-stats-btn':
@@ -16,25 +14,22 @@ $('.data-view-btn').click(function () {
       break;
   }
 
-  // Hide all data views
   $('.data-view').hide();
 
   // Show the selected data view
   $('#' + dataViewToShow).show();
 });
 $('.data-view-btn').click(function () {
-  // Remove the 'active' class from all buttons
   $('.data-view-btn').removeClass('active');
 
-  // Add the 'active' class to the clicked button
   $(this).addClass('active');
 
-  // Hide all data-view divs
+  var btnId = $(this).attr('id');
+  var dataViewToShow = btnId.replace('-btn', '');
+
   $('.data-view').hide();
 
-  // Show the data-view div that corresponds to the clicked button
-  var id = $(this).attr('id').replace('-btn', '');
-  $('#' + id).show();
+  $('#' + dataViewToShow).show();
 });
 
 let labels = Object.keys(yearCountData);
@@ -49,7 +44,6 @@ var myPieChart = new Chart(ctx, {
       {
         data: data,
         backgroundColor: [
-          // You can define your colors here
           'rgba(255, 99, 132, 0.5)',
           'rgba(54, 162, 235, 0.5)',
           'rgba(255, 206, 86, 0.5)',
@@ -61,10 +55,23 @@ var myPieChart = new Chart(ctx, {
     ],
   },
   options: {
+    cutoutPercentage: 5, // Reduce the pie size slightly
     responsive: true,
-    title: {
-      display: true,
-      text: 'Distribution of Track Release Dates',
+    plugins: {
+      title: {
+        display: false,
+        text: 'Distribution of Track Release Dates',
+        fontSize: 16, // Optional: Adjust font size as needed
+        align: 'center',
+        position: 'bottom',
+      },
+      legend: {
+        position: 'left', // Position the legend on the right side of the chart
+        labels: {
+          boxWidth: 10, // Optional: Adjust box width of the legend color boxes
+          padding: 5, // Optional: Adjust padding between legend items
+        },
+      },
     },
   },
 });
