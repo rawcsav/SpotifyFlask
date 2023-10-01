@@ -106,10 +106,14 @@ p {
 .image-container {
   cursor: pointer;
   position: relative;
+  transition: transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
 }
 
 .image-container:hover {
   transform: scale(1.05);
+  transition: transform 0.3s ease;
 }
 
 .playlist-image {
@@ -119,6 +123,8 @@ p {
   min-height: 200px; /* Set to your specific size */
   min-width: 200px; /* Set to your specific size */
   object-fit: cover;
+  border-radius: 5px;
+
   width: 200px;
 }
 
@@ -128,6 +134,7 @@ p {
   color: white;
   cursor: pointer;
   display: flex;
+
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 15px;
   font-weight: bold;
@@ -149,6 +156,7 @@ p {
   left: 0;
   position: absolute;
   right: 0;
+  border-radius: 5px;
 }
 
 .playlist-item {

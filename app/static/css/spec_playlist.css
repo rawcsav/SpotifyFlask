@@ -132,10 +132,11 @@ p {
 }
 
 .playlist-cover {
-  border-radius: 10%;
+  border-radius: 5px;
   cursor: pointer;
   max-height: 200px;
   max-width: 200px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .playlist-container a {
@@ -235,6 +236,7 @@ canvas#YrPieChart {
   width: 125px;
   display: block;
   transition: transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .artist-image {
