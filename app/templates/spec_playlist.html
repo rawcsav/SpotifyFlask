@@ -32,6 +32,7 @@
     <title>Playlist - {{ playlist_data['id'] }}</title>
     <script>
       var yearCountData = JSON.parse('{{ year_count | safe }}');
+      var playlistId = '{{ playlist_id }}';
     </script>
     <link
       rel="stylesheet"
@@ -50,8 +51,14 @@
     </a>
     <div class="top-right-nav">
       <a href="https://webstats.rawcsav.com/playlist" class="profile-link">
-        Back to Playlists
-      </a>
+        Back to Playlist</a
+      >
+      <form
+        action="{{ url_for('playlist.refresh_playlist', playlist_id=playlist_id) }}"
+        method="post"
+      >
+        <button type="submit" class="profile-link">Refresh</button>
+      </form>
     </div>
     <h1>{{ playlist_data['name'] }}</h1>
 
@@ -76,6 +83,11 @@
               {% if is_collaborative %} Collaborative: Yes {% endif %}
             </p>
             <p class="is-public">{{ "Public" if is_public else "Private" }}</p>
+          </div>
+          <div class="plfunc-group">
+            <button id="like-all-songs-btn">Like All Songs</button>
+            <button id="unlike-all-songs-btn">Unlike All Songs</button>
+            <button id="remove-duplicates-btn">Remove Duplicates</button>
           </div>
         </div>
         <div class="button-group">

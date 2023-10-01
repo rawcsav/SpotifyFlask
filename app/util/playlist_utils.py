@@ -6,6 +6,25 @@ from flask import session
 import os
 
 
+def get_playlist_info(sp, playlist_id):
+    # Fetch the playlist object from Spotify
+    playlist = sp.playlist(playlist_id)
+
+    # Extract the required details from the playlist object
+    playlist_info = {
+        "id": playlist["id"],
+        "name": playlist["name"],
+        "owner": playlist["owner"]["display_name"],
+        "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
+        "public": playlist["public"],
+        "collaborative": playlist["collaborative"],
+        "total_tracks": playlist["tracks"]["total"],
+        "snapshot_id": playlist["snapshot_id"],
+    }
+
+    return playlist_info
+
+
 def get_playlist_tracks(sp, playlist_id):
     results = sp.playlist_tracks(playlist_id)
     tracks = results['items']
@@ -36,7 +55,6 @@ def get_track_info_list(sp, tracks):
         artists = track['artists']
         image = track['album'].get('images', [])
         cover_art = None
-
         if image:
             cover_art = image[0].get('url')
 
@@ -47,16 +65,19 @@ def get_track_info_list(sp, tracks):
                 artist_info.append(all_artist_info[artist_id])
         audio_features = track_features_dict.get(track_id, {})
 
+        is_local = track.get('is_local', False)  # Extracting the is_local attribute
+
         track_info = {
             'id': track_id,
             'name': track['name'],
-            'popularity': track['popularity'],
+            'is_local': is_local,
             'album': track['album']['name'],
             'release_date': track['album']['release_date'],
             'explicit': track['explicit'],
+            'popularity': None if is_local else track['popularity'],  # Set to None if track is local
             'cover_art': cover_art,
             'artists': artist_info,
-            'audio_features': audio_features
+            'audio_features': audio_features,
         }
 
         track_info_list.append(track_info)
@@ -105,8 +126,12 @@ def get_genre_artists_count(track_info_list, top_n=6):
 def get_audio_features_stats(track_info_list):
     audio_feature_stats = {feature: {'min': None, 'max': None, 'total': 0} for feature in
                            track_info_list[0]['audio_features'].keys() if feature != 'id'}
+    audio_feature_stats['popularity'] = {'min': None, 'max': None, 'total': 0}
 
     for track_info in track_info_list:
+        if track_info['is_local'] or track_info['popularity'] is None:
+            continue  # Skip local tracks and tracks with 'None' popularity
+
         for feature, value in track_info['audio_features'].items():
             if feature != 'id':
                 if audio_feature_stats[feature]['min'] is None or value < audio_feature_stats[feature]['min'][1]:
@@ -115,8 +140,17 @@ def get_audio_features_stats(track_info_list):
                     audio_feature_stats[feature]['max'] = (track_info['name'], value)
                 audio_feature_stats[feature]['total'] += value
 
+        # Calculate min, max, and total for popularity
+        pop = track_info['popularity']
+        if audio_feature_stats['popularity']['min'] is None or pop < audio_feature_stats['popularity']['min'][1]:
+            audio_feature_stats['popularity']['min'] = (track_info['name'], pop)
+        if audio_feature_stats['popularity']['max'] is None or pop > audio_feature_stats['popularity']['max'][1]:
+            audio_feature_stats['popularity']['max'] = (track_info['name'], pop)
+        audio_feature_stats['popularity']['total'] += pop
+
     for feature, stats in audio_feature_stats.items():
-        stats['avg'] = stats['total'] / len(track_info_list)
+        stats['avg'] = stats['total'] / len(
+            [track for track in track_info_list if not track['is_local'] and track['popularity'] is not None])
 
     return audio_feature_stats
 
@@ -139,8 +173,6 @@ def get_temporal_stats(track_info_list, playlist_id):
 
     oldest_track = min(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.min))
     newest_track = max(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.max))
-    print(oldest_track)
-    print(newest_track)
 
     year_count = defaultdict(int)
 
@@ -165,10 +197,11 @@ def get_temporal_stats(track_info_list, playlist_id):
 
 
 def get_playlist_details(sp, playlist_id):
+    playlist_info = get_playlist_info(sp, playlist_id)
     tracks = get_playlist_tracks(sp, playlist_id)
     track_info_list = get_track_info_list(sp, tracks)
     genre_counts, top_artists = get_genre_artists_count(track_info_list)
     audio_feature_stats = get_audio_features_stats(track_info_list)
     temporal_stats = get_temporal_stats(track_info_list, playlist_id)
 
-    return track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
+    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats

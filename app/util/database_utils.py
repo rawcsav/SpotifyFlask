@@ -57,6 +57,7 @@ class playlist_sql(db.Model):
     public = db.Column(db.Boolean)
     collaborative = db.Column(db.Boolean)
     total_tracks = db.Column(db.Integer)
+    snapshot_id = db.Column(db.String)
     tracks = db.Column(db.PickleType)
     genre_counts = db.Column(db.PickleType)
     top_artists = db.Column(db.PickleType)
@@ -132,7 +133,7 @@ def get_or_fetch_audio_features(sp, track_ids):
 
     to_fetch = [track_id for track_id in track_ids if track_id not in existing_feature_ids]
 
-    batch_size = 100  # Number of items to fetch in one API call
+    batch_size = 100
 
     if to_fetch:
         for i in range(0, len(to_fetch), batch_size):

@@ -75,3 +75,21 @@ var myPieChart = new Chart(ctx, {
     },
   },
 });
+
+$('#like-all-songs-btn').click(function () {
+  $.get('/like_all_songs/' + playlistId, function (response) {
+    alert(response); // show the server response
+  });
+});
+
+$('#unlike-all-songs-btn').click(function () {
+  $.get('/unlike_all_songs/' + playlistId, function (response) {
+    alert(response);
+  });
+});
+
+$('#remove-duplicates-btn').click(function () {
+  $.get('/remove_duplicates/' + playlistId, function (response) {
+    alert(response);
+  });
+});

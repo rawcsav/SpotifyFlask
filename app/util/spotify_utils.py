@@ -12,6 +12,8 @@ from app.util.database_utils import add_artist_to_db, get_or_fetch_artist_info, 
 
 FEATURES = config.AUDIO_FEATURES
 
+from flask import redirect
+
 
 def init_session_client(session):
     access_token = session.get("tokens", {}).get("access_token")
@@ -23,12 +25,18 @@ def init_session_client(session):
             access_token = None
 
     if not access_token:
-        refresh_response = json.loads(refresh())
-        if "error" in refresh_response:
-            return None, jsonify({"error": "Failed to refresh token"})
+        refresh_response = refresh()
 
-        # Update access token from session
-        access_token = session["tokens"].get("access_token")
+        # Check for the success status code
+        if refresh_response.status_code == 200:
+            # Update access token from session
+            access_token = refresh_response.json.get("access_token")
+        else:
+            # Redirect the user if refresh fails or any other issue
+            return redirect("http://webstats.rawcsav.com/")
+
+    if not access_token:  # Double check in case of any unforeseen issues after refresh
+        return redirect("http://webstats.rawcsav.com/")
 
     return Spotify(auth=access_token), None
 
@@ -191,7 +199,6 @@ def fetch_and_process_data(sp, time_periods):
                     else None,
                     "public": playlist["public"],
                     "collaborative": playlist["collaborative"],
-                    "total_tracks": playlist["tracks"]["total"],
                 }
                 playlist_info.append(info)
 
