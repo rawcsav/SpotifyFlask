@@ -4,10 +4,7 @@ from flask import Blueprint, render_template, session
 
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, UserData
-from app.util.session_utils import (
-    verify_session,
-    fetch_user_data,
-)
+from app.util.session_utils import verify_session, fetch_user_data
 
 from app.util.spotify_utils import fetch_and_process_data, init_session_client, update_user_data, \
     check_and_refresh_user_data, delete_old_user_data

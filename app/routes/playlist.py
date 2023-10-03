@@ -1,6 +1,5 @@
-import os
 from flask import Blueprint, render_template, jsonify, \
-    session, redirect, url_for
+    session
 import json
 
 from app.routes.auth import require_spotify_auth

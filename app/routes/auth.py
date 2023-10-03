@@ -18,8 +18,18 @@ def index():
 def require_spotify_auth(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'tokens' not in session:
-            return redirect(url_for('auth.index'))  # Redirect to the landing page if 'tokens' not in session
+        tokens = session.get('tokens')
+        expiry_time = datetime.fromisoformat(tokens.get('expiry_time')) if tokens else None
+
+        # Check if there are no tokens in the session
+        if not tokens:
+            return redirect(url_for('auth.index'))  # Redirect to the landing page
+
+        # If tokens are expired, redirect to refresh
+        elif expiry_time and expiry_time < datetime.now():
+            session['original_request_url'] = request.url  # Store the original requested URL before redirection
+            return redirect(url_for('auth.refresh'))
+
         return f(*args, **kwargs)
 
     return decorated_function

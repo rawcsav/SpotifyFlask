@@ -21,10 +21,9 @@ def create_app():
     Session(app)
 
     # Register blueprints
-    from .routes import auth, user, stats, search, recommendations, playlist, database
+    from .routes import auth, user, stats, search, recommendations, playlist
 
     app.register_blueprint(auth.bp)
-    app.register_blueprint(database.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
     app.register_blueprint(search.bp)
