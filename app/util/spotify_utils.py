@@ -1,18 +1,17 @@
 import json
 from collections import defaultdict
-from datetime import datetime
-from flask import jsonify
+from datetime import datetime, timedelta
 from spotipy import Spotify
 from spotipy.client import SpotifyException
 
 from app import config
 from app.routes.auth import refresh
 from app.util.database_utils import add_artist_to_db, get_or_fetch_artist_info, \
-    get_or_fetch_audio_features
+    get_or_fetch_audio_features, db, UserData
 
 FEATURES = config.AUDIO_FEATURES
 
-from flask import redirect
+from flask import redirect, session
 
 
 def init_session_client(session):
@@ -252,3 +251,46 @@ def calculate_averages_for_period(tracks, audio_features):
         for feature in FEATURES
     }
     return averaged_features, min_track, max_track, min_values, max_values
+
+
+def update_user_data(user_data_entry):
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    time_periods = ["short_term", "medium_term", "long_term"]
+    top_tracks, top_artists, all_artists_info, audio_features, genre_specific_data, sorted_genres_by_period, recent_tracks, playlist_info = fetch_and_process_data(
+        sp, time_periods)
+
+    user_data_entry.top_tracks = top_tracks
+    user_data_entry.top_artists = top_artists
+    user_data_entry.all_artists_info = all_artists_info
+    user_data_entry.audio_features = audio_features
+    user_data_entry.genre_specific_data = genre_specific_data
+    user_data_entry.sorted_genres_by_period = sorted_genres_by_period
+    user_data_entry.recent_tracks = recent_tracks
+    user_data_entry.playlist_info = playlist_info
+    user_data_entry.last_active = datetime.utcnow()
+
+    db.session.merge(user_data_entry)
+    db.session.commit()
+
+    return "User updated successfully"
+
+
+def check_and_refresh_user_data(user_data_entry):
+    if user_data_entry:
+        delta_since_last_active = datetime.utcnow() - user_data_entry.last_active
+        if timedelta(days=7) < delta_since_last_active < timedelta(days=30):
+            update_user_data(user_data_entry)
+        return True
+    else:
+        return False
+
+
+def delete_old_user_data():
+    all_users = UserData.query.all()
+    for user in all_users:
+        if datetime.utcnow() - user.last_active > timedelta(days=30):
+            db.session.delete(user)
+    db.session.commit()

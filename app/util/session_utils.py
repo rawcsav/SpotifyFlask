@@ -1,20 +1,9 @@
-import json
-import os
 import secrets
-import shutil
 import string
 from flask import abort
 import requests
 
 from app import config
-
-
-def remove_directory(directory_path):
-    if not os.path.exists(directory_path):
-        print(f"The directory {directory_path} does not exist.")
-        return
-    shutil.rmtree(directory_path)
-    print(f"The directory {directory_path} has been removed.")
 
 
 def verify_session(session):
@@ -29,38 +18,6 @@ def fetch_user_data(access_token):
     if res.status_code != 200:
         abort(res.status_code)
     return res.json()
-
-
-def manage_user_directory(spotify_user_id, session):
-    session_dir = os.path.join(config.MAIN_USER_DIR, spotify_user_id)
-    os.makedirs(session_dir, exist_ok=True)
-    session["UPLOAD_DIR"] = session_dir
-    return session_dir
-
-
-def store_to_json(user_data, json_path):
-    with open(json_path, "w") as f:
-        json.dump(user_data, f, ensure_ascii=False, indent=4)
-
-
-def load_from_json(json_path):
-    if not os.path.exists(json_path):
-        return None
-    with open(json_path, "r") as f:
-        return json.load(f)
-
-
-def update_json(user_data, json_path):
-    try:
-        with open(json_path, "r") as f:
-            existing_data = json.load(f)
-    except FileNotFoundError:
-        existing_data = {}
-
-    existing_data.update(user_data)
-
-    with open(json_path, "w") as f:
-        json.dump(existing_data, f, ensure_ascii=False, indent=4)
 
 
 def generate_state():

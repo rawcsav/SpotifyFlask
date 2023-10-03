@@ -1,11 +1,8 @@
-from datetime import datetime
-
-from flask import Flask, session, current_app
+from flask import Flask
 from flask_session import Session
 
 from app import config
-from app.util.session_utils import remove_directory
-from app.util.database_utils import db
+from app.util.database_utils import db, UserData
 
 
 def create_app():
@@ -22,20 +19,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
     Session(app)
-
-    @app.before_request
-    def before_request():
-        session.modified = True  # ensure every request resets the session lifetime
-
-        if "last_activity" in session:
-            elapsed = datetime.utcnow() - session["last_activity"]
-            session_lifetime = current_app.config.get("PERMANENT_SESSION_LIFETIME")
-            if elapsed > session_lifetime:
-                main_upload_dir = session.get("UPLOAD_DIR")
-                remove_directory(main_upload_dir)
-                session.clear()
-
-        session["last_activity"] = datetime.utcnow()
 
     # Register blueprints
     from .routes import auth, user, stats, search, recommendations, playlist, database

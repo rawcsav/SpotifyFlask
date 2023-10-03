@@ -4,8 +4,7 @@ from flask import Blueprint, render_template, jsonify, \
 import json
 
 from app.routes.auth import require_spotify_auth
-from app.util.database_utils import db, playlist_sql
-from app.util.session_utils import load_from_json
+from app.util.database_utils import db, playlist_sql, UserData
 from app.util.spotify_utils import init_session_client
 from app.util.playlist_utils import get_playlist_details, update_playlist_data
 
@@ -15,17 +14,17 @@ bp = Blueprint('playlist', __name__)
 @bp.route('/playlist', methods=['GET'])
 @require_spotify_auth
 def playlist():
-    user_directory = session["UPLOAD_DIR"]
-    json_path = os.path.join(user_directory, 'user_data.json')
-    user_data = load_from_json(json_path)
+    spotify_user_id = session["USER_ID"]
 
-    if not user_data:
+    # Retrieve the user's data entry from the database
+    user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+    if not user_data_entry:
         return jsonify(error="User data not found"), 404
 
     owner_name = session.get("DISPLAY_NAME")
-    playlists = [playlist for playlist in user_data["playlists"]
+    playlists = [playlist for playlist in user_data_entry.playlist_info
                  if playlist["owner"] is not None
-                 and playlist["owner"] is not None
                  and playlist["owner"] == owner_name]
 
     return render_template('playlist.html', playlists=playlists)

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,8 +17,21 @@ def validate_audio_data(data):
     return all(key in data for key in required_keys)
 
 
+class UserData(db.Model):
+    spotify_user_id = db.Column(db.String, primary_key=True, index=True)
+    top_tracks = db.Column(db.PickleType, nullable=True)
+    top_artists = db.Column(db.PickleType, nullable=True)
+    all_artists_info = db.Column(db.PickleType, nullable=True)
+    audio_features = db.Column(db.PickleType, nullable=True)
+    genre_specific_data = db.Column(db.PickleType, nullable=True)
+    sorted_genres_by_period = db.Column(db.PickleType, nullable=True)
+    recent_tracks = db.Column(db.PickleType, nullable=True)
+    playlist_info = db.Column(db.PickleType, nullable=True)
+    last_active = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class artist_sql(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True, index=True)
     name = db.Column(db.String)
     external_url = db.Column(db.String)
     followers = db.Column(db.Integer)
@@ -31,7 +45,7 @@ class artist_sql(db.Model):
 
 
 class features_sql(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True, index=True)
     danceability = db.Column(db.Float)
     energy = db.Column(db.Float)
     key = db.Column(db.Integer)

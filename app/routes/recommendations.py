@@ -3,12 +3,12 @@ import os
 from flask import Blueprint, jsonify, render_template, request, session
 
 from app.routes.auth import require_spotify_auth
+from app.util.database_utils import UserData
 from app.util.spotify_utils import (
     init_session_client,
     get_recommendations,
     format_track_info,
 )
-from app.util.session_utils import load_from_json
 
 bp = Blueprint("recommendations", __name__)
 
@@ -24,18 +24,23 @@ def parse_seeds(key):
 @bp.route("/recommendations", methods=["GET"])
 @require_spotify_auth
 def recommendations():
-    user_directory = session.get("UPLOAD_DIR")  # Presumed to be set elsewhere
-    json_path = os.path.join(user_directory, "user_data.json")
-    user_data = load_from_json(json_path)  # Using existing function
+    spotify_user_id = session["USER_ID"]
+
+    # Retrieve the user's data entry from the database
+    user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+    if not user_data_entry:
+        return jsonify(error="User data not found"), 404
+
     owner_name = session.get("DISPLAY_NAME")
-    playlists = [playlist for playlist in user_data["playlists"]
+    playlists = [playlist for playlist in user_data_entry.playlist_info
                  if playlist["owner"] is not None
-                 and playlist["owner"] is not None
                  and playlist["owner"] == owner_name]
+
     return render_template(
         "recommendations.html",
         playlists=playlists,
-        user_data=user_data,
+        user_data=user_data_entry,
     )
 
 

@@ -1,17 +1,17 @@
 import json
-import os
 
-from flask import Blueprint, render_template, session, jsonify
+from flask import Blueprint, render_template, session
 
 from app.routes.auth import require_spotify_auth
+from app.util.database_utils import db, UserData
 from app.util.session_utils import (
     verify_session,
     fetch_user_data,
-    manage_user_directory,
-    store_to_json,
-    load_from_json,
 )
-from app.util.spotify_utils import fetch_and_process_data, init_session_client
+
+from app.util.spotify_utils import fetch_and_process_data, init_session_client, update_user_data, \
+    check_and_refresh_user_data, delete_old_user_data
+from datetime import datetime
 
 bp = Blueprint("user", __name__)
 
@@ -21,51 +21,34 @@ bp = Blueprint("user", __name__)
 def profile():
     try:
         access_token = verify_session(session)
-
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
-
         spotify_user_display_name = res_data.get("display_name")
+
         session["DISPLAY_NAME"] = spotify_user_display_name
+        session["USER_ID"] = spotify_user_id
         sp, error = init_session_client(session)
         if error:
             return json.dumps(error), 401
-        manage_user_directory(spotify_user_id, session)
-        user_directory = session["UPLOAD_DIR"]
-        json_path = os.path.join(user_directory, "user_data.json")
 
-        if os.path.exists(json_path):
-            user_data = load_from_json(json_path)
-            return render_template(
-                "profile.html",
-                data=res_data,
-                tokens=session.get("tokens"),
-                user_data=user_data,
-            )
+        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
-        time_periods = ["short_term", "medium_term", "long_term"]
+        if check_and_refresh_user_data(user_data_entry):
+            user_data = {
+                "top_tracks": user_data_entry.top_tracks,
+                "top_artists": user_data_entry.top_artists,
+                "all_artists_info": user_data_entry.all_artists_info,
+                "audio_features": user_data_entry.audio_features,
+                "sorted_genres": user_data_entry.sorted_genres_by_period,
+                "genre_specific_data": user_data_entry.genre_specific_data,
+                "recent_tracks": user_data_entry.recent_tracks,
+                "playlists": user_data_entry.playlist_info
+            }
+        else:
+            time_periods = ["short_term", "medium_term", "long_term"]
+            top_tracks, top_artists, all_artists_info, audio_features, genre_specific_data, sorted_genres_by_period, recent_tracks, playlist_info = fetch_and_process_data(
+                sp, time_periods)
 
-        (
-            top_tracks,
-            top_artists,
-            all_artists_info,
-            audio_features,
-            genre_specific_data,
-            sorted_genres_by_period,
-            recent_tracks,
-            playlist_info,
-        ) = fetch_and_process_data(sp, time_periods)
-
-        if all(v is not None and v != [] for v in [
-            top_tracks,
-            top_artists,
-            all_artists_info,
-            audio_features,
-            genre_specific_data,
-            sorted_genres_by_period,
-            recent_tracks,
-            playlist_info,
-        ]):
             user_data = {
                 "top_tracks": top_tracks,
                 "top_artists": top_artists,
@@ -74,13 +57,28 @@ def profile():
                 "sorted_genres": sorted_genres_by_period,
                 "genre_specific_data": genre_specific_data,
                 "recent_tracks": recent_tracks,
-                "playlists": playlist_info,
+                "playlists": playlist_info
             }
-            store_to_json(user_data, json_path)
 
-        return render_template(
-            "profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data
-        )
+            new_entry = UserData(
+                spotify_user_id=spotify_user_id,
+                top_tracks=top_tracks,
+                top_artists=top_artists,
+                all_artists_info=all_artists_info,
+                audio_features=audio_features,
+                genre_specific_data=genre_specific_data,
+                sorted_genres_by_period=sorted_genres_by_period,
+                recent_tracks=recent_tracks,
+                playlist_info=playlist_info,
+                last_active=datetime.utcnow()  # Set the last_active timestamp for the new user
+            )
+            db.session.merge(new_entry)
+            db.session.commit()
+
+        delete_old_user_data()
+
+        return render_template("profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data)
+
     except Exception as e:
         print(f"An error occurred: {e}")
         return str(e), 500
@@ -90,46 +88,16 @@ def profile():
 def refresh_data():
     try:
         access_token = verify_session(session)
-        user_data = fetch_user_data(access_token)
-        spotify_user_id = user_data.get("id")
-        sp, error = init_session_client(session)
-        if error:
-            return json.dumps(error), 401
+        res_data = fetch_user_data(access_token)
+        spotify_user_id = res_data.get("id")
 
-        manage_user_directory(spotify_user_id, session)
-        user_directory = session["UPLOAD_DIR"]
-        json_path = os.path.join(user_directory, "user_data.json")
+        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+        if user_data_entry:
+            update_user_data(user_data_entry)
+            return "User Refreshed Successfully!", 200
+        else:
+            return "User data not found", 404
 
-        # Define time periods for Spotify data
-        time_periods = ["short_term", "medium_term", "long_term"]
-
-        (
-            top_tracks,
-            top_artists,
-            all_artists_info,
-            audio_features,
-            genre_specific_data,
-            sorted_genres_by_period,
-            recent_tracks,
-            playlist_info,
-        ) = fetch_and_process_data(sp, time_periods)
-
-        recent_tracks = sp.current_user_recently_played(limit=50)["items"]
-
-        user_data = {
-            "top_tracks": top_tracks,
-            "top_artists": top_artists,
-            "all_artists_info": all_artists_info,
-            "audio_features": audio_features,
-            "sorted_genres": sorted_genres_by_period,
-            "genre_specific_data": genre_specific_data,
-            "recent_tracks": recent_tracks,
-            "playlists": playlist_info,
-        }
-
-        store_to_json(user_data, json_path)
-
-        return jsonify(user_data), 200
     except Exception as e:
         print(f"An error occurred: {e}")
         return str(e), 500
