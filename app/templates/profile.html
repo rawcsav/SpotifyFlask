@@ -116,9 +116,9 @@
               </div>
               <div class="text-center mt-4 d-flex justify-content-center">
                 <a href="/logout" class="btn btn-danger mr-2">Logout</a>
-                <button id="refresh-button" class="btn btn-success mr-2">Refresh Data</button>
-
-
+                <button id="refresh-button" class="btn btn-success mr-2">
+                  Refresh Data
+                </button>
               </div>
             </div>
           </section>
@@ -146,7 +146,37 @@
           </section>
         </div>
       </div>
+      <div class="row mt-5 footer">
+        <div class="col-12 text-center">
+          <p>
+            For the complete code of this project, visit the
+            <a
+              href="https://github.com/rawcsav/SpotifyFlask"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub Repository</a
+            >.
+          </p>
+          <p>
+            Explore my Spotify data analysis projects:
+            <a
+              href="https://rawcsav.com/projects/botify10.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Botify10</a
+            >
+            and
+            <a
+              href="https://rawcsav.com/projects/Botify%20Grime.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Botify Grime</a
+            >.
+          </p>
+        </div>
+      </div>
+      <!-- End Footer Section -->
     </div>
   </body>
-    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </html>
