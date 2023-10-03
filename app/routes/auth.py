@@ -37,6 +37,9 @@ def require_spotify_auth(f):
 
 @bp.route('/<loginout>')
 def login(loginout):
+    if loginout == 'logout':
+        session.clear()
+        return redirect(url_for('auth.index'))
     state = generate_state()
     scope = 'user-read-private user-top-read user-read-recently-played playlist-read-private playlist-read-collaborative ' \
             'playlist-modify-private playlist-modify-public user-library-modify user-library-read'
@@ -90,4 +93,4 @@ def refresh():
         'refresh_token': new_refresh_token,
         'expiry_time': new_expiry_time.isoformat()
     })
-    return jsonify(session['tokens'])
+    return redirect(session.pop('original_request_url', url_for('auth.index')))
