@@ -55,7 +55,6 @@ def callback():
     stored_state = request.cookies.get('spotify_auth_state')
 
     if state is None or state != stored_state:
-        # Implement robust logging here
         abort(400, description="State mismatch")
 
     code = request.args.get('code')
@@ -81,7 +80,7 @@ def refresh():
     payload = {'grant_type': 'refresh_token', 'refresh_token': session.get('tokens').get('refresh_token')}
     res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
     if error:
-        abort(error)
+        return redirect(url_for('auth.index'))
 
     new_access_token = res_data.get('access_token')
     new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
@@ -93,4 +92,4 @@ def refresh():
         'refresh_token': new_refresh_token,
         'expiry_time': new_expiry_time.isoformat()
     })
-    return redirect(session.pop('original_request_url', url_for('auth.index')))
+    return redirect(session.pop('original_request_url', url_for('user.profile')))
