@@ -70,7 +70,6 @@ def refresh():
     if error:
         abort(error)
 
-    # Update access token and possibly refresh token
     new_access_token = res_data.get('access_token')
     new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
     expires_in = res_data.get('expires_in')

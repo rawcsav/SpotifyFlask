@@ -1,9 +1,11 @@
-from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
+import json
+
+from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db
 from datetime import datetime
-import matplotlib.pyplot as plt
 from collections import defaultdict
 from flask import session
-import os
+
+from app.util.spotify_utils import init_session_client
 
 
 def get_playlist_info(sp, playlist_id):
@@ -205,3 +207,36 @@ def get_playlist_details(sp, playlist_id):
     temporal_stats = get_temporal_stats(track_info_list, playlist_id)
 
     return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
+
+
+def update_playlist_data(playlist_id):
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    playlist = playlist_sql.query.get(playlist_id)
+    if not playlist:
+        return "Playlist not found", 404
+
+    # Fetch the new data
+    pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
+        pl_feature_stats, pl_temporal_stats = get_playlist_details(sp, playlist_id)
+
+    # Update the playlist object
+    playlist.name = pl_playlist_info['name']
+    playlist.owner = pl_playlist_info['owner']
+    playlist.cover_art = pl_playlist_info['cover_art']
+    playlist.public = pl_playlist_info['public']
+    playlist.collaborative = pl_playlist_info['collaborative']
+    playlist.total_tracks = pl_playlist_info['total_tracks']
+    playlist.snapshot_id = pl_playlist_info['snapshot_id']
+    playlist.tracks = pl_track_data
+    playlist.genre_counts = pl_genre_counts
+    playlist.top_artists = pl_top_artists
+    playlist.feature_stats = pl_feature_stats
+    playlist.temporal_stats = pl_temporal_stats
+
+    db.session.merge(playlist)
+    db.session.commit()
+
+    return "Playlist updated successfully"

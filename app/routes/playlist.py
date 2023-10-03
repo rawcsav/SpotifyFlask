@@ -7,7 +7,7 @@ from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, playlist_sql
 from app.util.session_utils import load_from_json
 from app.util.spotify_utils import init_session_client
-from app.util.playlist_utils import get_playlist_details
+from app.util.playlist_utils import get_playlist_details, update_playlist_data
 
 bp = Blueprint('playlist', __name__)
 
@@ -93,36 +93,11 @@ def show_playlist(playlist_id):
 @bp.route('/playlist/<string:playlist_id>/refresh', methods=['POST'])
 @require_spotify_auth
 def refresh_playlist(playlist_id):
-    sp, error = init_session_client(session)
-    if error:
-        return json.dumps(error), 401
-
-    playlist = playlist_sql.query.get(playlist_id)
-    if not playlist:
-        return "Playlist not found", 404
-
-    # Fetch the new data
-    pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats, = \
-        get_playlist_details(sp, playlist_id)
-
-    # Update the playlist object
-    playlist.name = pl_playlist_info['name']
-    playlist.owner = pl_playlist_info['owner']
-    playlist.cover_art = pl_playlist_info['cover_art']
-    playlist.public = pl_playlist_info['public']
-    playlist.collaborative = pl_playlist_info['collaborative']
-    playlist.total_tracks = pl_playlist_info['total_tracks']
-    playlist.snapshot_id = pl_playlist_info['snapshot_id']
-    playlist.tracks = pl_track_data
-    playlist.genre_counts = pl_genre_counts
-    playlist.top_artists = pl_top_artists
-    playlist.feature_stats = pl_feature_stats
-    playlist.temporal_stats = pl_temporal_stats
-
-    db.session.merge(playlist)
-    db.session.commit()
-
+    result = update_playlist_data(playlist_id)
+    if "error" in result:
+        return result, 401
+    if "Playlist not found" in result:
+        return result, 404
     return redirect(url_for('playlist.show_playlist', playlist_id=playlist_id))
 
 
@@ -136,12 +111,18 @@ def like_all_songs(playlist_id):
     if not playlist:
         return "Playlist not found", 404
 
-    track_ids = [track['id'] for track in playlist.tracks]
+    # Filter out tracks without valid IDs
+    track_ids = [track['id'] for track in playlist.tracks if track.get('id')]
+    if not track_ids:
+        return "No valid tracks in the playlist", 400
 
-    # Batch the track_ids in groups of 50
-    for i in range(0, len(track_ids), 50):
-        batch = track_ids[i:i + 50]
-        sp.current_user_saved_tracks_add(batch)
+    try:
+        # Batch the track_ids in groups of 50
+        for i in range(0, len(track_ids), 50):
+            batch = track_ids[i:i + 50]
+            sp.current_user_saved_tracks_add(batch)
+    except Exception as e:
+        return f"Error occurred while liking songs: {str(e)}", 500
 
     return "All songs liked!"
 
@@ -156,14 +137,23 @@ def unlike_all_songs(playlist_id):
     if not playlist:
         return "Playlist not found", 404
 
-    track_ids = [track['id'] for track in playlist.tracks]
+    # Filter out tracks without valid IDs
+    track_ids = [track['id'] for track in playlist.tracks if track.get('id')]
+    if not track_ids:
+        return "No valid tracks in the playlist", 400
 
-    # Batch the track_ids in groups of 50
-    for i in range(0, len(track_ids), 50):
-        batch = track_ids[i:i + 50]
-        sp.current_user_saved_tracks_delete(batch)
+    try:
+        # Batch the track_ids in groups of 50
+        for i in range(0, len(track_ids), 50):
+            batch = track_ids[i:i + 50]
+            sp.current_user_saved_tracks_delete(batch)
+    except Exception as e:
+        return f"Error occurred while unliking songs: {str(e)}", 500
 
     return "All songs unliked!"
+
+
+from flask import redirect, url_for
 
 
 @bp.route('/remove_duplicates/<playlist_id>')
@@ -179,8 +169,8 @@ def remove_duplicates(playlist_id):
     snapshot_id = playlist.snapshot_id
 
     track_ids = [track['id'] for track in playlist.tracks if
-                 track['id'] is not None]  # Exclude local files for duplicate check
-    all_track_ids = [track['id'] for track in playlist.tracks]  # Includes local files for positioning
+                 track['id'] is not None]
+    all_track_ids = [track['id'] for track in playlist.tracks]
 
     track_count = {track: track_ids.count(track) for track in set(track_ids)}
 
@@ -188,7 +178,6 @@ def remove_duplicates(playlist_id):
 
     for track_id, count in track_count.items():
         if count > 1:
-            # Get all positions except the first one (to keep one instance)
             duplicate_positions = [i for i, x in enumerate(all_track_ids) if x == track_id][1:]
             positions_to_remove.extend(duplicate_positions)
 
@@ -197,4 +186,11 @@ def remove_duplicates(playlist_id):
                  positions_to_remove[i:i + 100]]
         sp.playlist_remove_specific_occurrences_of_items(playlist_id, batch, snapshot_id)
 
-    return "Duplicates removed from Spotify and the database updated!"
+    update_result = update_playlist_data(playlist_id)
+    if "error" in update_result:
+        return update_result, 401
+    if "Playlist not found" in update_result:
+        return update_result, 404
+
+    # Redirect to the playlist page or a route that displays the updated playlist
+    return redirect(url_for('playlist.show_playlist', playlist_id=playlist_id))

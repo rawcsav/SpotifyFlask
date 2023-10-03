@@ -78,18 +78,51 @@ var myPieChart = new Chart(ctx, {
 
 $('#like-all-songs-btn').click(function () {
   $.get('/like_all_songs/' + playlistId, function (response) {
-    alert(response); // show the server response
+    showToast(response); // Assumes a successful response message
+  }).fail(function (error) {
+    showToast('An error occurred while liking all songs.', 'error');
   });
 });
 
 $('#unlike-all-songs-btn').click(function () {
   $.get('/unlike_all_songs/' + playlistId, function (response) {
-    alert(response);
+    showToast(response);
+  }).fail(function (error) {
+    showToast('An error occurred while unliking all songs.', 'error');
   });
 });
 
 $('#remove-duplicates-btn').click(function () {
   $.get('/remove_duplicates/' + playlistId, function (response) {
-    alert(response);
+    showToast('Successfully removed duplicates.');
+  }).fail(function (error) {
+    showToast('An error occurred while removing duplicates.', 'error');
   });
+});
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+
+  toastMessage.textContent = message;
+
+  if (type === 'error') {
+    toast.classList.add('error');
+    toast.classList.remove('success');
+  } else {
+    toast.classList.add('success');
+    toast.classList.remove('error');
+  }
+
+  toast.style.display = 'block';
+
+  // Automatically hide the toast after 5 seconds
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 5000);
+}
+
+// Closing the toast when the 'X' is clicked
+document.querySelector('.close-toast').addEventListener('click', function () {
+  this.parentElement.style.display = 'none';
 });

@@ -53,19 +53,20 @@
       <a href="https://webstats.rawcsav.com/playlist" class="profile-link">
         Back to Playlist</a
       >
-      <form
-        action="{{ url_for('playlist.refresh_playlist', playlist_id=playlist_id) }}"
-        method="post"
-      >
-        <button type="submit" class="profile-link">Refresh</button>
-      </form>
     </div>
     <h1>{{ playlist_data['name'] }}</h1>
-
+    <div class="button-group">
+      <button class="data-view-btn active" id="summary-stats-btn">
+        Summary Stats
+      </button>
+      <button class="data-view-btn" id="genre-counts-btn">Genre Stats</button>
+      <button class="data-view-btn" id="feature-stats-btn">
+        Feature Stats
+      </button>
+    </div>
     <div id="summary-stats" class="data-view">
       <div class="top-section">
         <div class="playlist-container">
-          <!-- Wrap the playlist cover in an anchor tag using the provided playlist_url -->
           <a
             href="{{ playlist_url }}"
             target="_blank"
@@ -83,23 +84,19 @@
               {% if is_collaborative %} Collaborative: Yes {% endif %}
             </p>
             <p class="is-public">{{ "Public" if is_public else "Private" }}</p>
+            <br />
+            <form
+              action="{{ url_for('playlist.refresh_playlist', playlist_id=playlist_id) }}"
+              method="post"
+            >
+              <button type="submit" class="profile-link">Refresh Data</button>
+            </form>
           </div>
           <div class="plfunc-group">
             <button id="like-all-songs-btn">Like All Songs</button>
             <button id="unlike-all-songs-btn">Unlike All Songs</button>
             <button id="remove-duplicates-btn">Remove Duplicates</button>
           </div>
-        </div>
-        <div class="button-group">
-          <button class="data-view-btn active" id="summary-stats-btn">
-            Summary Stats
-          </button>
-          <button class="data-view-btn" id="genre-counts-btn">
-            Genre Stats
-          </button>
-          <button class="data-view-btn" id="feature-stats-btn">
-            Feature Stats
-          </button>
         </div>
       </div>
       <div class="bottom-section">
@@ -175,6 +172,10 @@
         </li>
         {% endfor %}
       </ul>
+    </div>
+    <div id="toast" class="toast">
+      <div class="toast-content" id="toastMessage"></div>
+      <span class="close-toast">×</span>
     </div>
   </body>
   <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>

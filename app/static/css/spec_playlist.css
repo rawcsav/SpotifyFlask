@@ -7,7 +7,7 @@ body {
   background: linear-gradient(120deg, #edc9af, #f3e0c3);
   font-family: Futura, sans-serif;
   margin: 0;
-  overflow: hidden;
+  overflow-x: hidden;
   padding: 10px;
   width: 100%;
 }
@@ -61,10 +61,10 @@ body {
 .button-group {
   align-items: flex-end;
   display: flex;
-  flex: 1;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
   justify-content: center;
+  margin-top: -10px;
   padding: 20px;
 }
 
@@ -85,6 +85,23 @@ body {
   background-color: #5bbad5;
 }
 
+.plfunc-group button {
+  background-color: #4a314d;
+  border: transparent;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  transition: background-color 0.3s;
+}
+
+.plfunc-group button:hover {
+  background-color: #5bbad5;
+}
+
 .data-view-btn.active {
   background-color: #5bbad5;
   color: white;
@@ -93,9 +110,9 @@ body {
 h1 {
   color: #507494;
   font-family: Futura, sans-serif;
-  font-size: 45px;
+  font-size: 40px;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 10px;
   text-align: center;
 }
 
@@ -116,12 +133,12 @@ p {
 }
 
 .top-section {
-  margin-left: 50px;
-  margin-right: 50px;
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 .playlist-container {
@@ -291,4 +308,32 @@ canvas#YrPieChart {
 
 .artist-name {
   font-weight: bold;
+}
+
+.toast {
+  border-radius: 5px;
+  bottom: 2%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  color: white;
+  display: none;
+  padding: 12px 24px;
+  position: fixed;
+  right: 2%;
+  z-index: 1000;
+}
+
+.close-toast {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toast.success {
+  background-color: #4caf50;
+}
+
+.toast.error {
+  background-color: #f44336;
 }
