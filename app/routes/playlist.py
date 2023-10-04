@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify, \
-    session
+    session, redirect, url_for
 import json
 
 from app.routes.auth import require_spotify_auth
@@ -149,9 +149,6 @@ def unlike_all_songs(playlist_id):
         return f"Error occurred while unliking songs: {str(e)}", 500
 
     return "All songs unliked!"
-
-
-from flask import redirect, url_for
 
 
 @bp.route('/remove_duplicates/<playlist_id>')

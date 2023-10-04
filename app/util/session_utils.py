@@ -1,5 +1,7 @@
 import secrets
 import string
+from datetime import timezone, timedelta
+
 from flask import abort
 import requests
 
@@ -45,3 +47,7 @@ def request_tokens(payload, client_id, client_secret):
     if res_data.get("error") or res.status_code != 200:
         return None, res.status_code
     return res_data, None
+
+
+def convert_utc_to_est(utc_time):
+    return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=-4)))

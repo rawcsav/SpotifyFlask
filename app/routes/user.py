@@ -1,16 +1,19 @@
 import json
+from pytz import timezone
 
 from flask import Blueprint, render_template, session
 
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, UserData
-from app.util.session_utils import verify_session, fetch_user_data
+from app.util.session_utils import verify_session, fetch_user_data, convert_utc_to_est
 
 from app.util.spotify_utils import fetch_and_process_data, init_session_client, update_user_data, \
     check_and_refresh_user_data, delete_old_user_data
 from datetime import datetime
 
 bp = Blueprint("user", __name__)
+
+eastern = timezone('US/Eastern')
 
 
 @bp.route("/profile")
@@ -31,7 +34,7 @@ def profile():
         user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
         if check_and_refresh_user_data(user_data_entry):
-            last_active = user_data_entry.last_active  # retrieve the last_active date
+            last_active = datetime.utcnow()
 
             user_data = {
                 "top_tracks": user_data_entry.top_tracks,
@@ -78,8 +81,9 @@ def profile():
 
         delete_old_user_data()
 
+        est_time = convert_utc_to_est(last_active)
         return render_template("profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data,
-                               last_active=last_active)
+                               last_active=est_time)
 
     except Exception as e:
         print(f"An error occurred: {e}")
