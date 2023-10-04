@@ -38,6 +38,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/spec_playlist.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
@@ -69,9 +74,24 @@
       <div class="top-section">
         <div class="plfunc-group">
           <h3 class="utils-title">Playlist Utilities</h3>
-          <button id="like-all-songs-btn">Like All Songs</button>
-          <button id="unlike-all-songs-btn">Unlike All Songs</button>
-          <button id="remove-duplicates-btn">Remove Duplicates</button>
+          <button
+            id="like-all-songs-btn"
+            title="Like all songs in the playlist"
+          >
+            <i class="fas fa-thumbs-up"></i> Like All Songs
+          </button>
+          <button
+            id="unlike-all-songs-btn"
+            title="Unlike all songs in the playlist"
+          >
+            <i class="fas fa-thumbs-down"></i> Unlike All Songs
+          </button>
+          <button
+            id="remove-duplicates-btn"
+            title="Remove duplicate songs from the playlist"
+          >
+            Remove Duplicates
+          </button>
         </div>
         <div class="playlist-container">
           <a
@@ -100,17 +120,29 @@
               action="{{ url_for('playlist.refresh_playlist', playlist_id=playlist_id) }}"
               method="post"
             >
-              <button type="submit" class="pl-refresh">Refresh Data</button>
+              <button type="submit" class="pl-refresh">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+              </button>
             </form>
           </div>
         </div>
         <div class="plorder-group">
           <h3 class="utils-title">Playlist Ordering</h3>
-          <button id="order-desc-btn">Date Added (Descending)</button>
-          <button id="order-asc-btn">Date Added (Ascending)</button>
-          <button id="rd-asc-btn">Release Date (Ascending)</button>
-          <button id="rd-desc-btn">Release Date (Descending)</button>
-          <button id="shuffle-btn">Shuffle</button>
+          <button id="order-desc-btn">
+            <i class="fas fa-sort-numeric-down"></i> Date Added (Descending)
+          </button>
+          <button id="order-asc-btn">
+            <i class="fas fa-sort-numeric-up"></i> Date Added (Ascending)
+          </button>
+          <button id="rd-asc-btn">
+            <i class="fas fa-calendar-plus"></i> Release Date (Ascending)
+          </button>
+          <button id="rd-desc-btn">
+            <i class="fas fa-calendar-minus"></i> Release Date (Descending)
+          </button>
+          <button id="shuffle-btn">
+            <i class="fas fa-random"></i> Shuffle
+          </button>
         </div>
       </div>
       <div class="bottom-section">
