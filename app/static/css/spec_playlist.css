@@ -38,17 +38,22 @@ body {
 }
 
 .pl-refresh {
+  background-color: #28a745; /* Change as per your primary color */
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-family: Futura, sans-serif;
   font-size: 16px;
   font-weight: bold;
   height: 100%;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
   width: 150px;
-  background-color: #1446fe; /* Change as per your primary color */
-  border-radius: 5px;
-  color: #fff;
+  border: 1px solid #022b3a;
 }
 
-.profile-link,
-.pl-refresh {
+.profile-link {
   background-color: #022b3a;
   border: 1px solid #022b3a;
   border-radius: 5px;
@@ -101,11 +106,6 @@ body {
   transform: translateY(-3px); /* Gives a slight lift effect */
 }
 
-.plfunc-group button:hover,
-.plorder-group button:hover {
-  background-color: #5bbad5;
-}
-
 .button-group button:active,
 .plfunc-group button:active,
 .plorder-group button:active {
@@ -130,10 +130,6 @@ body {
     transform 0.3s; /* Added transform for a subtle scaling effect on hover */
 }
 
-.button-group button:hover {
-  background-color: #5bbad5;
-}
-
 #stats-section {
   align-items: stretch;
   display: flex;
@@ -147,7 +143,6 @@ body {
   display: flex;
   flex-flow: column wrap;
   gap: 10px;
-  justify-content: space-between;
   margin-top: -10px;
   padding: 20px;
   width: 100%;
@@ -160,13 +155,43 @@ body {
   border-radius: 5px;
   color: white;
   cursor: pointer;
-  font-family: Futura, sans-serif;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 14px;
   font-weight: bold;
   margin: 0 auto; /* Center align buttons */
   padding: 6px 10px;
   transition: background-color 0.3s;
-  width: 100%;
+  gap: 20px;
+  width: 40%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+#like-all-songs-btn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+#unlike-all-songs-btn {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+#remove-duplicates-btn,
+#shuffle-btn {
+  background-color: #022b3a;
+  color: #f8f9fa;
+}
+
+#order-desc-btn,
+#rd-desc-btn {
+  background-color: #0788b7;
+  color: white;
+}
+
+#order-asc-btn,
+#rd-asc-btn {
+  background-color: lightpink;
+  color: white;
 }
 
 .data-view {
