@@ -94,6 +94,15 @@ body {
   background-color: #5bbad5;
 }
 
+.plfunc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: -10px;
+  padding: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 .plfunc-group button {
   background-color: #4a314d;
   border: transparent;
@@ -192,6 +201,7 @@ p {
 }
 
 .top-section {
+  gap: 40px;
   margin-top: 100px;
   align-items: stretch; /* Changed from 'normal' */
   align-content: normal;
@@ -360,7 +370,8 @@ canvas#YrPieChart {
 }
 
 .decade-title,
-.top-artists-title {
+.top-artists-title,
+.utils-title {
   color: #022b3a;
   margin-top: 0;
   font-family: Futura, sans-serif;
