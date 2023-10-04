@@ -73,6 +73,7 @@ def get_track_info_list(sp, tracks):
             'id': track_id,
             'name': track['name'],
             'is_local': is_local,
+            'added_at': track_data.get('added_at', None),  # Adding the "added_at" field
             'album': track['album']['name'],
             'release_date': track['album']['release_date'],
             'explicit': track['explicit'],

@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, jsonify, \
-    session, redirect, url_for
+    session, redirect, url_for, request
 import json
+import random
 
+from time import sleep
+from requests.exceptions import RequestException
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, playlist_sql, UserData
 from app.util.spotify_utils import init_session_client
@@ -189,3 +192,80 @@ def remove_duplicates(playlist_id):
 
     # Redirect to the playlist page or a route that displays the updated playlist
     return redirect(url_for('playlist.show_playlist', playlist_id=playlist_id))
+
+
+MAX_RETRIES = 3
+RETRY_WAIT_SECONDS = 2
+
+
+@bp.route('/playlist/<string:playlist_id>/reorder', methods=['POST'])
+@require_spotify_auth
+def reorder_playlist(playlist_id):
+    sp, error = init_session_client(session)
+    if error:
+        return jsonify(error=error), 401
+
+    playlist = playlist_sql.query.get(playlist_id)
+    if not playlist:
+        return jsonify(error="Playlist not found"), 404
+
+    # Separate local files and other tracks
+    local_files = [track for track in playlist.tracks if track['id'] is None]
+    non_local_files = [track for track in playlist.tracks if track['id'] is not None]
+
+    # Extract track details for non-local tracks
+    added_at_dates = [track['added_at'] for track in non_local_files]
+    track_ids = [track['id'] for track in non_local_files]
+
+    # Directly extract release_dates for non-local tracks
+    release_dates = [track['release_date'] for track in non_local_files]
+
+    combined = list(zip(track_ids, added_at_dates, release_dates))
+    sorting_criterion = request.json.get('sorting_criterion')
+
+    if sorting_criterion == 'Date Added - Ascending':
+        sorted_tracks = sorted(combined, key=lambda x: x[1])
+    elif sorting_criterion == 'Date Added - Descending':
+        sorted_tracks = sorted(combined, key=lambda x: x[1], reverse=True)
+    elif sorting_criterion == 'Release Date - Ascending':
+        sorted_tracks = sorted(combined, key=lambda x: (x[2] is None, x[2]))  # Prioritize non-None values
+    elif sorting_criterion == 'Release Date - Descending':
+        sorted_tracks = sorted(combined, key=lambda x: (x[2] is None, x[2]), reverse=True)
+    elif sorting_criterion == 'Random Shuffle':
+        random.shuffle(combined)
+        sorted_tracks = combined
+    else:
+        return jsonify(error="Invalid sorting criterion"), 400
+
+    # Integrate local files back to the sorted list
+    sorted_tracks.extend([(track['id'], track['added_at'], None) for track in local_files])
+
+    sorted_track_ids = [item[0] for item in sorted_tracks]
+    snapshot_id = playlist.snapshot_id
+
+    original_positions = [track['id'] for track in playlist.tracks]
+
+    for i, target_track_id in enumerate(sorted_track_ids):
+        if target_track_id is None:  # Local track
+            continue
+        current_position = original_positions.index(target_track_id)
+        if i != current_position:
+            retries = 0
+            success = False
+            while retries < MAX_RETRIES and not success:
+                try:
+                    sp.playlist_reorder_items(playlist_id, range_start=current_position, insert_before=i,
+                                              range_length=1, snapshot_id=snapshot_id)
+                    original_positions.pop(current_position)
+                    original_positions.insert(i, target_track_id)
+                    snapshot_id = sp.playlist(playlist_id)['snapshot_id']
+                    success = True
+                except (RequestException, Exception) as e:
+                    retries += 1
+                    if retries < MAX_RETRIES:
+                        sleep(RETRY_WAIT_SECONDS)
+                    else:
+                        return jsonify(
+                            error=f"Failed to reorder track after {MAX_RETRIES} attempts. Error: {str(e)}"), 500
+
+    return jsonify(status="Playlist reordered successfully"), 200

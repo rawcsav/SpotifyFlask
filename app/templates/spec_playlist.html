@@ -38,6 +38,7 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/spec_playlist.css') }}"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -66,6 +67,12 @@
     <h1>{{ playlist_data['name'] }}</h1>
     <div id="summary-stats" class="data-view">
       <div class="top-section">
+        <div class="plfunc-group">
+          <h3 class="utils-title">Playlist Utilities</h3>
+          <button id="like-all-songs-btn">Like All Songs</button>
+          <button id="unlike-all-songs-btn">Unlike All Songs</button>
+          <button id="remove-duplicates-btn">Remove Duplicates</button>
+        </div>
         <div class="playlist-container">
           <a
             href="{{ playlist_url }}"
@@ -97,29 +104,13 @@
             </form>
           </div>
         </div>
-        <div class="plfunc-group">
-          <h3 class="utils-title">Playlist Utilities</h3>
-          <button id="like-all-songs-btn">Like All Songs</button>
-          <button id="unlike-all-songs-btn">Unlike All Songs</button>
-          <button id="remove-duplicates-btn">Remove Duplicates</button>
-        </div>
-        <div class="chart-flex">
-          <h3 class="decade-title">Tracks by Decade</h3>
-          <div class="chart-container">
-            <canvas id="YrPieChart" class="year-pie-chart"></canvas>
-            <div class="oldest-newest-tracks">
-              <p class="oldest-track">
-                Oldest: {{ playlist_data['temporal_stats']['oldest_track'] }} by
-                {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
-                playlist_data['temporal_stats']['oldest_track_date'] }})
-              </p>
-              <p class="newest-track">
-                Newest: {{ playlist_data['temporal_stats']['newest_track'] }} by
-                {{ playlist_data['temporal_stats']['newest_track_artist'] }} ({{
-                playlist_data['temporal_stats']['newest_track_date'] }})
-              </p>
-            </div>
-          </div>
+        <div class="plorder-group">
+          <h3 class="utils-title">Playlist Ordering</h3>
+          <button id="order-desc-btn">Date Added (Descending)</button>
+          <button id="order-asc-btn">Date Added (Ascending)</button>
+          <button id="rd-asc-btn">Release Date (Ascending)</button>
+          <button id="rd-desc-btn">Release Date (Descending)</button>
+          <button id="shuffle-btn">Shuffle</button>
         </div>
       </div>
       <div class="bottom-section">
@@ -149,6 +140,24 @@
               </div>
             </li>
             {% endfor %}
+          </div>
+        </div>
+        <div class="chart-flex">
+          <h3 class="decade-title">Tracks by Decade</h3>
+          <div class="chart-container">
+            <canvas id="YrPieChart" class="year-pie-chart"></canvas>
+            <div class="oldest-newest-tracks">
+              <p class="oldest-track">
+                Oldest: {{ playlist_data['temporal_stats']['oldest_track'] }} by
+                {{ playlist_data['temporal_stats']['oldest_track_artist'] }} ({{
+                playlist_data['temporal_stats']['oldest_track_date'] }})
+              </p>
+              <p class="newest-track">
+                Newest: {{ playlist_data['temporal_stats']['newest_track'] }} by
+                {{ playlist_data['temporal_stats']['newest_track_artist'] }} ({{
+                playlist_data['temporal_stats']['newest_track_date'] }})
+              </p>
+            </div>
           </div>
         </div>
       </div>

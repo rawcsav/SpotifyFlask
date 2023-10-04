@@ -44,11 +44,11 @@ body {
   border-radius: 5px;
   color: white;
   cursor: pointer;
-  text-align: center;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 10px;
   font-weight: bold;
   padding: 4px;
+  text-align: center;
   text-decoration: none;
   transition: background-color 0.3s;
 }
@@ -63,8 +63,8 @@ body {
 .pl-refresh {
   font-size: 16px;
   font-weight: bold;
-  width: 150px;
   height: 100%;
+  width: 150px;
 }
 
 .button-group {
@@ -94,16 +94,18 @@ body {
   background-color: #5bbad5;
 }
 
-.plfunc-group {
+.plfunc-group,
+.plorder-group {
   display: flex;
-  flex-direction: column;
+  flex-flow: column wrap;
   gap: 10px;
+  justify-content: space-between;
   margin-top: -10px;
   padding: 20px;
-  justify-content: space-between;
-  flex-wrap: wrap;
 }
-.plfunc-group button {
+
+.plfunc-group button,
+.plorder-group button {
   background-color: #4a314d;
   border: transparent;
   border-radius: 5px;
@@ -116,16 +118,17 @@ body {
   transition: background-color 0.3s;
 }
 
-.plfunc-group button:hover {
+.plfunc-group button:hover,
+.plorder-group button:hover {
   background-color: #5bbad5;
 }
 
 #stats-section {
-  width: 100%;
-  margin-top: 100px;
   align-items: stretch;
   display: flex;
   flex-direction: column;
+  margin-top: 100px;
+  width: 100%;
 }
 
 .data-view {
@@ -169,13 +172,15 @@ p {
 
 @keyframes dynamicShadow {
   0% {
-    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
   }
+
   50% {
-    box-shadow: 0 0 20px 40px rgba(0, 0, 0, 0.5); /* Increased spread and blur */
+    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%); /* Increased spread and blur */
   }
+
   100% {
-    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
   }
 }
 
@@ -183,31 +188,33 @@ p {
   0% {
     box-shadow:
       0 0 10px 2px red,
-      0 0 20px 2px rgba(255, 255, 255, 0.5),
-      0 0 30px 5px rgba(255, 255, 255, 0.5);
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
   }
+
   50% {
     box-shadow:
       0 0 20px 5px pink,
-      0 0 30px 10px rgba(255, 255, 255, 0.5),
-      0 0 40px 15px rgba(255, 255, 255, 0.5);
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
   }
+
   100% {
     box-shadow:
       0 0 10px 2px orange,
-      0 0 20px 2px rgba(255, 255, 255, 0.5),
-      0 0 30px 5px rgba(255, 255, 255, 0.5);
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
   }
 }
 
 .top-section {
-  gap: 40px;
-  margin-top: 100px;
-  align-items: stretch; /* Changed from 'normal' */
   align-content: normal;
+  align-items: stretch; /* Changed from 'normal' */
   display: flex;
   flex-wrap: nowrap;
+  gap: 40px;
   justify-content: space-around;
+  margin-top: 100px;
 }
 
 .playlist-container {
@@ -220,18 +227,19 @@ p {
 
 .playlist-text {
   display: flex;
-  width: 100px;
   flex-direction: column;
+  width: 100px;
 }
 
 .playlist-desc {
-  text-decoration: none;
   display: flex;
-  max-width: 300px;
+  flex-direction: row;
   gap: 50px;
   margin-top: 10px;
-  flex-direction: row;
+  max-width: 300px;
+  text-decoration: none;
 }
+
 .playlist-cover {
   border-radius: 5px;
   cursor: pointer;
@@ -279,9 +287,9 @@ canvas#YrPieChart {
 .bottom-section {
   align-items: center;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 20px;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 100px;
 }
 
 .oldest-newest-tracks {
@@ -298,45 +306,43 @@ canvas#YrPieChart {
 }
 
 .chart-flex {
-  width: 400px;
-  max-width: 400px;
   align-items: center;
   display: flex;
   flex-direction: column;
+  max-width: 400px;
+  width: 400px;
 }
 
 .artist-list {
+  align-content: center;
   display: flex;
-  gap: 50px;
+  flex-flow: column wrap;
+  gap: 20px;
   grid-template-columns: repeat(3, 1fr);
   height: 300px;
   justify-items: center;
   list-style: none;
   max-height: 300px;
   position: relative;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-content: center;
 }
 
 .artist-container {
-  border-radius: 50%;
   display: block;
-  height: 125px;
-  overflow: hidden;
+  height: 100px;
   position: relative;
   transition: transform 0.3s ease;
-  width: 125px;
+  width: 100px;
 }
 
 .artist-image {
+  border-radius: 50%;
   height: 100%;
   width: 100%;
 }
 
 .artist-list img {
-  max-height: 125px;
-  max-width: 125px;
+  max-height: 100px;
+  max-width: 100px;
 }
 
 .artist-container:hover {
@@ -351,33 +357,45 @@ canvas#YrPieChart {
 }
 
 .overlay {
-  align-content: space-around;
   align-items: center;
-  background-color: rgb(0 0 0 / 60%); /* Black with 60% opacity */
+  background: linear-gradient(transparent, rgb(0 0 0 / 50%));
+  border-radius: 50%;
   bottom: 0;
-  color: white;
+  box-sizing: border-box; /* This will ensure padding does not affect the total size */
   display: flex;
-  flex-flow: column wrap;
-  font-size: 10px;
-  justify-content: space-around;
-  opacity: 1;
-  overflow-x: hidden;
-  padding-bottom: 10px;
-  pointer-events: none;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-end;
+  left: 0;
   position: absolute;
-  transition: 0.5s ease;
+  pointer-events: none; /* This will ensure the overlay does not block mouse events */
   width: 100%;
+}
+
+.artist-name,
+.artist-count {
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0;
+  max-width: 90%; /* This ensures the text doesn't go edge to edge */
+  text-align: center;
+  word-wrap: break-word; /* Breaks the text to next line if it exceeds max-width */
+}
+
+.artist-count {
+  padding-bottom: 20px; /* Adjusted padding to keep text within boundary */
 }
 
 .decade-title,
 .top-artists-title,
 .utils-title {
   color: #022b3a;
-  margin-top: 0;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
   margin-bottom: 20px;
+  margin-top: 0;
   text-align: center;
   text-decoration: none;
   width: 100%;

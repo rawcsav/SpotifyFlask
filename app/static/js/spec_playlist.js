@@ -42,42 +42,33 @@ $(document).ready(function () {
 
   $('.artist-image').each(function (index, artistImage) {
     if (artistImage) {
-      // Check if artistImage is defined
       artistImage.crossOrigin = 'anonymous';
-      const src = artistImage.src; // Save the current src
-      artistImage.src = ''; // Clear the src
+      const src = artistImage.src;
+      artistImage.src = '';
       artistImage.onload = function () {
         const palette = colorThief.getPalette(artistImage, 4);
-        let dominantColor = palette[0];
-        for (let i = 0; i < palette.length; i++) {
-          if (
-            dominantColor[0] < 85 &&
-            dominantColor[1] < 85 &&
-            dominantColor[2] < 85
-          ) {
-            dominantColor = palette[i];
-          } else {
-            break;
-          }
-        }
+        const dominantColor = palette[0]; // Use the most dominant color directly
 
-        // Calculate the complementary color
-        const complementaryColor = [
-          255 - dominantColor[0],
-          255 - dominantColor[1],
-          255 - dominantColor[2],
-        ];
+        // Convert the dominant color to a TinyColor object
+        const dominantColorObj = tinycolor({
+          r: dominantColor[0],
+          g: dominantColor[1],
+          b: dominantColor[2],
+        });
 
-        // Define a golden yellow color for the box shadow
-        const boxShadowColor = `rgba(${complementaryColor[0]}, ${complementaryColor[1]}, ${complementaryColor[2]}, 0.6)`;
+        // Create some variations of the dominant color
+        const color1 = dominantColorObj.lighten(10).toRgbString();
+        const color2 = dominantColorObj.darken(10).toRgbString();
+        const color3 = dominantColorObj.saturate(10).toRgbString();
+        const color4 = dominantColorObj.desaturate(10).toRgbString();
 
         // Create the box shadow
-        const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
+        const boxShadow = `0 0 60px 0 ${color1}, inset -100px 10px 80px 20px ${color2}, 0 0 40px 10px ${color3}, inset 0 0 10px 0 ${color4}`;
 
         // Apply the box shadow
         artistImage.style.boxShadow = boxShadow;
       };
-      artistImage.src = src; // Set the src back to its original value
+      artistImage.src = src;
     } else {
       console.log('No artist image found in container', container);
     }
@@ -200,5 +191,46 @@ $(document).ready(function () {
   // Start observing each '.data-view' element
   $('.data-view').each(function (index, element) {
     observer.observe(element);
+  });
+
+  function reorderPlaylist(criterion) {
+    $.ajax({
+      type: 'POST',
+      url: `/playlist/${playlistId}/reorder`,
+      contentType: 'application/json',
+      data: JSON.stringify({ sorting_criterion: criterion }),
+      success: function (response) {
+        if (response.status === 'Playlist reordered successfully') {
+          showToast('Playlist reordered successfully.');
+        } else {
+          showToast('Failed to reorder playlist.', 'error');
+        }
+      },
+      error: function (error) {
+        showToast('An error occurred while reordering the playlist.', 'error');
+      },
+    });
+  }
+
+  // Bind functionality to the ordering buttons
+  $('#order-desc-btn').click(function () {
+    reorderPlaylist('Date Added - Descending');
+  });
+
+  $('#order-asc-btn').click(function () {
+    reorderPlaylist('Date Added - Ascending');
+  });
+
+  // Bind functionality to the "Release Date" ordering buttons
+  $('#rd-asc-btn').click(function () {
+    reorderPlaylist('Release Date - Ascending');
+  });
+
+  $('#rd-desc-btn').click(function () {
+    reorderPlaylist('Release Date - Descending');
+  });
+
+  $('#shuffle-btn').click(function () {
+    reorderPlaylist('Random Shuffle');
   });
 });
