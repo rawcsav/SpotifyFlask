@@ -1,12 +1,12 @@
 body {
-  background-color: #edc9af;
+  background-color: #ffffff;
   font-family: Futura, sans-serif;
   width: 100%;
   overflow-x: hidden;
 }
 
 h1 {
-  color: #507494;
+  color: #022b3a;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
@@ -15,7 +15,7 @@ h1 {
 }
 
 h2 {
-  color: #507494;
+  color: #022b3a;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -23,7 +23,7 @@ h2 {
 }
 
 p {
-  color: #507494;
+  color: #022b3a;
   font-weight: 500;
   margin: 0;
   text-decoration: none;
@@ -73,7 +73,7 @@ p {
 }
 
 .profile-link {
-  border: transparent;
+  border: 1px solid #022b3a;
   border-radius: 5px;
   cursor: pointer;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
@@ -83,13 +83,13 @@ p {
   text-decoration: none;
   transition: background-color 0.3s;
   width: 100%;
-  background-color: #507494;
+  background-color: #022b3a;
   color: white;
 }
 
 .profile-link:hover {
-  color: white;
-  background-color: #704214;
+  color: #022b3a;
+  background-color: #ffffff;
   text-decoration: none;
 }
 

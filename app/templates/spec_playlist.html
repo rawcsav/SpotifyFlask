@@ -39,7 +39,7 @@
       href="{{ url_for('static', filename='css/spec_playlist.css') }}"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body>
@@ -76,6 +76,7 @@
               class="playlist-cover"
               src="{{ playlist_data['cover_art'] }}"
               alt="Playlist Cover"
+              crossorigin="anonymous"
             />
           </a>
           <div class="playlist-desc">
@@ -135,6 +136,7 @@
                     class="artist-image"
                     src="{{ image_url }}"
                     alt="{{ artist }}'s picture"
+                    crossorigin="anonymous"
                   />
                 </a>
                 <div class="overlay">
