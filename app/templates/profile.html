@@ -2,10 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -59,8 +57,12 @@
       href="{{ url_for('static', filename='css/profile.css') }}"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.js"></script>
+    {% from "loading.html" import loading_animation %}
   </head>
+
   <body>
+    {{ loading_animation() }}
+
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png"

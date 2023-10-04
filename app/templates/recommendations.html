@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link
       rel="stylesheet"
       href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
@@ -53,8 +55,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/recommendations.css') }}"
     />
+    {% from "loading.html" import loading_animation %}
   </head>
   <body>
+    {{ loading_animation() }}
+
     <div class="top-right-nav">
       <div class="nav-buttons">
         <a href="https://webstats.rawcsav.com/profile" class="profile-link"

@@ -60,8 +60,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/stats.css') }}"
     />
+    {% from "loading.html" import loading_animation %}
   </head>
   <body>
+    {{ loading_animation() }}
+
     <div class="top-right-nav">
       <a href="https://webstats.rawcsav.com/profile" class="profile-link"
         >Return to Profile</a

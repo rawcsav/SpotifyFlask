@@ -1,0 +1,120 @@
+{% macro loading_animation() %}
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  #loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex; /* set parent to flex */
+    justify-content: center; /* horizontally center children */
+    align-items: center; /* vertically center children */
+  }
+
+  #vinyl {
+    width: 200px;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    animation: spin 1.5s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<div id="loading-overlay">
+  <div id="vinyl"></div>
+</div>
+
+<script>
+  const vinyls = [
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459064/Loading/259b0191c50295355fe46f6fd63ac412-removebg-preview_wuko8q.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459066/Loading/3c00842ddcdc68ef63a7c90f3e1e2dac-removebg-preview_d2kqf5.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459065/Loading/88e2b5e55bbec5f1d2e2c6dabb87c6e6-removebg-preview_ylfs6l.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459064/Loading/54ea8b83ee165562ad325b6a805dc43e-removebg-preview_fw2mrv.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459064/Loading/c23262f659b9b9432d7f5e40d240f62e-removebg-preview_ougqut.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459064/Loading/c4a929f8f05ed3c51e9959e1bc345864-removebg-preview_chef36.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459063/Loading/001ef8d056b31366b85bb21d9b23e393-removebg-preview_mdo9sl.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459063/Loading/6d8b40932841b33fe7e71d5e2f872788-removebg-preview_rsntup.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459063/Loading/4c463bc81b4a5fb91b6a104170d56bdb-removebg-preview_rb2vem.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459063/Loading/8c44f8dea637551a9568944bc98a8fa9-removebg-preview_nezdjv.png',
+    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459063/Loading/34af4e1cdef582bd36d13cd14d985e16-removebg-preview_t3bnda.png',
+  ]; // Update with your paths
+
+  function getRandomVinyl() {
+    const randomIndex = Math.floor(Math.random() * vinyls.length);
+    return vinyls[randomIndex];
+  }
+
+  function showLoading() {
+    const vinylElement = document.getElementById('vinyl');
+    vinylElement.style.backgroundImage = `url(${getRandomVinyl()})`;
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.style.display = 'flex'; /* Show the loading animation */
+  }
+
+  function hideLoading() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.style.display = 'none'; /* Hide the loading animation */
+  }
+
+  function delayEvent(event, callback) {
+    setTimeout(function () {
+      event.preventDefault();
+      callback();
+    }, 50);
+  }
+
+  (function () {
+    var originalFetch = window.fetch;
+    window.fetch = function () {
+      showLoading();
+      return originalFetch.apply(this, arguments).finally(hideLoading);
+    };
+  })();
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const anchors = document.querySelectorAll('a');
+    const forms = document.querySelectorAll('form');
+
+    // Handle anchor clicks
+    anchors.forEach((anchor) => {
+      anchor.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default behavior
+        showLoading();
+        history.pushState({}, '', anchor.href); // Update the current history entry
+        window.location.href = anchor.href; // Navigate to the URL
+      });
+    });
+
+    // Handle form submissions
+    forms.forEach((form) => {
+      form.addEventListener('submit', function (event) {
+        delayEvent(event, function () {
+          showLoading();
+          form.submit();
+        });
+      });
+    });
+
+    window.addEventListener('load', hideLoading);
+    window.addEventListener('popstate', function (event) {
+      showLoading();
+    });
+  });
+</script>
+{% endmacro %}
