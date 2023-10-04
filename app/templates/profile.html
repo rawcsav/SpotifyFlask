@@ -120,11 +120,18 @@
                   Refresh Data
                 </button>
               </div>
+              <div class="text-center mt-2">
+                <small class="text-muted" style="font-size: 0.7rem"
+                  >Last Active: {{ last_active.strftime('%B %d, %Y at %I:%M %p')
+                  }}</small
+                >
+              </div>
+
+              <br />
             </div>
           </section>
         </div>
 
-        <!-- Recent Tracks and Playlists (Right Side) -->
         <div class="col-md-6 flex-fill">
           <section class="card mb-4">
             <h3>Recent Tracks</h3>
@@ -163,7 +170,7 @@
               href="https://rawcsav.com/projects/botify10.html"
               target="_blank"
               rel="noopener noreferrer"
-              >Botify10</a
+              >Botify</a
             >
             and
             <a

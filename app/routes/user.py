@@ -31,6 +31,8 @@ def profile():
         user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
         if check_and_refresh_user_data(user_data_entry):
+            last_active = user_data_entry.last_active  # retrieve the last_active date
+
             user_data = {
                 "top_tracks": user_data_entry.top_tracks,
                 "top_artists": user_data_entry.top_artists,
@@ -42,6 +44,8 @@ def profile():
                 "playlists": user_data_entry.playlist_info
             }
         else:
+            last_active = datetime.utcnow()  # for new users, set the current time
+
             time_periods = ["short_term", "medium_term", "long_term"]
             top_tracks, top_artists, all_artists_info, audio_features, genre_specific_data, sorted_genres_by_period, recent_tracks, playlist_info = fetch_and_process_data(
                 sp, time_periods)
@@ -54,7 +58,7 @@ def profile():
                 "sorted_genres": sorted_genres_by_period,
                 "genre_specific_data": genre_specific_data,
                 "recent_tracks": recent_tracks,
-                "playlists": playlist_info
+                "playlists": playlist_info,
             }
 
             new_entry = UserData(
@@ -67,14 +71,15 @@ def profile():
                 sorted_genres_by_period=sorted_genres_by_period,
                 recent_tracks=recent_tracks,
                 playlist_info=playlist_info,
-                last_active=datetime.utcnow()  # Set the last_active timestamp for the new user
+                last_active=last_active  # Set the last_active timestamp for the new user
             )
             db.session.merge(new_entry)
             db.session.commit()
 
         delete_old_user_data()
 
-        return render_template("profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data)
+        return render_template("profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data,
+                               last_active=last_active)
 
     except Exception as e:
         print(f"An error occurred: {e}")

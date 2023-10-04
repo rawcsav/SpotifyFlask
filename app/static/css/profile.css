@@ -87,9 +87,9 @@ h3 {
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: 400px;
+  height: 420px;
   margin-bottom: 30px;
-  max-height: 400px;
+  max-height: 420px;
   padding: 30px;
 }
 

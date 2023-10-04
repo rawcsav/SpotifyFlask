@@ -289,8 +289,8 @@ def check_and_refresh_user_data(user_data_entry):
 
 
 def delete_old_user_data():
-    all_users = UserData.query.all()
-    for user in all_users:
-        if datetime.utcnow() - user.last_active > timedelta(days=30):
-            db.session.delete(user)
+    threshold_date = datetime.utcnow() - timedelta(days=30)
+    old_users = UserData.query.filter(UserData.last_active < threshold_date).all()
+    for user in old_users:
+        db.session.delete(user)
     db.session.commit()

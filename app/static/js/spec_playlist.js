@@ -1,48 +1,87 @@
 $(document).ready(function () {
-  const img = $('.playlist-cover')[0];
-  if (img) {
-    const colorThief = new ColorThief();
-    img.crossOrigin = 'anonymous';
-    img.onload = function () {
-      const color = colorThief.getColor(img);
-      const boxShadow = Array(3)
-        .fill()
-        .map(
-          (_, index) =>
-            `0 0 ${10 + index * 5}px ${10 + index * 10}px rgba(${color[0]}, ${
-              color[1]
-            }, ${color[2]}, 0.2)`,
-        )
-        .join(', ');
+  const colorThief = new ColorThief();
 
-      img.style.boxShadow = boxShadow;
+  const playlistCover = $('.playlist-cover')[0];
+  if (playlistCover) {
+    playlistCover.crossOrigin = 'anonymous';
+    playlistCover.onload = function () {
+      const palette = colorThief.getPalette(playlistCover, 4);
+      let dominantColor = palette[0];
+      for (let i = 0; i < palette.length; i++) {
+        if (
+          dominantColor[0] < 85 &&
+          dominantColor[1] < 85 &&
+          dominantColor[2] < 85
+        ) {
+          dominantColor = palette[i];
+        } else {
+          break;
+        }
+      }
+
+      // Calculate the complementary color
+      const complementaryColor = [
+        255 - dominantColor[0],
+        255 - dominantColor[1],
+        255 - dominantColor[2],
+      ];
+
+      // Define a golden yellow color for the box shadow
+      const boxShadowColor = `rgba(${complementaryColor[0]}, ${complementaryColor[1]}, ${complementaryColor[2]}, 0.6)`;
+
+      // Create the box shadow
+      const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
+
+      // Apply the box shadow
+      playlistCover.style.boxShadow = boxShadow;
     };
-    img.src = img.src;
+    playlistCover.src = playlistCover.src;
   }
 
   const artistContainers = $('.artist-container');
 
-  artistContainers.each(function (index, container) {
-    const img = $(container).find('.artist-image')[0];
-    img.crossOrigin = 'anonymous';
-    img.onload = function () {
-      const colorThief = new ColorThief();
-      const color = colorThief.getColor(img);
-      const boxShadow = Array(5)
-        .fill()
-        .map(
-          (_, index) =>
-            `0 0 ${10 + index * 10}px ${10 + index * 5}px rgba(${color[0]}, ${
-              color[1]
-            }, ${color[2]}, 0.2)`,
-        )
-        .join(', ');
+  $('.artist-image').each(function (index, artistImage) {
+    if (artistImage) {
+      // Check if artistImage is defined
+      artistImage.crossOrigin = 'anonymous';
+      const src = artistImage.src; // Save the current src
+      artistImage.src = ''; // Clear the src
+      artistImage.onload = function () {
+        const palette = colorThief.getPalette(artistImage, 4);
+        let dominantColor = palette[0];
+        for (let i = 0; i < palette.length; i++) {
+          if (
+            dominantColor[0] < 85 &&
+            dominantColor[1] < 85 &&
+            dominantColor[2] < 85
+          ) {
+            dominantColor = palette[i];
+          } else {
+            break;
+          }
+        }
 
-      container.style.boxShadow = boxShadow;
-    };
-    img.src = img.src;
+        // Calculate the complementary color
+        const complementaryColor = [
+          255 - dominantColor[0],
+          255 - dominantColor[1],
+          255 - dominantColor[2],
+        ];
+
+        // Define a golden yellow color for the box shadow
+        const boxShadowColor = `rgba(${complementaryColor[0]}, ${complementaryColor[1]}, ${complementaryColor[2]}, 0.6)`;
+
+        // Create the box shadow
+        const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
+
+        // Apply the box shadow
+        artistImage.style.boxShadow = boxShadow;
+      };
+      artistImage.src = src; // Set the src back to its original value
+    } else {
+      console.log('No artist image found in container', container);
+    }
   });
-
   $('.data-view-btn').click(function () {
     $('.data-view-btn').removeClass('active');
     $(this).addClass('active');
