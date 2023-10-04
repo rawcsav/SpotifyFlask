@@ -4,7 +4,318 @@ body {
 }
 
 body {
-  background-color: #f8f9fa; /* Soft grey to give depth */
+  background-color: #f1e3e4;
+  font-family: Futura, sans-serif;
+  max-width: 100vw;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+.top-right-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: absolute;
+  right: 10px;
+  top: 5px; /* Adjusted from 10px */
+}
+
+.homepage-link {
+  cursor: pointer;
+  left: 3px;
+  position: absolute;
+  top: 1px;
+}
+
+.homepage-link img {
+  height: 60px;
+  transition: transform 0.3s;
+  width: auto;
+}
+
+.pl-refresh {
+  background-color: #d5a021; /* Change as per your primary color */
+  border-radius: 10px;
+  height: 50%;
+  color: #fff;
+  cursor: pointer;
+  font-family: Futura, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  width: 150px;
+  border: transparent;
+}
+
+.profile-link {
+  background-color: #1c1d21;
+  border: 1px solid #1c1d21;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.button-group {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  margin-top: -10px;
+  padding: 20px;
+}
+
+.button-group button {
+  background-color: #4a314d;
+  border: transparent;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  transition: background-color 0.3s;
+}
+
+.button-group button:active,
+.plfunc-group button:active,
+.plorder-group button:active {
+  box-shadow: 0 5px 10px rgb(0 0 0 / 10%); /* Less shadow since the button is 'pressed' */
+  transform: translateY(1px); /* Press down effect on click */
+}
+
+#stats-section {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+  width: 100%;
+}
+
+.plfunc-group,
+.plorder-group {
+  display: flex;
+  flex-flow: column wrap;
+  gap: 10px;
+  margin-top: -10px;
+  padding: 20px;
+  width: 100%;
+}
+
+.plfunc-group button,
+.plorder-group button {
+  background-color: #4a314d;
+  border: transparent;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 auto; /* Center align buttons */
+  padding: 6px 10px;
+  transition: background-color 0.3s;
+  gap: 35px;
+  width: 60%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+#like-all-songs-btn,
+#order-asc-btn,
+#rd-asc-btn {
+  background-color: #1d7874;
+  color: #fff;
+}
+
+#unlike-all-songs-btn,
+#order-desc-btn,
+#rd-desc-btn {
+  background-color: #960200;
+  color: #fff;
+}
+
+#remove-duplicates-btn,
+#shuffle-btn {
+  background-color: #2b59c3;
+  color: #f8f9fa;
+}
+
+.data-view {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.data-view.animate {
+  opacity: 1;
+}
+
+.data-view-btn.active {
+  background-color: #5bbad5;
+  color: white;
+}
+
+h1 {
+  color: #1c1d21;
+  font-family: Futura, sans-serif;
+  font-size: 40px;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+
+h2 {
+  color: #1c1d21;
+  font-family: Futura, sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+p {
+  color: #1c1d21;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  text-decoration: none;
+}
+
+@keyframes dynamic-shadow {
+  0% {
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%); /* Increased spread and blur */
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
+  }
+}
+
+.homepage-link:hover img,
+.profile-link:hover,
+.pl-refresh:hover,
+.button-group button:hover,
+.plfunc-group button:hover,
+.plorder-group button:hover,
+.playlist-container a:hover,
+.artist-container:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s ease-in-out; /* Makes the scaling smooth */
+}
+
+.pl-refresh,
+.profile-link,
+.button-group button,
+.plfunc-group button,
+.plorder-group button {
+  transition:
+    background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out; /* Makes the color change smooth */
+}
+
+@keyframes sparkle {
+  0% {
+    box-shadow:
+      0 0 10px 2px #94a6dc,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 20px 5px pink,
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
+  }
+
+  100% {
+    box-shadow:
+      0 0 10px 2px #f3e3e3,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+}
+
+.homepage-link:hover img,
+.profile-link:hover,
+.pl-refresh:hover,
+.button-group button:hover,
+.plfunc-group button:hover,
+.plorder-group button:hover,
+.playlist-container a:hover {
+  animation: sparkle 5s infinite; /* Creates a pulsating effect */
+}
+
+.top-section {
+  align-content: normal;
+  align-items: stretch; /* Changed from 'normal' */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 40px;
+  justify-content: space-around;
+  margin-top: 100px;
+}
+
+.playlist-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.playlist-text {
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+}
+
+.playlist-desc {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  margin-top: 10px;
+  max-width: 300px;
+  text-decoration: none;
+}
+
+.playlist-cover {
+  border-radius: 5px;
+  cursor: pointer;
+  max-height: 300px;
+  max-width: 300px;
+}
+
+.playlist-container a {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Remove any default styles the browser might apply to the anchor tags */
+.playlist-container a:link,
+.playlist-container a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #f1e3e4;
   font-family: Futura, sans-serif;
   max-width: 100vw;
   overflow-x: hidden;
@@ -38,24 +349,24 @@ body {
 }
 
 .pl-refresh {
-  background-color: #28a745; /* Change as per your primary color */
-  border-radius: 5px;
+  background-color: #d5a021; /* Change as per your primary color */
+  border-radius: 10px;
+  height: 50%;
   color: #fff;
   cursor: pointer;
   font-family: Futura, sans-serif;
-  font-size: 16px;
+  font-size: 10px;
   font-weight: bold;
-  height: 100%;
   text-align: center;
   text-decoration: none;
   transition: background-color 0.3s;
   width: 150px;
-  border: 1px solid #022b3a;
+  border: transparent;
 }
 
 .profile-link {
-  background-color: #022b3a;
-  border: 1px solid #022b3a;
+  background-color: #1c1d21;
+  border: 1px solid #1c1d21;
   border-radius: 5px;
   color: white;
   cursor: pointer;
@@ -66,13 +377,6 @@ body {
   text-align: center;
   text-decoration: none;
   transition: background-color 0.3s;
-}
-
-.profile-link:hover,
-.pl-refresh:hover {
-  background-color: #fff;
-  color: #022b3a;
-  text-decoration: none;
 }
 
 .button-group {
@@ -98,36 +402,11 @@ body {
   transition: background-color 0.3s;
 }
 
-.button-group button:hover,
-.plfunc-group button:hover,
-.plorder-group button:hover {
-  background-color: #5bbad5;
-  box-shadow: 0 10px 20px rgb(0 0 0 / 10%); /* Slight shadow for depth */
-  transform: translateY(-3px); /* Gives a slight lift effect */
-}
-
 .button-group button:active,
 .plfunc-group button:active,
 .plorder-group button:active {
   box-shadow: 0 5px 10px rgb(0 0 0 / 10%); /* Less shadow since the button is 'pressed' */
   transform: translateY(1px); /* Press down effect on click */
-}
-
-/* Tertiary Action - if any, can be a more muted color or a simple outlined button */
-.button-tertiary {
-  background-color: transparent;
-  border: 1px solid #6c757d;
-  color: #6c757d;
-}
-
-.button-group button,
-.plfunc-group button,
-.plorder-group button {
-  background-color: #6c757d; /* A muted color for secondary actions */
-  color: #fff;
-  transition:
-    background-color 0.3s,
-    transform 0.3s; /* Added transform for a subtle scaling effect on hover */
 }
 
 #stats-section {
@@ -152,7 +431,7 @@ body {
 .plorder-group button {
   background-color: #4a314d;
   border: transparent;
-  border-radius: 5px;
+  border-radius: 10px;
   color: white;
   cursor: pointer;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
@@ -161,37 +440,29 @@ body {
   margin: 0 auto; /* Center align buttons */
   padding: 6px 10px;
   transition: background-color 0.3s;
-  gap: 20px;
-  width: 40%;
+  gap: 35px;
+  width: 60%;
   box-shadow: 0 0 10px rgb(0 0 0 / 10%);
 }
 
-#like-all-songs-btn {
-  background-color: #28a745;
+#like-all-songs-btn,
+#order-asc-btn,
+#rd-asc-btn {
+  background-color: #1d7874;
   color: #fff;
 }
 
-#unlike-all-songs-btn {
-  background-color: #dc3545;
+#unlike-all-songs-btn,
+#order-desc-btn,
+#rd-desc-btn {
+  background-color: #960200;
   color: #fff;
 }
 
 #remove-duplicates-btn,
 #shuffle-btn {
-  background-color: #022b3a;
+  background-color: #2b59c3;
   color: #f8f9fa;
-}
-
-#order-desc-btn,
-#rd-desc-btn {
-  background-color: #0788b7;
-  color: white;
-}
-
-#order-asc-btn,
-#rd-asc-btn {
-  background-color: lightpink;
-  color: white;
 }
 
 .data-view {
@@ -209,7 +480,7 @@ body {
 }
 
 h1 {
-  color: #022b3a;
+  color: #1c1d21;
   font-family: Futura, sans-serif;
   font-size: 40px;
   font-weight: bold;
@@ -218,7 +489,7 @@ h1 {
 }
 
 h2 {
-  color: #022b3a;
+  color: #1c1d21;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -226,7 +497,7 @@ h2 {
 }
 
 p {
-  color: #022b3a;
+  color: #1c1d21;
   font-size: 15px;
   font-weight: 500;
   margin: 0;
@@ -313,11 +584,6 @@ p {
 .playlist-container a {
   display: block;
   transition: transform 0.3s ease;
-}
-
-/* Add hover effect for the clickable playlist cover */
-.playlist-container a:hover {
-  transform: scale(1.05);
 }
 
 /* Remove any default styles the browser might apply to the anchor tags */
@@ -408,8 +674,165 @@ canvas#YrPieChart {
   max-width: 100px;
 }
 
-.artist-container:hover {
-  transform: scale(1.05);
+/* Remove any default styles the browser might apply to the anchor tags around artist images */
+.artist-container a:link,
+.artist-container a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.overlay {
+  align-items: center;
+  background: linear-gradient(transparent, rgb(0 0 0 / 50%));
+  border-radius: 50%;
+  bottom: 0;
+  box-sizing: border-box; /* This will ensure padding does not affect the total size */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-end;
+  left: 0;
+  pointer-events: none; /* This will ensure the overlay does not block mouse events */
+  position: absolute;
+  width: 100%;
+}
+
+.artist-name,
+.artist-count {
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  margin: 0;
+  max-width: 90%; /* This ensures the text doesn't go edge to edge */
+  text-align: center;
+  word-wrap: break-word; /* Breaks the text to next line if it exceeds max-width */
+}
+
+.artist-count {
+  padding-bottom: 20px; /* Adjusted padding to keep text within boundary */
+}
+
+.decade-title,
+.top-artists-title,
+.utils-title {
+  color: #1c1d21;
+  font-family: Futura, sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  margin-top: 0;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+}
+
+.toast {
+  border-radius: 5px;
+  bottom: 2%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  color: white;
+  display: none;
+  padding: 12px 24px;
+  position: fixed;
+  right: 2%;
+  z-index: 1000;
+}
+
+.close-toast {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toast.success {
+  background-color: #4caf50;
+}
+
+.toast.error {
+  background-color: #f44336;
+}
+
+.playlist-desc p {
+  font-size: 18px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: normal;
+}
+
+.chart-container {
+  align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  max-height: 300px;
+  position: relative;
+}
+
+canvas#YrPieChart {
+  max-height: 300px;
+  max-width: 300px;
+}
+
+.bottom-section {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 100px;
+}
+
+.oldest-newest-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.artist-flex {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-flex {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  width: 400px;
+}
+
+.artist-list {
+  align-content: center;
+  display: flex;
+  flex-flow: column wrap;
+  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  height: 300px;
+  justify-items: center;
+  list-style: none;
+  max-height: 300px;
+  position: relative;
+}
+
+.artist-container {
+  display: block;
+  height: 100px;
+  position: relative;
+  transition: transform 0.3s ease;
+  width: 100px;
+}
+
+.artist-image {
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+}
+
+.artist-list img {
+  max-height: 100px;
+  max-width: 100px;
 }
 
 /* Remove any default styles the browser might apply to the anchor tags around artist images */
@@ -453,11 +876,11 @@ canvas#YrPieChart {
 .decade-title,
 .top-artists-title,
 .utils-title {
-  color: #022b3a;
+  color: #1c1d21;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   margin-top: 0;
   text-align: center;
   text-decoration: none;
