@@ -5,12 +5,11 @@ $(document).ready(function () {
     img.crossOrigin = 'anonymous';
     img.onload = function () {
       const color = colorThief.getColor(img);
-
-      const boxShadow = Array(5) // Create 5 layers of shadows for the aura effect
+      const boxShadow = Array(3)
         .fill()
         .map(
           (_, index) =>
-            `0 0 ${10 + index * 10}px ${10 + index * 5}px rgba(${color[0]}, ${
+            `0 0 ${10 + index * 5}px ${10 + index * 10}px rgba(${color[0]}, ${
               color[1]
             }, ${color[2]}, 0.2)`,
         )
@@ -18,19 +17,18 @@ $(document).ready(function () {
 
       img.style.boxShadow = boxShadow;
     };
-    img.src = img.src; // Trigger the onload event
+    img.src = img.src;
   }
+
   const artistContainers = $('.artist-container');
 
-  // Loop over each container
   artistContainers.each(function (index, container) {
     const img = $(container).find('.artist-image')[0];
     img.crossOrigin = 'anonymous';
     img.onload = function () {
       const colorThief = new ColorThief();
       const color = colorThief.getColor(img);
-
-      const boxShadow = Array(5) // Create 5 layers of shadows for the aura effect
+      const boxShadow = Array(5)
         .fill()
         .map(
           (_, index) =>
@@ -42,40 +40,15 @@ $(document).ready(function () {
 
       container.style.boxShadow = boxShadow;
     };
-    img.src = img.src; // Trigger the onload event
+    img.src = img.src;
   });
 
-  $('.data-view-btn').click(function () {
-    var btnId = $(this).attr('id');
-
-    var dataViewToShow;
-    switch (btnId) {
-      case 'summary-stats-btn':
-        dataViewToShow = 'summary-stats';
-        break;
-      case 'genre-counts-btn':
-        dataViewToShow = 'genre-counts';
-        break;
-      case 'feature-stats-btn':
-        dataViewToShow = 'feature-stats';
-        break;
-    }
-
-    $('.data-view').hide();
-
-    // Show the selected data view
-    $('#' + dataViewToShow).show();
-  });
   $('.data-view-btn').click(function () {
     $('.data-view-btn').removeClass('active');
-
     $(this).addClass('active');
-
     var btnId = $(this).attr('id');
     var dataViewToShow = btnId.replace('-btn', '');
-
     $('.data-view').hide();
-
     $('#' + dataViewToShow).show();
   });
 
@@ -102,21 +75,21 @@ $(document).ready(function () {
       ],
     },
     options: {
-      cutoutPercentage: 5, // Reduce the pie size slightly
+      cutoutPercentage: 5,
       responsive: true,
       plugins: {
         title: {
           display: false,
           text: 'Distribution of Track Release Dates',
-          fontSize: 16, // Optional: Adjust font size as needed
+          fontSize: 16,
           align: 'center',
           position: 'bottom',
         },
         legend: {
-          position: 'left', // Position the legend on the right side of the chart
+          position: 'left',
           labels: {
-            boxWidth: 10, // Optional: Adjust box width of the legend color boxes
-            padding: 5, // Optional: Adjust padding between legend items
+            boxWidth: 10,
+            padding: 5,
           },
         },
       },
@@ -125,7 +98,7 @@ $(document).ready(function () {
 
   $('#like-all-songs-btn').click(function () {
     $.get('/like_all_songs/' + playlistId, function (response) {
-      showToast(response); // Assumes a successful response message
+      showToast(response);
     }).fail(function (error) {
       showToast('An error occurred while liking all songs.', 'error');
     });
@@ -163,14 +136,30 @@ $(document).ready(function () {
 
     toast.style.display = 'block';
 
-    // Automatically hide the toast after 5 seconds
     setTimeout(() => {
       toast.style.display = 'none';
     }, 5000);
   }
 
-  // Closing the toast when the 'X' is clicked
   document.querySelector('.close-toast').addEventListener('click', function () {
     this.parentElement.style.display = 'none';
+  });
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      // If the element is in the viewport
+      if (entry.isIntersecting) {
+        // Add a class to animate the element
+        entry.target.classList.add('animate');
+      } else {
+        // If the element is not in the viewport, remove the 'animate' class
+        entry.target.classList.remove('animate');
+      }
+    });
+  });
+
+  // Start observing each '.data-view' element
+  $('.data-view').each(function (index, element) {
+    observer.observe(element);
   });
 });

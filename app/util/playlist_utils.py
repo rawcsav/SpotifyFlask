@@ -87,7 +87,7 @@ def get_track_info_list(sp, tracks):
     return track_info_list
 
 
-def get_genre_artists_count(track_info_list, top_n=6):
+def get_genre_artists_count(track_info_list, top_n=10):
     genre_counts = {}
     artist_counts = {}
     artist_images = {}
