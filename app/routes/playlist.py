@@ -9,6 +9,7 @@ from time import sleep
 from requests.exceptions import RequestException
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, playlist_sql, UserData
+from app.util.session_utils import verify_session, fetch_user_data
 from app.util.spotify_utils import init_session_client
 from app.util.playlist_utils import get_playlist_details, update_playlist_data
 
@@ -19,10 +20,9 @@ bp = Blueprint('playlist', __name__)
 @require_spotify_auth
 def playlist():
     spotify_user_id = session["USER_ID"]
-    data = {
-        "images": [{"url": session.get("PROFILE_PIC", "")}],
-        "display_name": session.get("DISPLAY_NAME", "")
-    }
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+
     # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
@@ -34,7 +34,7 @@ def playlist():
                  if playlist["owner"] is not None
                  and playlist["owner"] == owner_name]
 
-    return render_template('playlist.html', data=data, playlists=playlists)
+    return render_template('playlist.html', data=res_data, playlists=playlists)
 
 
 @bp.route('/playlist/<string:playlist_id>')
@@ -42,10 +42,8 @@ def playlist():
 def show_playlist(playlist_id):
     playlist = playlist_sql.query.get(playlist_id)
     playlist_url = f"https://open.spotify.com/playlist/{playlist_id}"
-    data = {
-        "images": [{"url": session.get("PROFILE_PIC", "")}],
-        "display_name": session.get("DISPLAY_NAME", "")
-    }
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
     if playlist:
         playlist_data = playlist.__dict__
         owner_name = playlist_data['owner']
@@ -55,7 +53,7 @@ def show_playlist(playlist_id):
         temporal_stats = playlist_data.get('temporal_stats', {})
         year_count = temporal_stats.get('year_count', {})
 
-        return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_url=playlist_url,
+        return render_template('spec_playlist.html', data=res_data, playlist_id=playlist_id, playlist_url=playlist_url,
                                playlist_data=playlist_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public)

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, jsonify, session
 
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import UserData
+from app.util.session_utils import fetch_user_data, verify_session
 from app.util.spotify_utils import calculate_averages_for_period
 
 bp = Blueprint('stats', __name__)
@@ -11,10 +12,8 @@ bp = Blueprint('stats', __name__)
 @require_spotify_auth
 def stats():
     spotify_user_id = session["USER_ID"]
-    data = {
-        "images": [{"url": session.get("PROFILE_PIC", "")}],
-        "display_name": session.get("DISPLAY_NAME", "")
-    }
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
 
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
@@ -38,7 +37,7 @@ def stats():
             period_tracks, audio_features)
 
     return render_template('stats.html',
-                           data=data,
+                           data=res_data,
                            top_tracks=top_tracks,
                            top_artists=top_artists,
                            sorted_genres=sorted_genres_by_period,

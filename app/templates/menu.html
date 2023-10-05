@@ -100,8 +100,13 @@
   <div class="menu-container">
     {% if data.images and data.images[0] %}
     <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
-    {% endif %}
-    <span class="truncate">{{ data.display_name }}</span>
+    {% else %}
+    <img
+      src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1696536571/bd33260dec7cd00233c444cda31ba12a-removebg-preview_cgobu0.png"
+      alt="Placeholder Image"
+      class="profile-img"
+    />
+    {% endif %} <span class="truncate">{{ data.display_name }}</span>
   </div>
   <div class="drop-menu" id="menu">
     <a class="drop-item" href="{{ url_for('user.profile') }}">Profile</a>

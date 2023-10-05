@@ -25,10 +25,8 @@ def parse_seeds(key):
 @require_spotify_auth
 def recommendations():
     spotify_user_id = session["USER_ID"]
-    data = {
-        "images": [{"url": session.get("PROFILE_PIC", "")}],
-        "display_name": session.get("DISPLAY_NAME", "")
-    }
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
 
     # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
@@ -43,7 +41,7 @@ def recommendations():
 
     return render_template(
         "recommendations.html",
-        data=data,
+        data=res_data,
         playlists=playlists,
         user_data=user_data_entry,
     )
