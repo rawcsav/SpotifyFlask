@@ -43,7 +43,6 @@ def get_playlist_tracks(sp, playlist_id):
 def get_track_info_list(sp, tracks):
     track_ids = [track_data['track']['id'] for track_data in tracks if track_data['track']['id'] is not None]
     track_features_dict = get_or_fetch_audio_features(sp, track_ids)
-
     track_info_list = []
 
     # Pre-fetch all artist info at once to minimize API calls.
@@ -53,24 +52,29 @@ def get_track_info_list(sp, tracks):
 
     for track_data in tracks:
         track = track_data['track']
-        track_id = track['id']
+
+        # Remove unwanted columns
+        track.pop('available_markets', None)
+        track.pop('disc_number', None)
+        track.pop('external_ids', None)
+        track.pop('href', None)
+        track.pop('linked_from', None)
+        track.pop('restrictions', None)
+
         artists = track['artists']
         image = track['album'].get('images', [])
-        cover_art = None
-        if image:
-            cover_art = image[0].get('url')
+        cover_art = image[0].get('url') if image else None
 
         artist_info = []
         for artist in artists:
             artist_id = artist['id']
             if artist_id is not None and artist_id in all_artist_info:
                 artist_info.append(all_artist_info[artist_id])
-        audio_features = track_features_dict.get(track_id, {})
-
+        audio_features = track_features_dict.get(track['id'], {})
         is_local = track.get('is_local', False)  # Extracting the is_local attribute
 
         track_info = {
-            'id': track_id,
+            'id': track['id'],
             'name': track['name'],
             'is_local': is_local,
             'added_at': track_data.get('added_at', None),  # Adding the "added_at" field
