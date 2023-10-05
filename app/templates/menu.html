@@ -91,7 +91,7 @@
 <!-- Dropdown Structure -->
 <div id="spotifyUserDropdown" onclick="toggleDropdown()">
   <div class="menu-container">
-    {% if data.images and len(data.images) > 0 %}
+    {% if data.images and data.images[0] %}
     <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
     {% else %}
     <img
