@@ -145,7 +145,7 @@
       </div>
       <div class="form-container">
         <h2>Tuneable Features</h2>
-        <form data-ajax="true">
+        <form>
           <input type="hidden" id="track_seeds" name="track_seeds" />
           <input type="hidden" id="artist_seeds" name="artist_seeds" />
 
@@ -240,6 +240,6 @@
         transform: translate(-50%, -50%);
       "
     ></div>
+    <script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
   </body>
-  <script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
 </html>

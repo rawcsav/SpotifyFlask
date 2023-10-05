@@ -62,26 +62,51 @@
     return vinyls[randomIndex];
   }
 
-  function showLoading() {
-    const vinylElement = document.getElementById('vinyl');
+  window.showLoading = function () {
+    console.log('showLoading called');
+
+    let loadingOverlay = document.getElementById('loading-overlay');
+    let vinylElement = document.getElementById('vinyl');
+
+    // If the loadingOverlay is already displayed, don't do anything
+    if (loadingOverlay && loadingOverlay.style.display === 'flex') {
+      return;
+    }
+
+    // If the loading animation elements don't exist, create them
+    if (!loadingOverlay) {
+      loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'loading-overlay';
+      document.body.appendChild(loadingOverlay);
+    }
+
+    if (!vinylElement) {
+      vinylElement = document.createElement('div');
+      vinylElement.id = 'vinyl';
+      loadingOverlay.appendChild(vinylElement);
+    }
+
+    // Continue as before
     vinylElement.style.backgroundImage = `url(${getRandomVinyl()})`;
-    const loadingOverlay = document.getElementById('loading-overlay');
     loadingOverlay.style.display = 'flex';
-  }
+  };
 
   let animationDisplayedAt = new Date().getTime();
 
-  function hideLoading() {
+  window.hideLoading = function () {
+    console.log('hideLoading called');
+
     const loadingOverlay = document.getElementById('loading-overlay');
-    const fadeOutDuration = 500; // 0.5s in milliseconds
+    const fadeOutDuration = 500;
 
     const completeHide = () => {
-      loadingOverlay.style.display = 'none';
+      // Instead of hiding, remove the element entirely
+      loadingOverlay.remove();
     };
 
     const timeSinceAnimationDisplayed =
       new Date().getTime() - animationDisplayedAt;
-    const minimumDisplayTime = 1000; // 2 seconds
+    const minimumDisplayTime = 1000;
 
     if (timeSinceAnimationDisplayed < minimumDisplayTime) {
       setTimeout(() => {
@@ -92,44 +117,50 @@
       loadingOverlay.style.opacity = '0';
       setTimeout(completeHide, fadeOutDuration);
     }
-  }
+  };
 
   // Show the loading animation as soon as the JavaScript is executed
-  showLoading();
+  window.showLoading();
 
   window.addEventListener('load', function () {
     // Hide the loading animation once the page is fully loaded
-    hideLoading();
+    window.hideLoading();
   });
 
+  let ajaxRequestCount = 0;
+
   $(document).ajaxStart(function () {
-    showLoading();
+    ajaxRequestCount++;
+    if (ajaxRequestCount === 1) {
+      window.showLoading();
+    }
   });
 
   $(document).ajaxStop(function () {
-    hideLoading();
+    ajaxRequestCount--;
+    if (ajaxRequestCount === 0) {
+      window.hideLoading();
+    }
   });
 
   $(document).on('submit', 'form', function (event) {
     var useAjax = $(this).data('ajax');
 
     if (useAjax) {
-      // If the form should be submitted via AJAX, prevent it from being submitted normally
       event.preventDefault();
 
-      showLoading();
+      window.showLoading();
 
       $.ajax({
         url: $(this).attr('action'),
         method: $(this).attr('method'),
         data: $(this).serialize(),
         complete: function () {
-          hideLoading();
+          window.hideLoading();
         },
       });
     } else {
-      // If the form should be submitted normally, show the loading animation
-      showLoading();
+      window.showLoading();
     }
   });
 </script>

@@ -348,6 +348,7 @@ $(document).ready(function () {
           }
         });
       });
+
       document.querySelector('.results-container').scrollTop = 0;
     }).fail(function (jqXHR, textStatus, errorThrown) {
       console.error('Error:', textStatus, errorThrown);
