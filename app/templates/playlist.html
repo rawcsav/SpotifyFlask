@@ -62,7 +62,6 @@
   </head>
   <body>
     {{ loading_animation() }}
-
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png"
@@ -70,8 +69,8 @@
       />
     </a>
     <div class="top-right-nav">
-      <a href="https://webstats.rawcsav.com/profile" class="profile-link"
-        >Return to Profile</a
+      <a href="{{ url_for('user.profile') }}" class="profile-link">
+        Return to Profile</a
       >
     </div>
     <h1>Spotify Playlists</h1>

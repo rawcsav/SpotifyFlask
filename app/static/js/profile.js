@@ -1,19 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
   const refreshButton = document.getElementById('refresh-button');
 
-  refreshButton.addEventListener('click', async () => {
-    try {
-      const response = await fetch('/refresh-data', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
+  refreshButton.addEventListener('click', function () {
+    $.ajax({
+      url: '/refresh-data',
+      method: 'POST',
+      success: function (response) {
         location.reload(); // Refresh the /profile page
-      } else {
-        console.error('Failed to refresh data');
-      }
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error('Failed to refresh data:', errorThrown);
+      },
+    });
   });
 });

@@ -59,11 +59,10 @@
   </head>
   <body>
     {{ loading_animation() }}
-
     <div class="top-right-nav">
       <div class="nav-buttons">
-        <a href="https://webstats.rawcsav.com/profile" class="profile-link"
-          >Return to Profile</a
+        <a href="{{ url_for('user.profile') }}" class="profile-link">
+          Return to Profile</a
         >
       </div>
       <button id="showInstructions">Show Instructions</button>
@@ -146,7 +145,7 @@
       </div>
       <div class="form-container">
         <h2>Tuneable Features</h2>
-        <form>
+        <form data-ajax="true">
           <input type="hidden" id="track_seeds" name="track_seeds" />
           <input type="hidden" id="artist_seeds" name="artist_seeds" />
 

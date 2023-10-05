@@ -62,12 +62,11 @@
     />
     {% from "loading.html" import loading_animation %}
   </head>
+  {{ loading_animation() }}
   <body>
-    {{ loading_animation() }}
-
     <div class="top-right-nav">
-      <a href="https://webstats.rawcsav.com/profile" class="profile-link"
-        >Return to Profile</a
+      <a href="{{ url_for('user.profile') }}" class="profile-link">
+        Return to Profile</a
       >
     </div>
     <h1>Spotify Stats</h1>

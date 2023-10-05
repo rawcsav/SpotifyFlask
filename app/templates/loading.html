@@ -11,11 +11,13 @@
     left: 0;
     width: 100%;
     height: 100%;
+    opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 1000;
     display: flex; /* set parent to flex */
     justify-content: center; /* horizontally center children */
     align-items: center; /* vertically center children */
+    transition: opacity 0.5s ease-out; /* 0.5s fade out */
   }
 
   #vinyl {
@@ -64,57 +66,71 @@
     const vinylElement = document.getElementById('vinyl');
     vinylElement.style.backgroundImage = `url(${getRandomVinyl()})`;
     const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.style.display = 'flex'; /* Show the loading animation */
+    loadingOverlay.style.display = 'flex';
   }
+
+  let animationDisplayedAt = new Date().getTime();
 
   function hideLoading() {
     const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.style.display = 'none'; /* Hide the loading animation */
-  }
+    const fadeOutDuration = 500; // 0.5s in milliseconds
 
-  function delayEvent(event, callback) {
-    setTimeout(function () {
-      event.preventDefault();
-      callback();
-    }, 50);
-  }
-
-  (function () {
-    var originalFetch = window.fetch;
-    window.fetch = function () {
-      showLoading();
-      return originalFetch.apply(this, arguments).finally(hideLoading);
+    const completeHide = () => {
+      loadingOverlay.style.display = 'none';
     };
-  })();
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const anchors = document.querySelectorAll('a');
-    const forms = document.querySelectorAll('form');
+    const timeSinceAnimationDisplayed =
+      new Date().getTime() - animationDisplayedAt;
+    const minimumDisplayTime = 1000; // 2 seconds
 
-    // Handle anchor clicks
-    anchors.forEach((anchor) => {
-      anchor.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent default behavior
-        showLoading();
-        history.pushState({}, '', anchor.href); // Update the current history entry
-        window.location.href = anchor.href; // Navigate to the URL
-      });
-    });
+    if (timeSinceAnimationDisplayed < minimumDisplayTime) {
+      setTimeout(() => {
+        loadingOverlay.style.opacity = '0';
+        setTimeout(completeHide, fadeOutDuration);
+      }, minimumDisplayTime - timeSinceAnimationDisplayed);
+    } else {
+      loadingOverlay.style.opacity = '0';
+      setTimeout(completeHide, fadeOutDuration);
+    }
+  }
 
-    // Handle form submissions
-    forms.forEach((form) => {
-      form.addEventListener('submit', function (event) {
-        delayEvent(event, function () {
-          showLoading();
-          form.submit();
-        });
-      });
-    });
+  // Show the loading animation as soon as the JavaScript is executed
+  showLoading();
 
-    window.addEventListener('load', hideLoading);
-    window.addEventListener('popstate', function (event) {
+  window.addEventListener('load', function () {
+    // Hide the loading animation once the page is fully loaded
+    hideLoading();
+  });
+
+  $(document).ajaxStart(function () {
+    showLoading();
+  });
+
+  $(document).ajaxStop(function () {
+    hideLoading();
+  });
+
+  $(document).on('submit', 'form', function (event) {
+    var useAjax = $(this).data('ajax');
+
+    if (useAjax) {
+      // If the form should be submitted via AJAX, prevent it from being submitted normally
+      event.preventDefault();
+
       showLoading();
-    });
+
+      $.ajax({
+        url: $(this).attr('action'),
+        method: $(this).attr('method'),
+        data: $(this).serialize(),
+        complete: function () {
+          hideLoading();
+        },
+      });
+    } else {
+      // If the form should be submitted normally, show the loading animation
+      showLoading();
+    }
   });
 </script>
 {% endmacro %}
