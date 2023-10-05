@@ -1,0 +1,108 @@
+<style>
+  body {
+    font-family: Futura, sans-serif;
+  }
+  #spotifyUserDropdown {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 800;
+    align-content: center;
+    cursor: pointer;
+    font-family: Futura, sans-serif;
+    background: rgba(
+      255,
+      255,
+      255,
+      0.8
+    ); /* Semi-transparent white background */
+    padding: 8px 12px;
+    border-radius: 20px; /* Rounded edges for the button */
+    transition: background 0.3s; /* Smooth transition effect */
+  }
+
+  #spotifyUserDropdown:hover {
+    background: rgba(255, 255, 255, 1); /* Solid white background on hover */
+  }
+
+  .profile-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow to give depth */
+  }
+
+  /* Subtle gradient for dropdown */
+  .drop-menu {
+    display: none;
+
+    background: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  }
+  .menu-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .drop-item {
+    padding: 15px;
+    background: #ffffff;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    transition:
+      background 0.2s,
+      color 0.2s; /* Transition effect for color changes */
+    border-bottom: 1px solid #eaeaea; /* Separator for each item */
+  }
+
+  .drop-item:last-child {
+    border-bottom: none; /* Remove border for the last item */
+  }
+
+  .drop-item:hover {
+    background: #1db954;
+    color: white;
+    box-shadow: inset 0 -3px 0 0 #12873d; /* A little depth on hover */
+  }
+</style>
+
+<!-- Dropdown Structure -->
+<div id="spotifyUserDropdown" onclick="toggleDropdown()">
+  <div class="menu-container">
+    <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
+    {{ data.display_name }}
+  </div>
+  <div class="drop-menu" id="menu">
+    <a class="drop-item" href="{{ url_for('stats.stats') }}"
+      >Personal Music Stats</a
+    >
+    <a class="drop-item" href="{{ url_for('recommendations.recommendations') }}"
+      >Music Recommendations</a
+    >
+    <a class="drop-item" href="{{ url_for('playlist.playlist') }}"
+      >Playlist Explorer</a
+    >
+    <a class="drop-item" href="/logout">Logout</a>
+  </div>
+</div>
+
+<script>
+  function toggleDropdown() {
+    const menu = document.getElementById('menu');
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'block';
+    } else {
+      menu.style.display = 'none';
+    }
+  }
+
+  // Close the dropdown if clicked outside
+  window.addEventListener('click', function (event) {
+    const dropdown = document.getElementById('spotifyUserDropdown');
+    if (!dropdown.contains(event.target)) {
+      document.getElementById('menu').style.display = 'none';
+    }
+  });
+</script>

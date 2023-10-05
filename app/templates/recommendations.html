@@ -55,16 +55,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/recommendations.css') }}"
     />
-    {% from "loading.html" import loading_animation %}
+    {% from "loading.html" import loading_animation %}{% include 'menu.html' %}
   </head>
   <body>
     {{ loading_animation() }}
     <div class="top-right-nav">
-      <div class="nav-buttons">
-        <a href="{{ url_for('user.profile') }}" class="profile-link">
-          Return to Profile</a
-        >
-      </div>
       <button id="showInstructions">Show Instructions</button>
     </div>
     <h1>Music Recommendations</h1>

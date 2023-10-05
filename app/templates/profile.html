@@ -58,7 +58,7 @@
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.js"></script>
-    {% from "loading.html" import loading_animation %}
+    {% from "loading.html" import loading_animation %} {% include 'menu.html' %}
   </head>
   <body>
     {{ loading_animation() }}

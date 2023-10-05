@@ -9,7 +9,7 @@ body {
   max-height: 100vh;
   overflow-x: hidden;
   overflow-y: hidden;
-  padding: 20px;
+  padding: 30px;
 }
 
 .noselect {
@@ -52,9 +52,9 @@ html {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  position: absolute;
-  right: 15px;
-  top: 5px;
+  position: fixed;
+  right: 150px;
+  top: 30px;
 }
 
 .nav-buttons {
@@ -89,7 +89,6 @@ html {
   text-decoration: none;
   transition: background-color 0.3s;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-
   width: 100%;
 }
 

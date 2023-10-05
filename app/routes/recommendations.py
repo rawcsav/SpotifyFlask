@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, render_template, request, session
 
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import UserData
+from app.util.session_utils import verify_session, fetch_user_data
 from app.util.spotify_utils import (
     init_session_client,
     get_recommendations,
@@ -24,6 +25,10 @@ def parse_seeds(key):
 @require_spotify_auth
 def recommendations():
     spotify_user_id = session["USER_ID"]
+    data = {
+        "images": [{"url": session.get("PROFILE_PIC", "")}],
+        "display_name": session.get("DISPLAY_NAME", "")
+    }
 
     # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
@@ -38,6 +43,7 @@ def recommendations():
 
     return render_template(
         "recommendations.html",
+        data=data,
         playlists=playlists,
         user_data=user_data_entry,
     )

@@ -58,7 +58,7 @@
       href="{{ url_for('static', filename='css/playlist.css') }}"
     />
     <title>Spotify Playlists</title>
-    {% from "loading.html" import loading_animation %}
+    {% from "loading.html" import loading_animation %}{% include 'menu.html' %}
   </head>
   <body>
     {{ loading_animation() }}
@@ -68,11 +68,6 @@
         alt="Homepage"
       />
     </a>
-    <div class="top-right-nav">
-      <a href="{{ url_for('user.profile') }}" class="profile-link">
-        Return to Profile</a
-      >
-    </div>
     <h1>Spotify Playlists</h1>
     <ul id="playlist-container"></ul>
   </body>

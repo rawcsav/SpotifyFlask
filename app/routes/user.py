@@ -24,8 +24,10 @@ def profile():
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
         spotify_user_display_name = res_data.get("display_name")
+        user_profile_pic = res_data.get("images")[0].get("url") if res_data.get("images") else None
 
         session["DISPLAY_NAME"] = spotify_user_display_name
+        session["PROFILE_PIC"] = user_profile_pic
         session["USER_ID"] = spotify_user_id
         sp, error = init_session_client(session)
         if error:

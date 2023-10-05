@@ -49,7 +49,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {% from "loading.html" import loading_animation %}
+    {% from "loading.html" import loading_animation %}{% include 'menu.html' %}
   </head>
   <body>
     {{ loading_animation() }}
@@ -59,19 +59,14 @@
         alt="Homepage"
       />
     </a>
-    <div class="top-right-nav">
-      <a href="{{ url_for('playlist.playlist') }}" class="profile-link">
-        Back to Playlist</a
-      >
-      <div class="button-group">
-        <button class="data-view-btn active" id="summary-stats-btn">
-          Summary Stats
-        </button>
-        <button class="data-view-btn" id="genre-counts-btn">Genre Stats</button>
-        <button class="data-view-btn" id="feature-stats-btn">
-          Feature Stats
-        </button>
-      </div>
+    <div class="button-group">
+      <button class="data-view-btn active" id="summary-stats-btn">
+        Summary Stats
+      </button>
+      <button class="data-view-btn" id="genre-counts-btn">Genre Stats</button>
+      <button class="data-view-btn" id="feature-stats-btn">
+        Feature Stats
+      </button>
     </div>
     <h1>{{ playlist_data['name'] }}</h1>
     <div id="summary-stats" class="data-view">

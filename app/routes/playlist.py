@@ -19,7 +19,10 @@ bp = Blueprint('playlist', __name__)
 @require_spotify_auth
 def playlist():
     spotify_user_id = session["USER_ID"]
-
+    data = {
+        "images": [{"url": session.get("PROFILE_PIC", "")}],
+        "display_name": session.get("DISPLAY_NAME", "")
+    }
     # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
@@ -31,7 +34,7 @@ def playlist():
                  if playlist["owner"] is not None
                  and playlist["owner"] == owner_name]
 
-    return render_template('playlist.html', playlists=playlists)
+    return render_template('playlist.html', data=data, playlists=playlists)
 
 
 @bp.route('/playlist/<string:playlist_id>')
@@ -39,7 +42,10 @@ def playlist():
 def show_playlist(playlist_id):
     playlist = playlist_sql.query.get(playlist_id)
     playlist_url = f"https://open.spotify.com/playlist/{playlist_id}"
-
+    data = {
+        "images": [{"url": session.get("PROFILE_PIC", "")}],
+        "display_name": session.get("DISPLAY_NAME", "")
+    }
     if playlist:
         playlist_data = playlist.__dict__
         owner_name = playlist_data['owner']
@@ -87,7 +93,9 @@ def show_playlist(playlist_id):
     is_collaborative = playlist_data['collaborative']
     is_public = playlist_data['public']
 
-    return render_template('spec_playlist.html', playlist_id=playlist_id, playlist_url=playlist_url,
+    return render_template('spec_playlist.html', playlist_id=playlist_id,
+                           data=data,
+                           playlist_url=playlist_url,
                            playlist_data=playlist_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public)
