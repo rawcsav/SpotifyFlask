@@ -40,6 +40,9 @@ def playlist():
 @bp.route('/playlist/<string:playlist_id>')
 @require_spotify_auth
 def show_playlist(playlist_id):
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+
     playlist = playlist_sql.query.get(playlist_id)
     playlist_url = f"https://open.spotify.com/playlist/{playlist_id}"
     access_token = verify_session(session)
@@ -92,7 +95,7 @@ def show_playlist(playlist_id):
     is_public = playlist_data['public']
 
     return render_template('spec_playlist.html', playlist_id=playlist_id,
-                           data=data,
+                           data=res_data,
                            playlist_url=playlist_url,
                            playlist_data=playlist_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,

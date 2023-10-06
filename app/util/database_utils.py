@@ -91,7 +91,6 @@ def add_artist_to_db(artist_data):
         popularity=artist_data['popularity'],
     )
     db.session.merge(new_artist)
-    db.session.commit()
 
 
 def get_or_fetch_artist_info(sp, artist_ids):
@@ -121,7 +120,7 @@ def get_or_fetch_artist_info(sp, artist_ids):
             )
             existing_artist_ids[new_artist.id] = new_artist  # Update the existing artists dict
             db.session.merge(new_artist)
-            db.session.commit()
+    db.session.commit()
 
     # Create the final dictionary
     final_artists = {}
@@ -174,7 +173,7 @@ def get_or_fetch_audio_features(sp, track_ids):
                     db.session.merge(new_feature)
                     existing_feature_ids[feature['id']] = new_feature
 
-            db.session.commit()
+        db.session.commit()
 
     final_features = {track_id: {
         'id': feature.id,
