@@ -26,16 +26,13 @@ def init_session_client(session):
     if not access_token:
         refresh_response = refresh()
 
-        # Check for the success status code
         if refresh_response.status_code == 200:
-            # Update access token from session
             access_token = refresh_response.json.get("access_token")
         else:
-            # Redirect the user if refresh fails or any other issue
-            return redirect("http://webstats.rawcsav.com/")
+            return redirect(config.REDIRECT_URL)
 
     if not access_token:  # Double check in case of any unforeseen issues after refresh
-        return redirect("http://webstats.rawcsav.com/")
+        return redirect(config.REDIRECT_URL)
 
     return Spotify(auth=access_token), None
 

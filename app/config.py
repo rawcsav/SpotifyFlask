@@ -40,3 +40,8 @@ AUDIO_FEATURES = [
     "valence",
     "popularity",
 ]
+
+REDIRECT_URL = "http://webstats.rawcsav.com/"
+
+MAX_RETRIES = 3
+RETRY_WAIT_SECONDS = 2

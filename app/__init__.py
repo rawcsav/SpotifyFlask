@@ -1,5 +1,9 @@
+import os
+
 from flask import Flask
 from flask_session import Session
+import logging
+from logging.handlers import RotatingFileHandler
 
 from app import config
 from app.util.database_utils import db, UserData
@@ -18,9 +22,22 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+
+        file_handler = RotatingFileHandler('logs/webstats.log', maxBytes=1024000, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Your Flask application startup')
+
     Session(app)
 
-    # Register blueprints
     from .routes import auth, user, stats, search, recommendations, playlist
 
     app.register_blueprint(auth.bp)

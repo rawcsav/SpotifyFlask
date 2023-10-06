@@ -64,7 +64,7 @@ class features_sql(db.Model):
 
 
 class playlist_sql(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True, index=True)
     name = db.Column(db.String)
     owner = db.Column(db.String)
     cover_art = db.Column(db.String)
