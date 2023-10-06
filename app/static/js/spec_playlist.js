@@ -211,26 +211,54 @@ $(document).ready(function () {
       },
     });
   }
+  function showReorderModal(callback) {
+    // Display the modal
+    $('#reorderModal').fadeIn();
 
-  // Bind functionality to the ordering buttons
+    // When the user confirms the reorder
+    $('#confirmReorder')
+      .off()
+      .click(function () {
+        $('#reorderModal').fadeOut();
+        callback(); // Call the reorder function
+      });
+
+    // When the user cancels the reorder
+    $('#cancelReorder')
+      .off()
+      .click(function () {
+        $('#reorderModal').fadeOut();
+      });
+  }
+
   $('#order-desc-btn').click(function () {
-    reorderPlaylist('Date Added - Descending');
+    showReorderModal(function () {
+      reorderPlaylist('Date Added - Descending');
+    });
   });
 
   $('#order-asc-btn').click(function () {
-    reorderPlaylist('Date Added - Ascending');
+    showReorderModal(function () {
+      reorderPlaylist('Date Added - Ascending');
+    });
   });
 
   // Bind functionality to the "Release Date" ordering buttons
   $('#rd-asc-btn').click(function () {
-    reorderPlaylist('Release Date - Ascending');
+    showReorderModal(function () {
+      reorderPlaylist('Release Date - Ascending');
+    });
   });
 
   $('#rd-desc-btn').click(function () {
-    reorderPlaylist('Release Date - Descending');
+    showReorderModal(function () {
+      reorderPlaylist('Release Date - Descending');
+    });
   });
 
   $('#shuffle-btn').click(function () {
-    reorderPlaylist('Random Shuffle');
+    showReorderModal(function () {
+      reorderPlaylist('Shuffle');
+    });
   });
 });

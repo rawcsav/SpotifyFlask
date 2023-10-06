@@ -33,7 +33,7 @@ def create_app():
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
 
-        app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(logging.DEBUG)
         app.logger.info('Your Flask application startup')
 
     Session(app)

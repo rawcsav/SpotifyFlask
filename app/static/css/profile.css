@@ -74,8 +74,9 @@ h3 {
 
 .card {
   background-color: #ffb3bd;
-  border-color: #6d2e46;
+  border-color: transparent;
   border-radius: 8px;
+  position: relative;
   box-shadow:
     2.8px 2.8px 2.2px rgb(0 0 0 / 2%),
     6.7px 6.7px 5.3px rgb(0 0 0 / 2.8%),
@@ -95,7 +96,6 @@ h3 {
 
 .col-md-4 {
   flex: 0 0 33.333333%;
-  flex: 0 0 33.333333%;
   max-width: 33.333333%;
   overflow-x: hidden;
   white-space: nowrap;
@@ -103,6 +103,12 @@ h3 {
 
 .media-body {
   flex: 1;
+}
+
+.text-muted {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .media-body h1 {

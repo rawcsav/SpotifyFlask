@@ -24,7 +24,6 @@ def profile():
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
         spotify_user_display_name = res_data.get("display_name")
-        user_profile_pic = res_data.get("images")[0].get("url") if res_data.get("images") else None
 
         session["DISPLAY_NAME"] = spotify_user_display_name
         session["USER_ID"] = spotify_user_id
@@ -35,8 +34,6 @@ def profile():
         user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
         if check_and_refresh_user_data(user_data_entry):
-            last_active = datetime.utcnow()
-
             user_data = {
                 "top_tracks": user_data_entry.top_tracks,
                 "top_artists": user_data_entry.top_artists,
@@ -45,10 +42,13 @@ def profile():
                 "sorted_genres": user_data_entry.sorted_genres_by_period,
                 "genre_specific_data": user_data_entry.genre_specific_data,
                 "recent_tracks": user_data_entry.recent_tracks,
-                "playlists": user_data_entry.playlist_info
+                "playlists": user_data_entry.playlist_info,
+                "last_active": user_data_entry.last_active
             }
+            last_active = user_data_entry.last_active
+
         else:
-            last_active = datetime.utcnow()  # for new users, set the current time
+            last_active = datetime.utcnow()
 
             time_periods = ["short_term", "medium_term", "long_term"]
             top_tracks, top_artists, all_artists_info, audio_features, genre_specific_data, sorted_genres_by_period, recent_tracks, playlist_info = fetch_and_process_data(
