@@ -1,0 +1,66 @@
+<head>
+  <style>
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      font-family: Futura, sans-serif;
+      display: flex;
+      background-color: rgba(255, 255, 255, 0.3);
+
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .footer p {
+      margin: 0; /* Remove or adjust margins */
+    }
+    .footer a:hover {
+      color: #555; /* Slightly lighter gray on hover */
+      text-decoration: none; /* Removes the underline */
+    }
+    .footer a::after {
+      content: '|';
+      margin: 0 3px; /* Adjust space around the separator */
+      color: #333; /* Same color as text */
+    }
+    .footer a:last-child::after {
+      content: '';
+    }
+
+    .footer svg {
+      fill: #333; /* Fill the SVG icons with the same color as the text */
+      height: 1.5em; /* Adjust this value for desired size */
+    }
+
+    .footer p,
+    .footer a {
+      font-size: 0.8rem; /* Adjust this value as needed */
+      color: #333; /* This is a dark gray color */
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Text shadow for better legibility */
+      text-decoration: none; /* Removes the underline */
+      margin: 0;
+      padding: 0;
+      bottom: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="footer" class="footer">
+    <p>Copyright © 2023 RAWCSAV. All rights reserved.</p>
+    <div class="footer-links">
+      <p>
+        <a href="https://rawcsav.com/">Home</a>
+        <a href="https://rawcsav.com/contact.html">Contact</a>
+        <a href="https://github.com/rawcsav">GitHub</a>
+      </p>
+    </div>
+  </div>
+</body>
