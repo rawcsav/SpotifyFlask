@@ -19,20 +19,16 @@ $(document).ready(function () {
         }
       }
 
-      // Calculate the complementary color
       const complementaryColor = [
         255 - dominantColor[0],
         255 - dominantColor[1],
         255 - dominantColor[2],
       ];
 
-      // Define a golden yellow color for the box shadow
       const boxShadowColor = `rgba(${complementaryColor[0]}, ${complementaryColor[1]}, ${complementaryColor[2]}, 0.3)`;
 
-      // Create the box shadow
       const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
 
-      // Apply the box shadow
       playlistCover.style.boxShadow = boxShadow;
     };
     playlistCover.src = playlistCover.src;
@@ -47,25 +43,20 @@ $(document).ready(function () {
       artistImage.src = '';
       artistImage.onload = function () {
         const palette = colorThief.getPalette(artistImage, 4);
-        const dominantColor = palette[0]; // Use the most dominant color directly
-
-        // Convert the dominant color to a TinyColor object
+        const dominantColor = palette[0];
         const dominantColorObj = tinycolor({
           r: dominantColor[0],
           g: dominantColor[1],
           b: dominantColor[2],
         });
 
-        // Create some variations of the dominant color
         const color1 = dominantColorObj.lighten(10).toRgbString();
         const color2 = dominantColorObj.darken(10).toRgbString();
         const color3 = dominantColorObj.saturate(10).toRgbString();
         const color4 = dominantColorObj.desaturate(10).toRgbString();
 
-        // Create the box shadow
         const boxShadow = `0 0 60px 0 ${color1}, inset -100px 10px 80px 20px ${color2}, 0 0 40px 10px ${color3}, inset 0 0 10px 0 ${color4}`;
 
-        // Apply the box shadow
         artistImage.style.boxShadow = boxShadow;
       };
       artistImage.src = src;
@@ -177,18 +168,14 @@ $(document).ready(function () {
 
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
-      // If the element is in the viewport
       if (entry.isIntersecting) {
-        // Add a class to animate the element
         entry.target.classList.add('animate');
       } else {
-        // If the element is not in the viewport, remove the 'animate' class
         entry.target.classList.remove('animate');
       }
     });
   });
 
-  // Start observing each '.data-view' element
   $('.data-view').each(function (index, element) {
     observer.observe(element);
   });
@@ -212,18 +199,15 @@ $(document).ready(function () {
     });
   }
   function showReorderModal(callback) {
-    // Display the modal
     $('#reorderModal').fadeIn();
 
-    // When the user confirms the reorder
     $('#confirmReorder')
       .off()
       .click(function () {
         $('#reorderModal').fadeOut();
-        callback(); // Call the reorder function
+        callback();
       });
 
-    // When the user cancels the reorder
     $('#cancelReorder')
       .off()
       .click(function () {
@@ -243,7 +227,6 @@ $(document).ready(function () {
     });
   });
 
-  // Bind functionality to the "Release Date" ordering buttons
   $('#rd-asc-btn').click(function () {
     showReorderModal(function () {
       reorderPlaylist('Release Date - Ascending');

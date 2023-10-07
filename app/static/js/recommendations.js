@@ -10,16 +10,13 @@ $(document).ready(function () {
                 </a>`);
   });
 
-  // Get the modal and close button
   var modal = $('#instructionsModal');
   var closeBtn = $('.close');
 
-  // Show the modal when the button is clicked
   $('#showInstructions').click(function () {
     modal.css('display', 'block');
   });
 
-  // Hide the modal when the close button (×) is clicked
   closeBtn.click(function () {
     modal.css('display', 'none');
   });
@@ -32,41 +29,38 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  // Modal behavior
   $('#showInstructions').on('click', function () {
     $('#instructionsModal').fadeIn();
-    $('body').css('overflow', 'hidden'); // Prevent background scrolling
+    $('body').css('overflow', 'hidden');
   });
 
   $('.close').on('click', function () {
     $('#instructionsModal').fadeOut();
-    $('body').css('overflow', 'auto'); // Allow scrolling again
+    $('body').css('overflow', 'auto');
   });
 
   $(window).on('click', function (event) {
     if ($(event.target).is('#instructionsModal')) {
       $('#instructionsModal').fadeOut();
-      $('body').css('overflow', 'auto'); // Allow scrolling again
+      $('body').css('overflow', 'auto');
     }
   });
 
   $('#universal_search').click(function () {
     let query = $('#universal_input').val();
-    $('#universal_search_results').empty(); // Clear the previous search results
-    $('#universal_loading').show(); // Show the loading message
-    $('#universal_error').hide(); // Hide any previous error message
-
+    $('#universal_search_results').empty();
+    $('#universal_loading').show();
+    $('#universal_error').hide();
     $.ajax({
       url: '/search',
       method: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({
         query: query,
-        type: 'track,artist', // Search for both tracks and artists
+        type: 'track,artist',
       }),
       success: function (data) {
-        $('#universal_loading').hide(); // Hide the loading message when data is received
-
+        $('#universal_loading').hide();
         let trackResults = JSON.parse(data)['tracks']['items'];
         let artistResults = JSON.parse(data)['artists']['items'];
         $('#universal_search_results').empty();
@@ -82,7 +76,6 @@ $(document).ready(function () {
                   </div>
               `);
         });
-        // Append artist results
         artistResults.forEach((result) => {
           $('#universal_search_results').append(`
                   <div class="clickable-result artist" data-id="${result['id']}">
@@ -95,8 +88,8 @@ $(document).ready(function () {
         });
       },
       fail: function (jqXHR, textStatus, errorThrown) {
-        $('#universal_error').show(); // Show the error message
-        $('#universal_loading').hide(); // Hide the loading message
+        $('#universal_error').show();
+        $('#universal_loading').hide();
         console.error('Error:', textStatus, errorThrown);
       },
     });
@@ -133,10 +126,10 @@ $(document).ready(function () {
 
   $('#universal_search_results').on('click', '.clickable-result', function () {
     if (getTotalSeeds() < 5) {
-      let seedType = $(this).hasClass('track') ? 'track' : 'artist'; // Determine the seed type
+      let seedType = $(this).hasClass('track') ? 'track' : 'artist';
       $('#universal_seeds_container').append(
         $(this).clone().addClass(seedType),
-      ); // Add the seed type as a class
+      );
       updateSeedsInput('universal_seeds_container');
     } else {
       alert('You can select no more than 5 combined seeds.');
@@ -153,14 +146,12 @@ $(document).ready(function () {
     }
   });
 
-  // For removing track seeds:
   $('#universal_seeds_container').on('click', '.clickable-result', function () {
-    let seedType = $(this).hasClass('track') ? 'track' : 'artist'; // Determine the seed type
+    let seedType = $(this).hasClass('track') ? 'track' : 'artist';
     $(this).remove();
-    updateSeedsInput('universal_seeds_container'); // Update the appropriate seeds input
+    updateSeedsInput('universal_seeds_container');
   });
 
-  // Submit form
   $('form').submit(function (event) {
     event.preventDefault();
     getRecommendations();
@@ -248,9 +239,8 @@ $(document).ready(function () {
     .attr('data-min', '☁️ Moody blues')
     .attr('data-max', '☀️ Sunshine joy');
 
-  let currentPlayingAudio = null; // To keep track of the current playing audio element
-  let currentPlayingButton = null; // To keep track of the current playing button
-
+  let currentPlayingAudio = null;
+  let currentPlayingButton = null;
   $(document).on('click', '.add-to-seeds', function (event) {
     event.preventDefault();
     if (getTotalSeeds() < 5) {
@@ -263,7 +253,7 @@ $(document).ready(function () {
 
       if (seedType === 'track') {
         let trackId = $(this).attr('data-trackid');
-        let trackName = $(this).attr('data-name'); // Get name from data attribute
+        let trackName = $(this).attr('data-name');
         let artistName = $(this).attr('data-artist');
         seedElement = $(`
                 <div class="clickable-result track" data-id="${trackId}">
@@ -275,8 +265,8 @@ $(document).ready(function () {
                 </div>
             `);
       } else {
-        let artistName = $(this).attr('data-artist'); // Get artist name from data attribute
-        let artistId = $(this).attr('data-artistid'); // Get artist ID from data attribute
+        let artistName = $(this).attr('data-artist');
+        let artistId = $(this).attr('data-artistid');
         seedElement = $(`
                 <div class="clickable-result artist" data-id="${artistId}">
                     <img src="${imgSrc}" alt="Cover Art" class="result-image">
@@ -331,14 +321,14 @@ $(document).ready(function () {
         audioElement.addEventListener('play', function () {
           if (currentPlayingAudio && currentPlayingAudio !== audioElement) {
             currentPlayingAudio.pause();
-            currentPlayingButton.html('&#9654;'); // Set previous button to play symbol
+            currentPlayingButton.html('&#9654;');
           }
           currentPlayingAudio = audioElement;
           currentPlayingButton = playButton;
-          playButton.html('&#9616;&#9616;'); // Set to pause symbol
+          playButton.html('&#9616;&#9616;');
         });
         audioElement.addEventListener('pause', function () {
-          playButton.html('&#9654;'); // Set to play symbol
+          playButton.html('&#9654;');
         });
         playButton.click(function () {
           if (audioElement.paused) {
@@ -359,14 +349,13 @@ $(document).ready(function () {
 function showToast(button, message) {
   let toast = $('#toast');
 
-  // Position the toast next to the button
   let buttonOffset = button.offset();
   toast.css({
     top: buttonOffset.top,
     left: buttonOffset.left,
   });
 
-  toast.text(message).fadeIn(400).delay(2000).fadeOut(1000); // Show the toast
+  toast.text(message).fadeIn(400).delay(2000).fadeOut(1000);
 }
 $(document).on('click', '.add-to-saved', function (event) {
   event.preventDefault();
@@ -375,7 +364,7 @@ $(document).on('click', '.add-to-saved', function (event) {
 
   let trackId = $(this).attr('data-trackid');
   $.ajax({
-    url: '/save_track', // Update the endpoint URL as per your Flask route
+    url: '/save_track',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({ track_id: trackId }),
@@ -407,7 +396,6 @@ $(document).on('click', '.playlist-option', function (event) {
   let modal = $('#playlistModal');
   let trackId = modal.data('trackid');
 
-  // Retrieve the button element from the modal data
   let button = modal.data('button');
 
   $.ajax({
