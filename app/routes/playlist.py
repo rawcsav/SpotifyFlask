@@ -256,4 +256,4 @@ def reorder_playlist(playlist_id):
         except Exception as e:
             return jsonify(error=f"An error occurred while adding tracks: {str(e)}"), 500
 
-    return jsonify(status="New playlist created successfully"), 200
+    return jsonify(status="Playlist reordered successfully"), 200

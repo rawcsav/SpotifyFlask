@@ -135,17 +135,22 @@ def get_audio_features_stats(track_info_list):
                            track_info_list[0]['audio_features'].keys() if feature != 'id'}
     audio_feature_stats['popularity'] = {'min': None, 'max': None, 'total': 0}
 
-    for track_info in track_info_list:
+    for idx, track_info in enumerate(track_info_list):
         if track_info['is_local'] or track_info['popularity'] is None:
             continue  # Skip local tracks and tracks with 'None' popularity
 
         for feature, value in track_info['audio_features'].items():
             if feature != 'id':
-                if audio_feature_stats[feature]['min'] is None or value < audio_feature_stats[feature]['min'][1]:
-                    audio_feature_stats[feature]['min'] = (track_info['name'], value)
-                if audio_feature_stats[feature]['max'] is None or value > audio_feature_stats[feature]['max'][1]:
-                    audio_feature_stats[feature]['max'] = (track_info['name'], value)
-                audio_feature_stats[feature]['total'] += value
+                try:
+                    if audio_feature_stats[feature]['min'] is None or value < audio_feature_stats[feature]['min'][1]:
+                        audio_feature_stats[feature]['min'] = (track_info['name'], value)
+                    if audio_feature_stats[feature]['max'] is None or value > audio_feature_stats[feature]['max'][1]:
+                        audio_feature_stats[feature]['max'] = (track_info['name'], value)
+                    audio_feature_stats[feature]['total'] += value
+                except KeyError:
+                    print(
+                        f"KeyError at track index {idx}, track name: {track_info['name']}, missing feature: {feature}")
+                    continue
 
         # Calculate min, max, and total for popularity
         pop = track_info['popularity']
