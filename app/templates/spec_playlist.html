@@ -84,6 +84,13 @@
           >
             Remove Duplicates
           </button>
+          <br />
+          <button
+            id="recommendations-btn"
+            title="Get recommendations based on this playlist"
+          >
+            <i class="fas fa-lightbulb"></i> Recommendations
+          </button>
         </div>
         <div class="playlist-container">
           <a
@@ -148,12 +155,18 @@
           </div>
         </div>
       </div>
+      <div class="results-container">
+        <h2 class="recommendations-title" style="display: none">
+          Recommendations
+        </h2>
+        <div id="results"></div>
+      </div>
     </div>
     <div class="bottom-section">
       <div class="artist-flex">
         <h3 class="top-artists-title">Top Artists</h3>
         <div class="artist-list">
-          {% for artist, count, image_url, spotify_url in
+          {% for artist, count, image_url, spotify_url, artist_ids in
           playlist_data.top_artists %}
           <li class="artist-item">
             <div class="artist-container">

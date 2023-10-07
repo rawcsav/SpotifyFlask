@@ -244,6 +244,138 @@ $(document).ready(function () {
       reorderPlaylist('Shuffle');
     });
   });
+
+  let currentPlayingAudio = null;
+  let currentPlayingButton = null;
+
+  $('#recommendations-btn').click(function (event) {
+    event.preventDefault();
+    getPLRecommendations();
+  });
+
+  function getPLRecommendations() {
+    $.post(
+      `/get_pl_recommendations/${playlistId}/recommendations`,
+      function (data) {
+        let recommendations = data['recommendations'];
+        if (recommendations.length > 0) {
+          $('.recommendations-title').show();
+        }
+        $('#results').empty();
+        recommendations.forEach((trackInfo) => {
+          let audioElement = new Audio(trackInfo['preview']);
+          $('#results').append(`
+            <div class="result-item">
+                <div class="result-cover-art-container">
+                    <img src="${trackInfo['cover_art']}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo['trackid']}">
+                    <div class="caption">
+                        <h2>${trackInfo['trackName']}</h2>
+                        <p>${trackInfo['artist']}</p>
+                    </div>
+                    <div class="play-button" id="play_${trackInfo['trackid']}">&#9654;</div>
+                </div>
+                <div class="dropdown-content">
+                  <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">
+                      <i class="far fa-heart heart-icon"></i>
+                  </a>
+                  <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">
+                      <i class="fas fa-plus plus-icon"></i>
+                  </a>
+                </div>
+                <audio controls>
+                    <source src="${trackInfo['preview']}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        `);
+          let playButton = $(`#play_${trackInfo['trackid']}`);
+          playButton.addClass('noselect');
+
+          audioElement.addEventListener('play', function () {
+            if (currentPlayingAudio && currentPlayingAudio !== audioElement) {
+              currentPlayingAudio.pause();
+              currentPlayingButton.html('&#9654;');
+            }
+            currentPlayingAudio = audioElement;
+            currentPlayingButton = playButton;
+            playButton.html('&#9616;&#9616;');
+          });
+          audioElement.addEventListener('pause', function () {
+            playButton.html('&#9654;');
+          });
+          playButton.click(function () {
+            if (audioElement.paused) {
+              audioElement.play();
+            } else {
+              audioElement.pause();
+            }
+          });
+        });
+      },
+    ).fail(function () {
+      console.log('An error occurred while getting the recommendations.');
+    });
+  }
+
+  $(document).on('click', '.add-to-playlist', function (event) {
+    event.preventDefault();
+
+    let trackId = $(this).attr('data-trackid');
+
+    $.ajax({
+      url: '/add_to_playlist',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
+      success: function (data) {
+        // Display the toast message on successful addition
+        showToast('Track added to playlist successfully!');
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Display error toast
+        showToast(
+          'An error occurred while adding the track to the playlist.',
+          'error',
+        );
+        console.error('Error:', textStatus, errorThrown);
+      },
+    });
+  });
+
+  $(document).on('click', '.add-to-saved', function (event) {
+    event.preventDefault();
+
+    let trackId = $(this).attr('data-trackid');
+    $.ajax({
+      url: '/save_track',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ track_id: trackId }),
+      success: function (data) {
+        // Display the toast message on successful save
+        showToast('Track saved successfully!');
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Display error toast
+        showToast('An error occurred while saving the track.', 'error');
+        console.error('Error:', textStatus, errorThrown);
+      },
+    });
+  });
+  $(document).on('click', '.heart-icon', function () {
+    $(this).toggleClass('clicked');
+
+    if ($(this).hasClass('clicked')) {
+      // Change to filled heart
+      $(this).removeClass('far fa-heart').addClass('fas fa-heart');
+    } else {
+      // Change to empty heart
+      $(this).removeClass('fas fa-heart').addClass('far fa-heart');
+    }
+  });
+  $(document).on('click', '.plus-icon', function () {
+    $(this).toggleClass('clicked');
+  });
 });
 
 document.addEventListener('DOMContentLoaded', function () {

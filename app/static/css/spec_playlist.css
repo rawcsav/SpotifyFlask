@@ -497,16 +497,151 @@ canvas#YrPieChart {
   width: 100%;
 }
 
+.results-container {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: start;
+  margin-top: 40px;
+  text-align: center; /* This will center the inline and inline-block children */
+  overflow-x: auto;
+  width: 95%;
+}
+
+#results {
+  color: #333;
+  display: flex;
+  font-size: 12px;
+  gap: 15px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.result-cover-art {
+  border-radius: 5px;
+  box-shadow:
+    4px 5px 8px 0 rgb(0 0 0 / 20%),
+    0 2px 20px 0 rgb(0 0 0 / 19%);
+  height: 200px;
+  width: 200px;
+}
+
+.result-item .result-cover-art-container {
+  position: relative;
+}
+
+.result-item .result-cover-art-container .caption {
+  background: rgb(0 0 0 / 80%);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  bottom: 3px;
+  box-sizing: border-box;
+  color: white;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  position: absolute;
+  width: 100%;
+}
+
+.result-item h2 {
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0;
+}
+
+.result-item p {
+  align-items: center;
+  color: white;
+  display: flex;
+  font-size: 10px;
+  justify-content: flex-start;
+  padding: 0;
+  position: relative;
+}
+
+.result-item {
+  align-items: center;
+  border-right: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  width: auto;
+}
+
+.play-button {
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  font-size: 48px;
+  left: 50%;
+  line-height: 1;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+audio {
+  display: none;
+}
+
+.result-cover-art-container:hover .play-button {
+  display: block;
+}
+
+.result-cover-art-container:hover .result-cover-art {
+  opacity: 0.6;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+  gap: 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.heart-icon {
+  color: grey;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.heart-icon.clicked {
+  color: red;
+  cursor: pointer;
+}
+
+.plus-icon {
+  color: grey;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.plus-icon.clicked {
+  color: green;
+  cursor: pointer;
+}
+
+.heart-icon:hover,
+.plus-icon:hover {
+  transform: scale(1.1); /* scales the icon up to 110% of original size */
+  transition: transform 0.3s; /* smooth transition effect */
+}
+
 #genre-counts ul {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
 #genre-counts > ul > li {
   cursor: pointer;
-  transition: background-color 0.3s;
   padding: 5px 15px;
+  transition: background-color 0.3s;
   width: 30%;
 }
 
@@ -515,9 +650,9 @@ canvas#YrPieChart {
 }
 
 #genre-counts > ul > li > ul {
+  margin-bottom: 5px;
   margin-left: 15px;
   margin-top: 5px;
-  margin-bottom: 5px;
 }
 
 .toast {

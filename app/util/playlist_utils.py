@@ -9,10 +9,8 @@ from app.util.spotify_utils import init_session_client
 
 
 def get_playlist_info(sp, playlist_id):
-    # Fetch the playlist object from Spotify
     playlist = sp.playlist(playlist_id)
 
-    # Extract the required details from the playlist object
     playlist_info = {
         "id": playlist["id"],
         "name": playlist["name"],
@@ -97,6 +95,7 @@ def get_genre_artists_count(track_info_list, top_n=10):
     artist_counts = {}
     artist_images = {}
     artist_urls = {}
+    artist_ids = {}  # New dictionary to store artist IDs
 
     for track_info in track_info_list:
         for artist_dict in track_info['artists']:
@@ -120,6 +119,7 @@ def get_genre_artists_count(track_info_list, top_n=10):
                 genre_info[genre]["artists"].add(artist_name)
 
             artist_counts[artist_name] = artist_counts.get(artist_name, 0) + 1
+            artist_ids[artist_name] = artist_id  # Store the artist ID
 
             if artist_image_url:
                 artist_images[artist_name] = artist_image_url
@@ -127,8 +127,8 @@ def get_genre_artists_count(track_info_list, top_n=10):
             artist_urls[artist_name] = spotify_url
 
     sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
-    top_artists = [(name, count, artist_images.get(name, None), artist_urls.get(name)) for name, count in
-                   sorted_artists[:top_n]]
+    top_artists = [(name, count, artist_images.get(name, None), artist_urls.get(name), artist_ids.get(name)) for
+                   name, count in sorted_artists[:top_n]]
 
     # Convert genre_info artists sets back to lists for consistency
     for genre, info in genre_info.items():
@@ -257,3 +257,43 @@ def update_playlist_data(playlist_id):
     db.session.commit()
 
     return "Playlist updated successfully"
+
+
+def get_sp_genre_seeds(sp):
+    global genre_seeds
+    if 'genre_seeds' not in globals():
+        genre_seeds = sp.recommendation_genre_seeds()  # Assuming sp is your Spotipy client
+    return genre_seeds
+
+
+def get_artists_seeds(artist_counts, artist_ids, top_n=5):
+    sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
+    return [artist_ids[artist[0]] for artist in sorted_artists[:min(top_n, len(sorted_artists))]]
+
+
+def get_genres_seeds(sp, genre_info, top_n=10):
+    genre_seeds_dict = get_sp_genre_seeds(sp)
+    genre_seeds = genre_seeds_dict['genres']
+
+    valid_genres = []
+    for genre, count in sorted(genre_info.items(), key=lambda x: x[1]['count'], reverse=True)[:top_n]:
+        sanitized_genre = genre.strip().lower()
+
+        # Check for direct match
+        if sanitized_genre in genre_seeds:
+            valid_genres.append(sanitized_genre)
+            continue
+
+        # Check for space-hyphen replacement
+        hyphenated_genre = sanitized_genre.replace(" ", "-")
+        if hyphenated_genre in genre_seeds:
+            valid_genres.append(hyphenated_genre)
+            continue
+
+        # Check for hyphen-space replacement
+        spaced_genre = sanitized_genre.replace("-", " ")
+        if spaced_genre in genre_seeds:
+            valid_genres.append(spaced_genre)
+
+    print(valid_genres)
+    return valid_genres[:2]  # Return top 2 valid genres

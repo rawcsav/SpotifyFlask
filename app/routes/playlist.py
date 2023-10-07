@@ -10,8 +10,8 @@ from requests.exceptions import RequestException
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, playlist_sql, UserData
 from app.util.session_utils import verify_session, fetch_user_data
-from app.util.spotify_utils import init_session_client
-from app.util.playlist_utils import get_playlist_details, update_playlist_data
+from app.util.spotify_utils import init_session_client, format_track_info, get_recommendations
+from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds
 
 bp = Blueprint('playlist', __name__)
 
@@ -266,3 +266,49 @@ def reorder_playlist(playlist_id):
             return jsonify(error=f"An error occurred while adding tracks: {str(e)}"), 500
 
     return jsonify(status="Playlist reordered successfully"), 200
+
+
+@bp.route('/get_pl_recommendations/<string:playlist_id>/recommendations', methods=['POST'])
+def get_pl_recommendations(playlist_id):
+    print(f"playlist_id: {playlist_id}")  # Print the playlist_id
+
+    sp, error = init_session_client(session)
+    if error:
+        print(f"error: {error}")  # Print the error
+        return jsonify(error=error), 401
+
+    playlist = playlist_sql.query.get(playlist_id)
+    if not playlist:
+        return jsonify(error="Playlist not found"), 404
+
+    genre_info = playlist.genre_counts
+    top_artists = playlist.top_artists
+
+    artist_counts = {artist[0]: artist[1] for artist in top_artists}
+    artist_ids = {artist[0]: artist[4] for artist in top_artists}
+    print(f"artist_counts: {artist_counts}, artist_ids: {artist_ids}")  # Print the artist_counts and artist_ids
+
+    top_artist_ids = get_artists_seeds(artist_counts, artist_ids)
+    top_genres = get_genres_seeds(sp, genre_info)
+    print(f"top_artist_ids: {top_artist_ids}, top_genres: {top_genres}")  # Print the top_artist_ids and top_genres
+
+    num_artist_seeds = 5 - len(top_genres)
+    print(f"num_artist_seeds: {num_artist_seeds}")  # Print the num_artist_seeds
+
+    seeds = {
+        'track': None,
+        'artist': top_artist_ids[:num_artist_seeds],
+        'genre': top_genres
+    }
+
+    recommendations_data = get_recommendations(
+        sp, limit=10, market="US", **seeds
+    )
+
+    if "error" in recommendations_data:
+        return json.dumps(recommendations_data), 400
+
+    track_info_list = [
+        format_track_info(track) for track in recommendations_data["tracks"]
+    ]
+    return jsonify({"recommendations": track_info_list})
