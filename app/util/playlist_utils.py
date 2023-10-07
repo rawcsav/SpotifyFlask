@@ -93,18 +93,16 @@ def get_track_info_list(sp, tracks):
 
 
 def get_genre_artists_count(track_info_list, top_n=10):
-    genre_counts = {}
+    genre_info = {}  # Will store both counts and artist lists for each genre
     artist_counts = {}
     artist_images = {}
-    artist_urls = {}  # Dictionary to save artist URLs or URIs
+    artist_urls = {}
 
     for track_info in track_info_list:
         for artist_dict in track_info['artists']:
             artist_id = artist_dict.get('id')
             artist_name = artist_dict.get('name')
             artist_genres = artist_dict.get('genres', [])
-
-            # Build the Spotify URL using the artist's ID
             spotify_url = f"https://open.spotify.com/artist/{artist_id}"
 
             try:
@@ -113,21 +111,30 @@ def get_genre_artists_count(track_info_list, top_n=10):
                 artist_image_url = None
 
             for genre in artist_genres:
-                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+                # Initialize genre info if it's not present
+                if genre not in genre_info:
+                    genre_info[genre] = {"count": 0, "artists": set()}
+
+                # Increment genre count and add artist
+                genre_info[genre]["count"] += 1
+                genre_info[genre]["artists"].add(artist_name)
 
             artist_counts[artist_name] = artist_counts.get(artist_name, 0) + 1
 
             if artist_image_url:
                 artist_images[artist_name] = artist_image_url
 
-            # Save the constructed URL in the dictionary
             artist_urls[artist_name] = spotify_url
 
     sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
     top_artists = [(name, count, artist_images.get(name, None), artist_urls.get(name)) for name, count in
                    sorted_artists[:top_n]]
 
-    return genre_counts, top_artists
+    # Convert genre_info artists sets back to lists for consistency
+    for genre, info in genre_info.items():
+        info["artists"] = list(info["artists"])
+
+    return genre_info, top_artists
 
 
 def get_audio_features_stats(track_info_list):

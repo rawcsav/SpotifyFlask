@@ -13,8 +13,8 @@ body {
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */ /* Chrome, Safari, Opera */ /* Konqueror */ /* Firefox */ /* IE/Edge */
-  user-select: none; /* Non-prefixed version, currently not supported by any browser */
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .form-container input {

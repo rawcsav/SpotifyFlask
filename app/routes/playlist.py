@@ -53,8 +53,12 @@ def show_playlist(playlist_id):
         temporal_stats = playlist_data.get('temporal_stats', {})
         year_count = temporal_stats.get('year_count', {})
 
-        return render_template('spec_playlist.html', data=res_data, playlist_id=playlist_id, playlist_url=playlist_url,
-                               playlist_data=playlist_data,
+        sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
+        top_10_genre_data = dict(sorted_genre_data[:10])
+
+        return render_template('spec_playlist.html', data=res_data,
+                               playlist_id=playlist_id, playlist_url=playlist_url,
+                               playlist_data=playlist_data, top_10_genre_data=top_10_genre_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public)
 
@@ -91,10 +95,15 @@ def show_playlist(playlist_id):
     is_collaborative = playlist_data['collaborative']
     is_public = playlist_data['public']
 
+    # Preprocess the genre_counts data in the Python route function
+    sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
+    top_10_genre_data = dict(sorted_genre_data[:10])
+
     return render_template('spec_playlist.html', playlist_id=playlist_id,
                            data=res_data,
                            playlist_url=playlist_url,
                            playlist_data=playlist_data,
+                           top_10_genre_data=top_10_genre_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public)
 

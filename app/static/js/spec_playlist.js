@@ -262,3 +262,20 @@ $(document).ready(function () {
     });
   });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+  let genreItems = document.querySelectorAll('#genre-counts > ul > li');
+  genreItems.forEach((item) => {
+    item.addEventListener('click', function () {
+      let artistList = item.querySelector('.artist-genre-list');
+      if (
+        artistList.style.display === 'none' ||
+        artistList.style.display === ''
+      ) {
+        artistList.style.display = 'block';
+      } else {
+        artistList.style.display = 'none';
+      }
+    });
+  });
+});

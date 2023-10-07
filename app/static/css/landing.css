@@ -1,12 +1,12 @@
 body {
-  background-attachment: fixed; /* Makes the background fixed when scrolling */
+  background-attachment: fixed;
   background-color: #1ed760;
   background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694707526/layered-waves-haikei_jlojle.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  height: 100vh; /* Cover the entire viewport height */
+  height: 100vh;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -103,7 +103,7 @@ p {
 }
 
 .login-button {
-  align-items: center; /* vertically centers the contents */
+  align-items: center;
   background-color: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
@@ -120,8 +120,8 @@ p {
 
 .login-button,
 .login-button img {
-  line-height: normal; /* resets the line height */
-  vertical-align: middle; /* aligns inline elements to the middle */
+  line-height: normal;
+  vertical-align: middle;
 }
 
 .spotify-logo {
@@ -150,7 +150,7 @@ p {
 .login-button:hover {
   box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
   text-decoration: none;
-  transform: translateY(-2px); /* subtle lift effect */
+  transform: translateY(-2px);
 }
 
 @keyframes sk-bounce {

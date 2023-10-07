@@ -17,7 +17,7 @@ body {
   gap: 10px;
   position: absolute;
   right: 10px;
-  top: 5px; /* Adjusted from 10px */
+  top: 5px;
 }
 
 .homepage-link {
@@ -34,7 +34,7 @@ body {
 }
 
 .pl-refresh {
-  background-color: #d5a021; /* Change as per your primary color */
+  background-color: #d5a021;
   border: transparent;
   border-radius: 10px;
   color: #fff;
@@ -90,8 +90,8 @@ body {
 .button-group button:active,
 .plfunc-group button:active,
 .plorder-group button:active {
-  box-shadow: 0 5px 10px rgb(0 0 0 / 10%); /* Less shadow since the button is 'pressed' */
-  transform: translateY(1px); /* Press down effect on click */
+  box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
+  transform: translateY(1px);
 }
 
 #stats-section {
@@ -124,7 +124,7 @@ body {
   font-size: 14px;
   font-weight: bold;
   gap: 35px;
-  margin: 0 auto; /* Center align buttons */
+  margin: 0 auto;
   padding: 6px 10px;
   transition: background-color 0.3s;
   width: 60%;
@@ -214,7 +214,7 @@ p {
   }
 
   50% {
-    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%); /* Increased spread and blur */
+    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%);
   }
 
   100% {
@@ -231,7 +231,7 @@ p {
 .playlist-container a:hover,
 .artist-container:hover {
   transform: scale(1.05);
-  transition: transform 0.5s ease-in-out; /* Makes the scaling smooth */
+  transition: transform 0.5s ease-in-out;
 }
 
 .pl-refresh,
@@ -241,7 +241,7 @@ p {
 .plorder-group button {
   transition:
     background-color 0.5s ease-in-out,
-    color 0.5s ease-in-out; /* Makes the color change smooth */
+    color 0.5s ease-in-out;
 }
 
 @keyframes sparkle {
@@ -274,52 +274,17 @@ p {
 .plfunc-group button:hover,
 .plorder-group button:hover,
 .playlist-container a:hover {
-  animation: sparkle 5s infinite; /* Creates a pulsating effect */
+  animation: sparkle 5s infinite;
 }
 
 .top-section {
   align-content: normal;
-  align-items: stretch; /* Changed from 'normal' */
+  align-items: stretch;
   display: flex;
   flex-wrap: nowrap;
   gap: 40px;
   justify-content: space-around;
   margin-top: 100px;
-}
-
-.playlist-container {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: flex-start;
-}
-
-.playlist-text {
-  display: flex;
-  flex-direction: column;
-  width: 100px;
-}
-
-.playlist-desc {
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  margin-top: 10px;
-  max-width: 300px;
-  text-decoration: none;
-}
-
-.playlist-container a {
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-/* Remove any default styles the browser might apply to the anchor tags */
-.playlist-container a:link,
-.playlist-container a:visited {
-  color: inherit;
-  text-decoration: none;
 }
 
 @keyframes dynamic-shadow {
@@ -328,7 +293,7 @@ p {
   }
 
   50% {
-    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%); /* Increased spread and blur */
+    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%);
   }
 
   100% {
@@ -357,16 +322,6 @@ p {
       0 0 20px 2px rgb(255 255 255 / 50%),
       0 0 30px 5px rgb(255 255 255 / 50%);
   }
-}
-
-.top-section {
-  align-content: normal;
-  align-items: stretch; /* Changed from 'normal' */
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 40px;
-  justify-content: space-around;
-  margin-top: 100px;
 }
 
 .playlist-container {
@@ -404,7 +359,6 @@ p {
   transition: transform 0.3s ease;
 }
 
-/* Remove any default styles the browser might apply to the anchor tags */
 .playlist-container a:link,
 .playlist-container a:visited {
   color: inherit;
@@ -492,7 +446,6 @@ canvas#YrPieChart {
   max-width: 100px;
 }
 
-/* Remove any default styles the browser might apply to the anchor tags around artist images */
 .artist-container a:link,
 .artist-container a:visited {
   color: inherit;
@@ -504,13 +457,13 @@ canvas#YrPieChart {
   background: linear-gradient(transparent, rgb(0 0 0 / 50%));
   border-radius: 50%;
   bottom: 0;
-  box-sizing: border-box; /* This will ensure padding does not affect the total size */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: flex-end;
   left: 0;
-  pointer-events: none; /* This will ensure the overlay does not block mouse events */
+  pointer-events: none;
   position: absolute;
   width: 100%;
 }
@@ -521,13 +474,13 @@ canvas#YrPieChart {
   font-size: 10px;
   font-weight: bold;
   margin: 0;
-  max-width: 90%; /* This ensures the text doesn't go edge to edge */
+  max-width: 90%;
   text-align: center;
-  word-wrap: break-word; /* Breaks the text to next line if it exceeds max-width */
+  word-wrap: break-word;
 }
 
 .artist-count {
-  padding-bottom: 20px; /* Adjusted padding to keep text within boundary */
+  padding-bottom: 20px;
 }
 
 .decade-title,
@@ -542,6 +495,29 @@ canvas#YrPieChart {
   text-align: center;
   text-decoration: none;
   width: 100%;
+}
+
+#genre-counts ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#genre-counts > ul > li {
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 5px 15px;
+  width: 30%;
+}
+
+#genre-counts > ul > li:hover {
+  background-color: #f5f5f5;
+}
+
+#genre-counts > ul > li > ul {
+  margin-left: 15px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .toast {

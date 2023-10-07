@@ -10,7 +10,7 @@
 
 body {
   animation: fadeIn 1s ease-out;
-  background-attachment: fixed; /* Makes the background fixed when scrolling */
+  background-attachment: fixed;
   background-color: #fb6f92;
   background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694712481/blob-scene-haikei_ahjogm.svg');
   background-position: center;
@@ -133,7 +133,7 @@ h3 {
 }
 
 .btn:hover {
-  background-color: #8b495c; /* A slightly different color */
+  background-color: #8b495c;
   transform: scale(1.05);
 }
 
