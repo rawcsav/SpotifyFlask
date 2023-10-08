@@ -115,3 +115,29 @@ def add_to_playlist():
     playlist_id = request.json["playlist_id"]
     sp.playlist_add_items(playlist_id, [track_id])
     return jsonify({"status": "success"})
+
+
+@bp.route("/unsave_track", methods=["POST"])
+def unsave_track():
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    track_id = request.json["track_id"]
+    print(f"track_id: {track_id}")
+
+    sp.current_user_saved_tracks_delete([track_id])
+    return jsonify({"status": "success"})
+
+
+@bp.route("/remove_from_playlist", methods=["POST"])
+def remove_from_playlist():
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    track_id = request.json["track_id"]
+    playlist_id = request.json["playlist_id"]
+
+    sp.playlist_remove_all_occurrences_of_items(playlist_id, [track_id])
+    return jsonify({"status": "success"})

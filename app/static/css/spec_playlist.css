@@ -20,6 +20,11 @@ body {
   top: 5px;
 }
 
+.noselect {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 .homepage-link {
   cursor: pointer;
   left: 3px;
@@ -84,7 +89,7 @@ body {
   font-size: 10px;
   font-weight: bold;
   padding: 4px 8px;
-  transition: background-color 0.3s;
+  transition: transform 0.3s ease;
 }
 
 .button-group button:active,
@@ -126,7 +131,7 @@ body {
   gap: 35px;
   margin: 0 auto;
   padding: 6px 10px;
-  transition: background-color 0.3s;
+  transition: transform 0.3s ease;
   width: 60%;
 }
 
@@ -208,20 +213,6 @@ p {
   text-decoration: none;
 }
 
-@keyframes dynamic-shadow {
-  0% {
-    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
-  }
-
-  50% {
-    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
-  }
-}
-
 .homepage-link:hover img,
 .profile-link:hover,
 .pl-refresh:hover,
@@ -267,14 +258,118 @@ p {
   }
 }
 
-.homepage-link:hover img,
-.profile-link:hover,
-.pl-refresh:hover,
-.button-group button:hover,
-.plfunc-group button:hover,
-.plorder-group button:hover,
-.playlist-container a:hover {
+@keyframes sparkleRed {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px 2px red,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 20px 5px red,
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
+  }
+}
+
+@keyframes sparkleGreen {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px 2px green,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 20px 5px green,
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
+  }
+}
+
+@keyframes sparkleBlue {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px 2px blue,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 20px 5px blue,
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
+  }
+}
+
+@keyframes sparklePurple {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px 2px purple,
+      0 0 20px 2px rgb(255 255 255 / 50%),
+      0 0 30px 5px rgb(255 255 255 / 50%);
+  }
+
+  50% {
+    box-shadow:
+      0 0 20px 5px purple,
+      0 0 30px 10px rgb(255 255 255 / 50%),
+      0 0 40px 15px rgb(255 255 255 / 50%);
+  }
+}
+
+#refresh-btn:hover,
+.playlist-cover:hover {
   animation: sparkle 5s infinite;
+}
+
+#like-all-songs-btn,
+#order-asc-btn,
+#rd-asc-btn {
+  background-color: #1d7874;
+  color: #fff;
+}
+
+#like-all-songs-btn:hover,
+#order-asc-btn:hover,
+#rd-asc-btn:hover {
+  animation: sparkleGreen 5s infinite;
+}
+
+#unlike-all-songs-btn,
+#order-desc-btn,
+#rd-desc-btn {
+  background-color: #960200;
+  color: #fff;
+}
+
+#unlike-all-songs-btn:hover,
+#order-desc-btn:hover,
+#rd-desc-btn:hover {
+  animation: sparkleRed 5s infinite;
+}
+
+#remove-duplicates-btn,
+#shuffle-btn {
+  background-color: #2b59c3;
+  color: #f8f9fa;
+}
+
+#remove-duplicates-btn:hover,
+#shuffle-btn:hover {
+  animation: sparkleBlue 5s infinite;
+}
+
+#recommendations-btn:hover {
+  animation: sparklePurple 5s infinite;
 }
 
 .top-section {
@@ -285,43 +380,6 @@ p {
   gap: 40px;
   justify-content: space-around;
   margin-top: 100px;
-}
-
-@keyframes dynamic-shadow {
-  0% {
-    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
-  }
-
-  50% {
-    box-shadow: 0 0 20px 40px rgb(0 0 0 / 50%);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
-  }
-}
-
-@keyframes sparkle {
-  0% {
-    box-shadow:
-      0 0 10px 2px red,
-      0 0 20px 2px rgb(255 255 255 / 50%),
-      0 0 30px 5px rgb(255 255 255 / 50%);
-  }
-
-  50% {
-    box-shadow:
-      0 0 20px 5px pink,
-      0 0 30px 10px rgb(255 255 255 / 50%),
-      0 0 40px 15px rgb(255 255 255 / 50%);
-  }
-
-  100% {
-    box-shadow:
-      0 0 10px 2px orange,
-      0 0 20px 2px rgb(255 255 255 / 50%),
-      0 0 30px 5px rgb(255 255 255 / 50%);
-  }
 }
 
 .playlist-container {
@@ -501,10 +559,21 @@ canvas#YrPieChart {
   display: flex;
   flex-flow: column nowrap;
   justify-content: start;
-  margin-top: 40px;
-  text-align: center; /* This will center the inline and inline-block children */
+  position: relative;
+  padding-top: 110px;
   overflow-x: auto;
+  text-align: center; /* This will center the inline and inline-block children */
   width: 95%;
+  padding-bottom: 30px;
+}
+
+#recommendations-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70%;
+  text-align: center;
+  z-index: 10; /* This ensures the title stays above other content */
 }
 
 #results {
@@ -544,8 +613,10 @@ canvas#YrPieChart {
 
 .result-item h2 {
   color: white;
+  display: flex;
   font-size: 10px;
   font-weight: bold;
+  justify-content: flex-start;
   padding: 0;
 }
 
@@ -554,7 +625,6 @@ canvas#YrPieChart {
   color: white;
   display: flex;
   font-size: 10px;
-  justify-content: flex-start;
   padding: 0;
   position: relative;
 }
@@ -596,12 +666,12 @@ audio {
 }
 
 .dropdown-content {
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   font-size: 24px;
   gap: 20px;
   text-decoration: none;
-  cursor: pointer;
 }
 
 .heart-icon {
@@ -610,19 +680,19 @@ audio {
   font-size: 24px;
 }
 
-.heart-icon.clicked {
-  color: red;
+.heart-icon.liked {
+  color: hotpink;
   cursor: pointer;
 }
 
 .plus-icon {
-  color: grey;
+  color: green;
   cursor: pointer;
   font-size: 24px;
 }
 
-.plus-icon.clicked {
-  color: green;
+.plus-icon.added {
+  color: red;
   cursor: pointer;
 }
 

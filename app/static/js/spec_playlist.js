@@ -258,9 +258,9 @@ $(document).ready(function () {
       `/get_pl_recommendations/${playlistId}/recommendations`,
       function (data) {
         let recommendations = data['recommendations'];
-        if (recommendations.length > 0) {
-          $('.recommendations-title').show();
-        }
+        // Add the title
+        const title = '<h2 id="recommendations-title">Recommendations</h2>';
+        $('.results-container').prepend(title);
         $('#results').empty();
         recommendations.forEach((trackInfo) => {
           let audioElement = new Audio(trackInfo['preview']);
@@ -320,61 +320,104 @@ $(document).ready(function () {
   $(document).on('click', '.add-to-playlist', function (event) {
     event.preventDefault();
 
+    let plusIcon = $(this).find('.plus-icon');
     let trackId = $(this).attr('data-trackid');
 
-    $.ajax({
-      url: '/add_to_playlist',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
-      success: function (data) {
-        // Display the toast message on successful addition
-        showToast('Track added to playlist successfully!');
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Display error toast
-        showToast(
-          'An error occurred while adding the track to the playlist.',
-          'error',
-        );
-        console.error('Error:', textStatus, errorThrown);
-      },
-    });
+    if (plusIcon.hasClass('fas fa-minus')) {
+      // The track is already added, remove it
+      $.ajax({
+        url: '/remove_from_playlist',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
+        success: function (data) {
+          // Display the toast message on successful removal
+          showToast('Track removed from playlist successfully!');
+
+          // Change to plus icon
+          plusIcon.removeClass('fas fa-minus added').addClass('fas fa-plus');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          // Display error toast
+          showToast(
+            'An error occurred while removing the track from the playlist.',
+            'error',
+          );
+          console.error('Error:', textStatus, errorThrown);
+        },
+      });
+    } else {
+      // The track is not added yet, add it
+      $.ajax({
+        url: '/add_to_playlist',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
+        success: function (data) {
+          // Display the toast message on successful addition
+          showToast('Track added to playlist successfully!');
+
+          // Change to minus icon
+          plusIcon.removeClass('fas fa-plus').addClass('fas fa-minus added');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          // Display error toast
+          showToast(
+            'An error occurred while adding the track to the playlist.',
+            'error',
+          );
+          console.error('Error:', textStatus, errorThrown);
+        },
+      });
+    }
   });
 
   $(document).on('click', '.add-to-saved', function (event) {
     event.preventDefault();
 
+    let heartIcon = $(this).find('.heart-icon');
     let trackId = $(this).attr('data-trackid');
-    $.ajax({
-      url: '/save_track',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ track_id: trackId }),
-      success: function (data) {
-        // Display the toast message on successful save
-        showToast('Track saved successfully!');
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Display error toast
-        showToast('An error occurred while saving the track.', 'error');
-        console.error('Error:', textStatus, errorThrown);
-      },
-    });
-  });
-  $(document).on('click', '.heart-icon', function () {
-    $(this).toggleClass('clicked');
 
-    if ($(this).hasClass('clicked')) {
-      // Change to filled heart
-      $(this).removeClass('far fa-heart').addClass('fas fa-heart');
+    if (heartIcon.hasClass('fas fa-heart')) {
+      $.ajax({
+        url: '/unsave_track',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ track_id: trackId }),
+        success: function (data) {
+          // Display the toast message on successful unsave
+          showToast('Track unsaved successfully!');
+
+          // Change to empty heart
+          heartIcon.removeClass('fas fa-heart liked').addClass('far fa-heart');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          // Display error toast
+          showToast('An error occurred while unsaving the track.', 'error');
+          console.error('Error:', textStatus, errorThrown);
+        },
+      });
     } else {
-      // Change to empty heart
-      $(this).removeClass('fas fa-heart').addClass('far fa-heart');
+      // The track is not saved yet, save it
+      $.ajax({
+        url: '/save_track',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ track_id: trackId }),
+        success: function (data) {
+          // Display the toast message on successful save
+          showToast('Track saved successfully!');
+
+          // Change to filled heart
+          heartIcon.removeClass('far fa-heart').addClass('fas fa-heart liked');
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          // Display error toast
+          showToast('An error occurred while saving the track.', 'error');
+          console.error('Error:', textStatus, errorThrown);
+        },
+      });
     }
-  });
-  $(document).on('click', '.plus-icon', function () {
-    $(this).toggleClass('clicked');
   });
 });
 
