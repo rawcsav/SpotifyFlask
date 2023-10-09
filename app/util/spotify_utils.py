@@ -131,10 +131,12 @@ def fetch_and_process_data(sp, time_periods):
         all_artist_ids = []
         all_track_ids = []
         for period in time_periods:
-            all_artist_ids.extend([artist["id"] for artist in top_artists[period]["items"]])
+            all_artist_ids.extend([artist.get("id") for artist in top_artists[period]["items"] if artist.get("id")])
 
             all_artist_ids.extend(
-                [artist["id"] for track in top_tracks[period]["items"] for artist in track["artists"]])
+                [artist.get("id") for track in top_tracks[period]["items"] for artist in track["artists"] if
+                 artist.get("id")]
+            )
 
             all_track_ids.extend([track["id"] for track in top_tracks[period]["items"]])
 
@@ -201,16 +203,16 @@ def fetch_and_process_data(sp, time_periods):
                 playlist_info.append(info)
 
             offset += 50  # Move to the next page of playlists
-            return (
-                top_tracks,
-                top_artists,
-                all_artists_info,
-                audio_features,
-                genre_specific_data,
-                sorted_genres_by_period,
-                recent_tracks,
-                playlist_info,
-            )
+        return (
+            top_tracks,
+            top_artists,
+            all_artists_info,
+            audio_features,
+            genre_specific_data,
+            sorted_genres_by_period,
+            recent_tracks,
+            playlist_info,
+        )
     except Exception as e:
         print("Exception:", str(e))
         return (None, None, None, None, None, None, None, None)

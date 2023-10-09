@@ -8,7 +8,7 @@ import random
 from time import sleep
 from requests.exceptions import RequestException
 from app.routes.auth import require_spotify_auth
-from app.util.database_utils import db, playlist_sql, UserData
+from app.util.database_utils import db, playlist_sql, UserData, delete_expired_images_for_playlist
 from app.util.session_utils import verify_session, fetch_user_data
 from app.util.spotify_utils import init_session_client, format_track_info, get_recommendations
 from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds
@@ -40,9 +40,12 @@ def playlist():
 @bp.route('/playlist/<string:playlist_id>')
 @require_spotify_auth
 def show_playlist(playlist_id):
+    delete_expired_images_for_playlist(playlist_id)
+
     playlist = playlist_sql.query.get(playlist_id)
     playlist_url = f"https://open.spotify.com/playlist/{playlist_id}"
     access_token = verify_session(session)
+
     res_data = fetch_user_data(access_token)
     if playlist:
         playlist_data = playlist.__dict__
@@ -52,7 +55,6 @@ def show_playlist(playlist_id):
         is_public = playlist_data['public']
         temporal_stats = playlist_data.get('temporal_stats', {})
         year_count = temporal_stats.get('year_count', {})
-
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
 

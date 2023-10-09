@@ -12,6 +12,8 @@ from app.util.database_utils import db, UserData
 def create_app():
     app = Flask(__name__)
 
+    app.app_context().push()
+
     app.secret_key = config.SECRET_KEY
     app.config["SESSION_TYPE"] = config.SESSION_TYPE
     app.config["SESSION_PERMANENT"] = config.SESSION_PERMANENT
@@ -21,7 +23,9 @@ def create_app():
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
-
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQL_ALCHEMY_TRACK_MODIFICATIONS
+    app.config['SQLALCHEMY_ECHO'] = config.SQLALCHEMY_ECHO
+    
     if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
@@ -38,7 +42,7 @@ def create_app():
 
     Session(app)
 
-    from .routes import auth, user, stats, search, recommendations, playlist
+    from .routes import auth, user, stats, search, recommendations, playlist, art_gen
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(user.bp)
@@ -46,6 +50,7 @@ def create_app():
     app.register_blueprint(search.bp)
     app.register_blueprint(recommendations.bp)
     app.register_blueprint(playlist.bp)
+    app.register_blueprint(art_gen.bp)
 
     db.init_app(app)
 

@@ -232,7 +232,8 @@ p {
 .plorder-group button {
   transition:
     background-color 0.5s ease-in-out,
-    color 0.5s ease-in-out;
+    color 0.5s ease-in-out,
+    transform 0.5s ease-in-out;
 }
 
 @keyframes sparkle {
@@ -388,6 +389,17 @@ p {
   flex-direction: column;
   gap: 10px;
   justify-content: flex-start;
+}
+
+.custom-line {
+  background-size: 100% 2px;
+  border-bottom: 1px solid #94a6dc;
+  border-radius: 50%; /* This makes the ends rounded */
+  box-shadow: 0 1px 1px #94a6dc;
+  height: 2px;
+  margin: 40px auto;
+  margin-bottom: 20px;
+  width: 96%;
 }
 
 .playlist-text {
@@ -559,21 +571,25 @@ canvas#YrPieChart {
   display: flex;
   flex-flow: column nowrap;
   justify-content: start;
-  position: relative;
-  padding-top: 110px;
+  margin: 0 auto; /* This centers the div with equal margin on each side */
   overflow-x: auto;
+  position: relative;
   text-align: center; /* This will center the inline and inline-block children */
   width: 95%;
-  padding-bottom: 30px;
+}
+
+.artist-gen-container {
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+}
+
+#art-gen-title {
+  text-align: center;
 }
 
 #recommendations-title {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 70%;
   text-align: center;
-  z-index: 10; /* This ensures the title stays above other content */
 }
 
 #results {
@@ -723,6 +739,64 @@ audio {
   margin-bottom: 5px;
   margin-left: 15px;
   margin-top: 5px;
+}
+
+.login-button {
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+  color: #191919;
+  display: flex;
+  font-family: Futura;
+  font-size: 1.3em;
+  height: 20px;
+  justify-content: space-between;
+  padding: 10px 15px 10px 10px;
+  text-decoration: none;
+  transition: box-shadow 0.3s;
+  width: 200px;
+}
+
+.login-button,
+.login-button img {
+  line-height: normal;
+  vertical-align: middle;
+}
+
+.openai-logo {
+  height: auto;
+  width: 100px;
+}
+
+#apiKeyForm {
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+  color: #191919;
+  display: flex;
+  font-size: 1.3em;
+  height: 10px;
+  justify-content: space-between;
+  padding: 10px 15px 10px 10px;
+  text-decoration: none;
+  transition: box-shadow 0.3s;
+  width: 200px;
+}
+
+#apiKeyForm input {
+  border: none;
+  flex-grow: 1;
+}
+
+#apiKeyForm .submit-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0;
 }
 
 .toast {

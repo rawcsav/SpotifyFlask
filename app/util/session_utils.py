@@ -1,7 +1,9 @@
 import secrets
 import string
 from datetime import timezone, timedelta
-
+from cryptography.fernet import Fernet
+import openai
+import os
 from flask import abort
 import requests
 
@@ -51,3 +53,37 @@ def request_tokens(payload, client_id, client_secret):
 
 def convert_utc_to_est(utc_time):
     return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=-4)))
+
+
+def load_key_from_env():
+    return os.environ["CRYPT_KEY"].encode()
+
+
+def encrypt_data(data):
+    CRYPT_KEY = load_key_from_env()
+    cipher_suite = Fernet(CRYPT_KEY)
+    encrypted_data = cipher_suite.encrypt(data.encode())
+    return encrypted_data
+
+
+def decrypt_data(encrypted_data):
+    CRYPT_KEY = load_key_from_env()
+    cipher_suite = Fernet(CRYPT_KEY)
+    decrypted_data = cipher_suite.decrypt(encrypted_data)
+    return decrypted_data.decode()
+
+
+def is_api_key_valid(api_key):
+    # Set the API Key for openai
+    openai.api_key = api_key
+
+    try:
+        response = openai.Completion.create(
+            engine="davinci",
+            prompt="This is a test.",
+            max_tokens=5
+        )
+    except:
+        return False
+    else:
+        return True

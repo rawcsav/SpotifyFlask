@@ -1,4 +1,33 @@
+let artGenFetched = false;
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+
+  toastMessage.textContent = message;
+
+  if (type === 'error') {
+    toast.classList.add('error');
+    toast.classList.remove('success');
+  } else {
+    toast.classList.add('success');
+    toast.classList.remove('error');
+  }
+
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 5000);
+}
+
+document.querySelector('.close-toast').addEventListener('click', function () {
+  this.parentElement.style.display = 'none';
+});
+
 $(document).ready(function () {
+  let recommendationsFetched = false;
+
   const colorThief = new ColorThief();
 
   const playlistCover = $('.playlist-cover')[0];
@@ -64,6 +93,16 @@ $(document).ready(function () {
       console.log('No artist image found in container', container);
     }
   });
+
+  function toggleDivVisibility(selector) {
+    var el = $(selector);
+    if (el.css('display') === 'none') {
+      el.css('display', 'block');
+    } else {
+      el.css('display', 'none');
+    }
+  }
+
   $('.data-view-btn').click(function () {
     $('.data-view-btn').removeClass('active');
     $(this).addClass('active');
@@ -139,31 +178,6 @@ $(document).ready(function () {
     }).fail(function (error) {
       showToast('An error occurred while removing duplicates.', 'error');
     });
-  });
-
-  function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
-
-    toastMessage.textContent = message;
-
-    if (type === 'error') {
-      toast.classList.add('error');
-      toast.classList.remove('success');
-    } else {
-      toast.classList.add('success');
-      toast.classList.remove('error');
-    }
-
-    toast.style.display = 'block';
-
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 5000);
-  }
-
-  document.querySelector('.close-toast').addEventListener('click', function () {
-    this.parentElement.style.display = 'none';
   });
 
   const observer = new IntersectionObserver((entries, observer) => {
@@ -250,7 +264,12 @@ $(document).ready(function () {
 
   $('#recommendations-btn').click(function (event) {
     event.preventDefault();
-    getPLRecommendations();
+    if (!recommendationsFetched) {
+      getPLRecommendations();
+      recommendationsFetched = true;
+    } else {
+      toggleDivVisibility('.results-title-spot');
+    }
   });
 
   function getPLRecommendations() {
@@ -258,9 +277,10 @@ $(document).ready(function () {
       `/get_pl_recommendations/${playlistId}/recommendations`,
       function (data) {
         let recommendations = data['recommendations'];
-        // Add the title
+        const customLine = '<div class="custom-line"></div>';
         const title = '<h2 id="recommendations-title">Recommendations</h2>';
-        $('.results-container').prepend(title);
+        $('.results-title-spot').prepend(title); // Append the title to the results-title-spot div
+        $('.results-title-spot').css('display', 'block'); // Display the results-title-spot div
         $('#results').empty();
         recommendations.forEach((trackInfo) => {
           let audioElement = new Audio(trackInfo['preview']);
@@ -311,6 +331,9 @@ $(document).ready(function () {
             }
           });
         });
+
+        // Append the custom line
+        $('.results-title-spot').append(customLine);
       },
     ).fail(function () {
       console.log('An error occurred while getting the recommendations.');
@@ -437,3 +460,148 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+document.getElementById('apiKeyForm').onsubmit = function (e) {
+  e.preventDefault(); // Prevent form from being submitted normally
+  var apiKey = document.getElementById('apiKey').value;
+  console.log('API Key: ' + apiKey); // Just for testing
+  document.getElementById('connect-button').style.display = 'block';
+  document.getElementById('apiKeyForm').style.display = 'none';
+};
+
+function showArtGenContainer() {
+  var artGenContainer = document.querySelector('.artist-gen-container');
+
+  if (!artGenFetched) {
+    const title =
+      '<h2 id="art-gen-title" style="text-align: center;">Cover Art Gen</h2>';
+
+    // Insert the title at the beginning of the art gen container
+    artGenContainer.innerHTML = title + artGenContainer.innerHTML;
+
+    artGenFetched = true;
+
+    // Display the container
+    artGenContainer.style.display = 'flex';
+
+    // Check for the API key when the container is shown
+    $.get('/check-api-key', function (response) {
+      if (response.has_key) {
+        // User has an existing API key, hide the connect-button and show the "Update API Key" text
+        document.getElementById('connect-button').style.display = 'none';
+        document.getElementById('update-button').style.display = 'block';
+        document.getElementById('generate-art-btn').style.display = 'block';
+      } else {
+        // User does not have an API key, show the connect-button and hide the "Update API Key" text
+        document.getElementById('connect-button').style.display = 'block';
+        document.getElementById('update-button').style.display = 'none';
+      }
+    }).fail(function (error) {
+      console.error('Error checking API key:', error);
+    });
+  } else {
+    // For subsequent clicks, simply toggle the visibility
+    if (
+      artGenContainer.style.display === 'none' ||
+      artGenContainer.style.display === ''
+    ) {
+      artGenContainer.style.display = 'flex';
+    } else {
+      artGenContainer.style.display = 'none';
+    }
+  }
+}
+
+function handleApiKeySubmit(e) {
+  e.preventDefault(); // Prevent form from being submitted normally
+
+  var apiKey = document.getElementById('apiKey').value;
+
+  $.ajax({
+    url: '/save-api-key',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ api_key: apiKey }),
+    success: function (response) {
+      document.getElementById('update-button').style.display = 'block'; // Show the update-button
+      document.getElementById('connect-button').style.display = 'none'; // Hide the connect-button
+      document.getElementById('apiKeyForm').style.display = 'none';
+      document.getElementById('generate-art-btn').style.display = 'block';
+
+      // Display a success toast
+      showToast('API Key saved successfully!');
+    },
+    error: function (error) {
+      console.error('Error saving API key:', error);
+
+      // Display an error toast
+      showToast('An error occurred while saving the API key.', 'error');
+    },
+  });
+}
+
+// Function to display Input Field
+function displayInputField(event) {
+  event.preventDefault(); // Prevent the default link behavior
+
+  $.get('/check-api-key', function (response) {
+    if (response.has_key) {
+      // User has an existing API key, display the "Update API Key" text
+      document.getElementById('connect-button').style.display = 'none';
+      document.getElementById('update-button').style.display = 'block'; // This is the new "Update API Key" text
+      document.getElementById('apiKeyForm').style.display = 'none';
+      document.getElementById('generate-art-btn').style.display = 'block';
+    } else {
+      // User does not have an API key, show the input form and hide the "Update API Key" text
+      document.getElementById('connect-button').style.display = 'none';
+      document.getElementById('update-button').style.display = 'none';
+      document.getElementById('apiKeyForm').style.display = 'flex';
+      document.getElementById('generate-art-btn').style.display = 'none';
+    }
+  }).fail(function (error) {
+    console.error('Error checking API key:', error);
+  });
+}
+
+function showKeyFormAndHideUpdateButton() {
+  // Hide the update-button
+  document.getElementById('update-button').style.display = 'none';
+
+  // Hide the Generate Art button
+  document.getElementById('generate-art-btn').style.display = 'none';
+
+  // Display the API key form
+  document.getElementById('apiKeyForm').style.display = 'flex';
+}
+
+function generateArtForPlaylist() {
+  $.ajax({
+    url: `/generate_images/${playlistId}`,
+    method: 'POST',
+    success: function (response) {
+      const images = response.images;
+
+      displayImages(images);
+    },
+    error: function (error) {
+      console.error('Error generating images:', error);
+    },
+  });
+}
+
+function displayImages(images) {
+  const imageContainer = document.getElementById('art-gen-results'); // Replace with your image container's ID
+
+  // Clear previous images
+  while (imageContainer.firstChild) {
+    imageContainer.removeChild(imageContainer.firstChild);
+  }
+
+  images.forEach((imageUrl) => {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = 'Generated Cover Art';
+
+    imageContainer.appendChild(img);
+  });
+}

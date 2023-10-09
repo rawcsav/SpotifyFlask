@@ -90,6 +90,13 @@
           >
             <i class="fas fa-lightbulb"></i> Track Recs
           </button>
+          <button
+            id="artgen-btn"
+            title="Generate cover art"
+            onclick="showArtGenContainer()"
+          >
+            <i class="fas fa-image"></i> Cover Art Gen
+          </button>
         </div>
         <div class="playlist-container">
           <a
@@ -154,8 +161,51 @@
           </div>
         </div>
       </div>
-      <div class="results-container">
-        <div id="results"></div>
+      <div class="custom-line"></div>
+      <div class="results-title-spot" style="display: none">
+        <div class="results-container">
+          <div id="results"></div>
+        </div>
+      </div>
+      <div class="artist-gen-container" style="display: none">
+        <div id="connect-button" onclick="displayInputField(event)">
+          <a class="login-button" href="#">
+            Connect
+            <br />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg"
+              class="openai-logo"
+              alt="OpenAI"
+            />
+          </a>
+        </div>
+        <form
+          id="apiKeyForm"
+          style="display: none"
+          onsubmit="handleApiKeySubmit(event)"
+        >
+          <input type="text" id="apiKey" name="apiKey" required />
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+        <button
+          id="generate-art-btn"
+          style="display: none"
+          onclick="generateArtForPlaylist()"
+        >
+          Generate Art
+        </button>
+        <div id="art-gen-results"></div>
+        <p
+          id="update-button"
+          style="color: grey; font-size: small; cursor: pointer"
+          onclick="showKeyFormAndHideUpdateButton()"
+        >
+          Update OpenAI Key
+        </p>
+
+        <div class="custom-line"></div>
       </div>
     </div>
     <div class="bottom-section">

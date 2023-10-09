@@ -3,10 +3,11 @@ from functools import wraps
 from urllib.parse import urlencode
 
 from flask import (Blueprint, abort, make_response, redirect, render_template,
-                   request, session, url_for)
-
+                   request, session, url_for, jsonify)
 from app import config
-from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens
+from app.util.database_utils import UserData, db
+from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, load_key_from_env, \
+    is_api_key_valid, encrypt_data, verify_session, fetch_user_data
 
 bp = Blueprint('auth', __name__)
 
@@ -101,3 +102,39 @@ def refresh():
     })
 
     return redirect(session.pop('original_request_url', url_for('user.profile')))
+
+
+@bp.route('/save-api-key', methods=['POST'])
+def save_api_key():
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+    spotify_user_id = res_data.get("id")
+
+    user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+    api_key = request.json.get('api_key')
+
+    # Validate the key by using is_api_key_valid function
+    if not is_api_key_valid(api_key):
+        return jsonify({"message": "Invalid OpenAI API Key"}), 400
+
+    # If validation successful, encrypt and save the key
+    encrypted_key = encrypt_data(api_key)
+
+    user_data.api_key_encrypted = encrypted_key
+
+    db.session.commit()
+
+    return jsonify({"message": "API Key saved successfully"}), 200
+
+
+@bp.route('/check-api-key', methods=['GET'])
+def check_api_key():
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+    spotify_user_id = res_data.get("id")
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+    if user and user.api_key_encrypted:
+        return jsonify({"has_key": True})
+    else:
+        return jsonify({"has_key": False})

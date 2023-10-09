@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -28,6 +28,7 @@ class UserData(db.Model):
     recent_tracks = db.Column(db.PickleType, nullable=True)
     playlist_info = db.Column(db.PickleType, nullable=True)
     last_active = db.Column(db.DateTime, default=datetime.utcnow)
+    api_key_encrypted = db.Column(db.String, nullable=True)
 
 
 class artist_sql(db.Model):
@@ -77,6 +78,53 @@ class playlist_sql(db.Model):
     top_artists = db.Column(db.PickleType)
     feature_stats = db.Column(db.PickleType)
     temporal_stats = db.Column(db.PickleType)
+
+
+class artgen_sql(db.Model):
+    genre_name = db.Column(db.String, index=True, primary_key=True)
+    place_1 = db.Column(db.String)
+    place_2 = db.Column(db.String)
+    place_3 = db.Column(db.String)
+    place_4 = db.Column(db.String)
+    place_5 = db.Column(db.String)
+    role_1 = db.Column(db.String)
+    role_2 = db.Column(db.String)
+    role_3 = db.Column(db.String)
+    role_4 = db.Column(db.String)
+    role_5 = db.Column(db.String)
+    item_1 = db.Column(db.String)
+    item_2 = db.Column(db.String)
+    item_3 = db.Column(db.String)
+    item_4 = db.Column(db.String)
+    item_5 = db.Column(db.String)
+    symbol_1 = db.Column(db.String)
+    symbol_2 = db.Column(db.String)
+    symbol_3 = db.Column(db.String)
+    symbol_4 = db.Column(db.String)
+    symbol_5 = db.Column(db.String)
+    concept_1 = db.Column(db.String)
+    concept_2 = db.Column(db.String)
+    concept_3 = db.Column(db.String)
+    concept_4 = db.Column(db.String)
+    concept_5 = db.Column(db.String)
+    event_1 = db.Column(db.String)
+    event_2 = db.Column(db.String)
+    event_3 = db.Column(db.String)
+    event_4 = db.Column(db.String)
+    event_5 = db.Column(db.String)
+
+
+class artgenstyle_sql(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    art_style = db.Column(db.String(255), nullable=False)
+
+
+class artgenurl_sql(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String, nullable=False)
+    genre_name = db.Column(db.String, nullable=True)
+    playlist_id = db.Column(db.String, nullable=False)  # Added this line to store the playlist ID
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 def add_artist_to_db(artist_data):
@@ -192,3 +240,18 @@ def get_or_fetch_audio_features(sp, track_ids):
     } for track_id, feature in existing_feature_ids.items()}
 
     return final_features
+
+
+def delete_expired_images_for_playlist(playlist_id):
+    expiry_threshold = datetime.utcnow() - timedelta(hours=1)
+
+    expired_images = artgenurl_sql.query.filter(
+        artgenurl_sql.playlist_id == playlist_id,
+        artgenurl_sql.timestamp <= expiry_threshold
+    ).all()
+
+    for image in expired_images:
+        db.session.delete(image)
+
+    db.session.commit()
+    db.session.close()
