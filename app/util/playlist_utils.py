@@ -4,7 +4,7 @@ from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio
 from datetime import datetime
 from collections import defaultdict
 from flask import session
-
+import openai
 from app.util.spotify_utils import init_session_client
 
 
@@ -284,16 +284,14 @@ def get_genres_seeds(sp, genre_info, top_n=10):
             valid_genres.append(sanitized_genre)
             continue
 
-        # Check for space-hyphen replacement
         hyphenated_genre = sanitized_genre.replace(" ", "-")
         if hyphenated_genre in genre_seeds:
             valid_genres.append(hyphenated_genre)
             continue
 
-        # Check for hyphen-space replacement
         spaced_genre = sanitized_genre.replace("-", " ")
         if spaced_genre in genre_seeds:
             valid_genres.append(spaced_genre)
 
     print(valid_genres)
-    return valid_genres[:2]  # Return top 2 valid genres
+    return valid_genres[:2]
