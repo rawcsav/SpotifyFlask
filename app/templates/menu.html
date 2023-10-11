@@ -98,13 +98,13 @@
     background-color: #ef6e6e;
     text-decoration: none;
     color: white;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
   }
 
   #modeToggle {
-    border-bottom-left-radius: 5px;
     width: 100%;
     text-align: left;
-    border-bottom-right-radius: 5px;
     background-color: #001220; /* Light background for contrast */
     color: #fbae3c;
     font-family: Futura, sans-serif;
@@ -146,10 +146,10 @@
     <a class="drop-item" href="{{ url_for('playlist.playlist') }}"
       >Playlist Explorer</a
     >
-    <a class="drop-item" href="/logout">Logout</a>
     <button class="drop-item" id="modeToggle" onclick="toggleMode()">
       Dark Mode
     </button>
+    <a class="drop-item" href="/logout">Logout</a>
   </div>
 </div>
 
