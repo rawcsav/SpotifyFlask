@@ -443,6 +443,14 @@ $(document).ready(function () {
       });
     }
   });
+  document.addEventListener('themeToggled', function () {
+    if (typeof myPieChart !== 'undefined') {
+      let isDarkMode = document.body.classList.contains('dark-mode');
+      let legendLabelColor = isDarkMode ? '#e9705a' : '#1c1d21';
+      myPieChart.options.plugins.legend.labels.color = legendLabelColor;
+      myPieChart.update();
+    }
+  });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
