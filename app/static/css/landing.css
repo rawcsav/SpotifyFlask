@@ -191,3 +191,82 @@ html {
 * {
   transition: all 0.3s ease;
 }
+
+.logo-container {
+  position: relative;
+  display: inline-block; /* Added to wrap content around the text */
+}
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(20px, 20px); /* Starting position */
+    opacity: 0;
+  }
+  100% {
+    transform: translate(10px, 10px); /* Ending position */
+    opacity: 0.3; /* Adjust the ending opacity if necessary */
+  }
+}
+
+.logo-text {
+  font-size: 6em;
+  font-weight: 900;
+  letter-spacing: -3px;
+  background: -webkit-linear-gradient(left, #3498db, #004e89);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeInZoom 1.5s ease-in-out;
+}
+
+body.dark-mode .logo-text {
+  font-size: 6em;
+  font-weight: 900;
+  letter-spacing: -3px;
+  background: -webkit-linear-gradient(left, #fbae3c, #e9705a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeInZoom 1.5s ease-in-out;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgba(0, 0, 0, 0.3); /* Black with 30% opacity */
+  transform: translate(15px, 15px); /* Move the overlaid text slightly */
+  z-index: 2;
+  animation: slideIn 0.5s forwards;
+  transition: all 0.3s ease-out; /* Adjust the timing if necessary */
+}
+
+body.dark-mode .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgba(0, 0, 0, 0.3); /* Black with 30% opacity */
+  transform: translate(15px, 15px); /* Move the overlaid text slightly */
+  z-index: 2;
+  animation: slideIn 0.5s forwards;
+  transition: all 0.3s ease-out; /* Adjust the timing if necessary */
+}
+
+.outter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.block-element {
+  text-align: center;
+}
