@@ -12,6 +12,11 @@ body {
   width: 100%;
 }
 
+body.dark-mode {
+  background-color: #001220;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1696979324/layered-waves-haikei_7_t5gfjq.svg');
+}
+
 .center_column {
   align-items: center;
   display: flex;
@@ -81,6 +86,12 @@ p {
   animation: fadeIn 2s;
 }
 
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode p {
+  color: #fbae3c;
+}
+
 p {
   color: #fff;
   font-size: 1rem;
@@ -102,6 +113,10 @@ p {
   text-align: left;
 }
 
+body.dark-mode .container p {
+  color: #fa9845;
+}
+
 .login-button {
   align-items: center;
   background-color: #fff;
@@ -116,6 +131,11 @@ p {
   padding: 10px 15px 10px 10px;
   text-decoration: none;
   transition: box-shadow 0.3s;
+}
+
+body.dark-mode .login-button {
+  background-color: #f1f9f2;
+  color: #001220;
 }
 
 .login-button,

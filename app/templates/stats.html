@@ -63,13 +63,22 @@
     {% from "loading.html" import loading_animation %}{% include 'menu.html' %}
   </head>
   {{ loading_animation() }}
-  <body>
+  <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     <h1>Spotify Stats</h1>
     <a href="https://rawcsav.com" class="homepage-link">
+      {% if g.is_dark_mode %}
       <img
+        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png"
+        alt="Homepage"
+      />
+      {% else %}
+      <img
+        id="modeSensitiveImage"
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png"
         alt="Homepage"
       />
+
+      {% endif %}
     </a>
     <div class="content-container">
       <div

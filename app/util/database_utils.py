@@ -29,6 +29,7 @@ class UserData(db.Model):
     playlist_info = db.Column(db.PickleType, nullable=True)
     last_active = db.Column(db.DateTime, default=datetime.utcnow)
     api_key_encrypted = db.Column(db.String, nullable=True)
+    isDarkMode = db.Column(db.Boolean, nullable=True)
 
 
 class artist_sql(db.Model):

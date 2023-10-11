@@ -1,7 +1,7 @@
 import json
 from pytz import timezone
 
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, request, jsonify
 
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, UserData
@@ -97,6 +97,7 @@ def refresh_data():
         access_token = verify_session(session)
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
+        session["USER_ID"] = spotify_user_id
 
         user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
         if user_data_entry:
@@ -108,3 +109,20 @@ def refresh_data():
     except Exception as e:
         print(f"An error occurred: {e}")
         return str(e), 500
+
+
+@bp.route('/update_mode', methods=['POST'])
+def update_mode():
+    # Get the user ID and mode from the request
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+    spotify_user_id = res_data.get("id")
+    mode = request.json.get('mode')
+
+    # Update the user's mode in the database
+    # Assuming you're using SQLalchemy for ORM
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+    user.isDarkMode = True if mode == "dark" else False
+    db.session.commit()
+
+    return jsonify({'message': 'Mode updated successfully!'}), 200

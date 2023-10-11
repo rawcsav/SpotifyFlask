@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, session, g
 from flask_session import Session
 import logging
 from logging.handlers import RotatingFileHandler
@@ -25,7 +25,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQL_ALCHEMY_TRACK_MODIFICATIONS
     app.config['SQLALCHEMY_ECHO'] = config.SQLALCHEMY_ECHO
-    
+
     if not app.debug:
         if not os.path.exists('logs'):
             os.mkdir('logs')
@@ -56,5 +56,16 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @app.before_request
+    def apply_user_preference():
+        if 'USER_ID' in session:
+            user = UserData.query.filter_by(spotify_user_id=session['USER_ID']).first()
+            if user and user.isDarkMode:
+                g.is_dark_mode = True
+            else:
+                g.is_dark_mode = False
+        else:
+            g.is_dark_mode = False
 
     return app

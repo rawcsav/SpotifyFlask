@@ -43,6 +43,8 @@
 </div>
 
 <script>
+  let timeoutId;
+
   const vinyls = [
     'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459064/Loading/259b0191c50295355fe46f6fd63ac412-removebg-preview_wuko8q.png',
     'https://res.cloudinary.com/dn9bcrimg/image/upload/v1696459066/Loading/3c00842ddcdc68ef63a7c90f3e1e2dac-removebg-preview_d2kqf5.png',
@@ -118,6 +120,7 @@
     // Continue as before
     vinylElement.style.backgroundImage = `url(${getRandomVinyl()})`;
     loadingOverlay.style.display = 'flex';
+    timeoutId = setTimeout(window.hideLoading, 7000);
   };
 
   let animationDisplayedAt = new Date().getTime();
@@ -125,6 +128,7 @@
   window.hideLoading = function () {
     console.log('hideLoading called');
 
+    clearTimeout(timeoutId);
     const loadingOverlay = document.getElementById('loading-overlay');
     const fadeOutDuration = 500;
 

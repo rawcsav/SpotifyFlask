@@ -58,7 +58,7 @@
       href="{{ url_for('static', filename='css/landing.css') }}"
     />
   </head>
-  <body>
+  <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     <h1>Spotify Stats & Recommendations</h1>
     <h2>
       Explore your Spotify listening habits, discover new tracks, and get
@@ -74,10 +74,19 @@
       >.
     </p>
     <a href="https://rawcsav.com" class="homepage-link">
+      {% if g.is_dark_mode %}
       <img
+        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png"
+        alt="Homepage"
+      />
+      {% else %}
+      <img
+        id="modeSensitiveImage"
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png"
         alt="Homepage"
       />
+
+      {% endif %}
     </a>
     <div class="center_column">
       <br />
@@ -94,11 +103,9 @@
       <br />
       <div class="container">
         <p>
-          *Unfortunately, I need to finalize development before I apply for
-          expanded user access.<br /><br />
-          In the meantime, to use this hosted version of the application, you
-          will need to contact me with your name and the email attached to your
-          Spotify account.
+          Before finalizing this app with Spotify, to use this development
+          version of the application, you will need to contact me with your name
+          and the email attached to your Spotify account.
           <br /><br />
           Check out my own Spotify data analysis projects:
           <a
@@ -119,4 +126,5 @@
     </div>
     {% include 'footer.html' %}
   </body>
+  <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 </html>

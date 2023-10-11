@@ -4,6 +4,9 @@ body {
   overflow-x: hidden;
   width: 100%;
 }
+body.dark-mode {
+  background-color: #0c1c30;
+}
 
 h1 {
   color: #022b3a;
@@ -12,6 +15,9 @@ h1 {
   font-weight: bold;
   margin-top: 20px;
   text-align: center;
+}
+body.dark-mode h1 {
+  color: #fbae3c;
 }
 
 h2 {
@@ -22,11 +28,18 @@ h2 {
   text-decoration: none;
 }
 
+body.dark-mode h2 {
+  color: #fa9845;
+}
+
 p {
   color: #022b3a;
   font-weight: 500;
   margin: 0;
   text-decoration: none;
+}
+body.dark-mode p {
+  color: #fbae3c;
 }
 
 .homepage-link {
@@ -71,21 +84,6 @@ p {
   top: 10px;
 }
 
-.profile-link {
-  background-color: #022b3a;
-  border: 1px solid #022b3a;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 4px 8px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-  width: 100%;
-}
-
 @keyframes dynamicShadow {
   0% {
     box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
@@ -117,22 +115,6 @@ p {
       0 0 20px 2px rgba(255, 255, 255, 0.5),
       0 0 30px 5px rgba(255, 255, 255, 0.5);
   }
-}
-
-.profile-link:hover {
-  background-color: #fff;
-  color: #022b3a;
-  text-decoration: none;
-}
-
-.playlist-info {
-  align-items: center;
-  color: #704214;
-  display: flex;
-  flex-direction: column;
-  height: 200px;
-  text-decoration: none;
-  width: 200px;
 }
 
 .image-container {

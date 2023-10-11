@@ -1,4 +1,5 @@
 let artGenFetched = false;
+var myPieChart;
 
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
@@ -116,7 +117,7 @@ $(document).ready(function () {
   let data = Object.values(yearCountData);
 
   var ctx = document.getElementById('YrPieChart').getContext('2d');
-  var myPieChart = new Chart(ctx, {
+  myPieChart = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: labels,

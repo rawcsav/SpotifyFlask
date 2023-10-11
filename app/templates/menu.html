@@ -1,4 +1,8 @@
 <style>
+  * {
+    transition: all 0.3s ease;
+  }
+
   body {
     font-family: Futura, sans-serif;
   }
@@ -94,8 +98,27 @@
     background-color: #ef6e6e;
     text-decoration: none;
     color: white;
+  }
+
+  #modeToggle {
     border-bottom-left-radius: 5px;
+    width: 100%;
+    text-align: left;
     border-bottom-right-radius: 5px;
+    background-color: #001220; /* Light background for contrast */
+    color: #fbae3c;
+    font-family: Futura, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    border-color: transparent;
+    cursor: pointer;
+  }
+
+  /* Dark Mode button appearance */
+  .dark-mode #modeToggle {
+    background-color: #efefd0; /* Dark background for contrast */
+    color: #004e89;
+    /* Dark text */
   }
 </style>
 
@@ -124,6 +147,9 @@
       >Playlist Explorer</a
     >
     <a class="drop-item" href="/logout">Logout</a>
+    <button class="drop-item" id="modeToggle" onclick="toggleMode()">
+      Dark Mode
+    </button>
   </div>
 </div>
 
@@ -144,4 +170,49 @@
       document.getElementById('menu').style.display = 'none';
     }
   });
+  function toggleMode() {
+    const body = document.body;
+    const toggleButton = document.getElementById('modeToggle');
+    const modeSensitiveImage = document.getElementById('modeSensitiveImage');
+
+    let isDarkMode = body.classList.contains('dark-mode');
+    if (isDarkMode) {
+      body.classList.remove('dark-mode');
+      toggleButton.innerText = 'Dark Mode';
+      modeSensitiveImage.src =
+        'https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png'; // Your light mode image URL
+    } else {
+      body.classList.add('dark-mode');
+      toggleButton.innerText = 'Light Mode';
+      modeSensitiveImage.src =
+        'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
+    }
+
+    // Update chart color if myPieChart exists
+    if (typeof myPieChart !== 'undefined') {
+      let legendLabelColor = isDarkMode ? '#1c1d21' : '#e9705a';
+      myPieChart.options.plugins.legend.labels.color = legendLabelColor;
+      myPieChart.update();
+    }
+
+    // Save the mode preference to database
+    const modeToSave = isDarkMode ? 'light' : 'dark';
+
+    fetch('/update_mode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mode: modeToSave,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.message);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 </script>
