@@ -1,6 +1,6 @@
 body {
   background-attachment: fixed;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694728486/layered-peaks-haikei_lyxdy9.svg');
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697026351/v8sishg7kk3kugatbagt.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -21,6 +21,7 @@ body.dark-mode {
 }
 
 h1 {
+  color: #009bf5;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
@@ -29,9 +30,9 @@ h1 {
 }
 
 body.dark-mode h1 {
+  color: #fbae3c;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
-  color: #fbae3c;
   font-weight: bold;
   margin-top: 20px;
   text-align: center;
@@ -46,7 +47,7 @@ body.dark-mode h1 {
 }
 
 .content-container {
-  background-color: #adc4ce;
+  background-color: #daadaf;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   margin: 20px auto;
   max-height: 90vh;
@@ -66,6 +67,7 @@ body.dark-mode .content-container {
 }
 
 .term-definition {
+  color: #343434;
   font-size: 0.9em;
   font-style: italic;
   margin-bottom: 20px;
@@ -73,8 +75,8 @@ body.dark-mode .content-container {
 }
 
 body.dark-mode .term-definition {
-  font-size: 0.9em;
   color: #f28f4b;
+  font-size: 0.9em;
   font-style: italic;
   margin-bottom: 20px;
   text-align: center;
@@ -102,20 +104,20 @@ body.dark-mode .center-text {
 }
 
 .carousel-content {
-  color: #555;
+  color: #2f2f2f;
   font-family: Futura, sans-serif;
   font-size: 10px;
 }
 
 .carousel-content h1 {
-  color: #333;
+  color: #2f2f2f;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 30px;
   font-weight: bold;
 }
 
 .carousel-content h2 {
-  color: #333;
+  color: #2f2f2f;
   font-size: 20px;
   font-weight: bold;
   text-align: center;
@@ -148,12 +150,17 @@ body.dark-mode .carousel-content h2 {
 
 .carousel-control-prev,
 .carousel-control-next {
+  color: #368dbf;
   height: 50px;
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
   width: 50px;
   z-index: 9999;
+}
+
+.row li {
+  color: #343434;
 }
 
 body.dark-mode .row li {
@@ -168,9 +175,28 @@ body.dark-mode .row li {
   right: 1%;
 }
 
-.carousel-control-prev-icon,
+.carousel-control-prev-icon {
+  background-color: rgb(255 255 255 / 70%);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3e%3c/svg%3e");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+  border-radius: 50%; /* make it a circle */
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%); /* shadow around the control */
+  height: 30px;
+  width: 30px;
+}
+
 .carousel-control-next-icon {
-  color: #000;
+  background-color: rgb(
+    255 255 255 / 70%
+  ); /* semi-transparent white background */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23000000' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3e%3c/svg%3e");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+  border-radius: 50%; /* make it a circle */
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%); /* shadow around the control */
   height: 30px;
   width: 30px;
 }
@@ -187,7 +213,7 @@ body.dark-mode .row li {
 }
 
 .overlay .content {
-  background: #fff;
+  background: #ffb894;
   border-radius: 8px;
   box-shadow: 0 0 10px rgb(0 0 0 / 20%);
   max-height: 80%;
@@ -199,6 +225,7 @@ body.dark-mode .row li {
 
 .overlay h2,
 .overlay h3 {
+  color: #009bf5;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 22px;
   margin-top: 10px;
@@ -218,8 +245,8 @@ body.dark-mode .overlay .content {
 
 body.dark-mode .overlay h2,
 body.dark-mode .overlay h3 {
-  font-size: 22px;
   color: #fa9845;
+  font-size: 22px;
   margin-top: 10px;
   text-align: center;
 }
@@ -250,7 +277,7 @@ body.dark-mode .overlay h3 {
 }
 
 #overlayTimePeriod {
-  color: #777;
+  color: #5f95bb;
   font-size: 18px;
   font-weight: 400;
   margin-bottom: 20px;

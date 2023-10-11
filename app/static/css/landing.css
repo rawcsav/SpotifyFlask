@@ -1,7 +1,7 @@
 body {
   background-attachment: fixed;
-  background-color: #1ed760;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1694707526/layered-waves-haikei_jlojle.svg');
+  background-color: #faf0be;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697025520/yacryum4bs5cf4j31oux.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -84,6 +84,7 @@ h1,
 h2,
 p {
   animation: fadeIn 2s;
+  color: #368dbf;
 }
 
 body.dark-mode h1,
@@ -93,7 +94,6 @@ body.dark-mode p {
 }
 
 p {
-  color: #fff;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1;

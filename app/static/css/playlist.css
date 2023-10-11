@@ -1,5 +1,5 @@
 body {
-  background-color: #fff;
+  background-color: #faf0be;
   font-family: Futura, sans-serif;
   overflow-x: hidden;
   width: 100%;
@@ -9,7 +9,7 @@ body.dark-mode {
 }
 
 h1 {
-  color: #022b3a;
+  color: #368DBF;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
@@ -21,7 +21,7 @@ body.dark-mode h1 {
 }
 
 h2 {
-  color: #022b3a;
+  color: #368DBF;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -33,7 +33,7 @@ body.dark-mode h2 {
 }
 
 p {
-  color: #022b3a;
+  color: #368DBF;
   font-weight: 500;
   margin: 0;
   text-decoration: none;

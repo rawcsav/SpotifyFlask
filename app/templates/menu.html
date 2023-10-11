@@ -170,32 +170,10 @@
       document.getElementById('menu').style.display = 'none';
     }
   });
+
   function toggleMode() {
     const body = document.body;
-    const toggleButton = document.getElementById('modeToggle');
-    const modeSensitiveImage = document.getElementById('modeSensitiveImage');
-
-    let isDarkMode = body.classList.contains('dark-mode');
-    if (isDarkMode) {
-      body.classList.remove('dark-mode');
-      toggleButton.innerText = 'Dark Mode';
-      modeSensitiveImage.src =
-        'https://res.cloudinary.com/dn9bcrimg/image/upload/v1695251723/RawcSavLogo_iiq03n.png'; // Your light mode image URL
-    } else {
-      body.classList.add('dark-mode');
-      toggleButton.innerText = 'Light Mode';
-      modeSensitiveImage.src =
-        'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
-    }
-
-    // Update chart color if myPieChart exists
-    if (typeof myPieChart !== 'undefined') {
-      let legendLabelColor = isDarkMode ? '#1c1d21' : '#e9705a';
-      myPieChart.options.plugins.legend.labels.color = legendLabelColor;
-      myPieChart.update();
-    }
-
-    // Save the mode preference to database
+    const isDarkMode = body.classList.contains('dark-mode');
     const modeToSave = isDarkMode ? 'light' : 'dark';
 
     fetch('/update_mode', {
@@ -210,6 +188,71 @@
       .then((response) => response.json())
       .then((data) => {
         console.log(data.message);
+
+        const toggleButton = document.getElementById('modeToggle');
+        const modeSensitiveImage =
+          document.getElementById('modeSensitiveImage');
+
+        if (isDarkMode) {
+          body.classList.remove('dark-mode');
+          toggleButton.innerText = 'Dark Mode';
+          modeSensitiveImage.src =
+            'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
+        } else {
+          body.classList.add('dark-mode');
+          toggleButton.innerText = 'Light Mode';
+          modeSensitiveImage.src =
+            'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
+        }
+
+        // Update chart color if myPieChart exists
+        if (typeof myPieChart !== 'undefined') {
+          let legendLabelColor = isDarkMode ? '#1c1d21' : '#e9705a';
+          myPieChart.options.plugins.legend.labels.color = legendLabelColor;
+          myPieChart.update();
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+  // Fetch the user's mode from the server when the page loads
+  window.onload = function () {
+    checkMode();
+  };
+
+  function checkMode() {
+    fetch('/get_mode', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const body = document.body;
+        const toggleButton = document.getElementById('modeToggle');
+        const modeSensitiveImage =
+          document.getElementById('modeSensitiveImage');
+
+        if (data.mode === 'dark') {
+          body.classList.add('dark-mode');
+          toggleButton.innerText = 'Light Mode';
+          modeSensitiveImage.src =
+            'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png';
+        } else {
+          body.classList.remove('dark-mode');
+          toggleButton.innerText = 'Dark Mode';
+          modeSensitiveImage.src =
+            'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png';
+        }
+
+        // Update chart color if myPieChart exists
+        if (typeof myPieChart !== 'undefined') {
+          let legendLabelColor = data.mode === 'dark' ? '#1c1d21' : '#e9705a';
+          myPieChart.options.plugins.legend.labels.color = legendLabelColor;
+          myPieChart.update();
+        }
       })
       .catch((error) => {
         console.error('Error:', error);

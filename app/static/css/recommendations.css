@@ -1,7 +1,7 @@
 body {
   align-items: center;
   background-attachment: fixed;
-  background-color: #02343f;
+  background-color: #faf0be;
   display: flex;
   flex-direction: column;
   font-family: Futura, sans-serif;
@@ -67,10 +67,10 @@ html {
 }
 
 #showInstructions {
-  background-color: #f0edcc;
+  background-color: #368dbf;
   border: transparent;
   border-radius: 5px;
-  color: #02343f;
+  color: #faf0be;
   cursor: pointer;
   font-size: 10px;
   font-weight: bold;
@@ -87,7 +87,9 @@ body.dark-mode #showInstructions {
 }
 
 #showInstructions:hover {
-  background-color: #1e4174;
+  background-color: #faf0be;
+  color: #368dbf;
+  box-shadow: 0 0 15px 5px #5f95bb;
 }
 
 body.dark-mode #showInstructions:hover {
@@ -110,7 +112,7 @@ body.dark-mode #showInstructions:hover {
 }
 
 .modal-content {
-  background-color: #f0edcc;
+  background-color: #fab898;
   border-radius: 5px;
   color: #02343f;
   margin: 5% auto;
@@ -137,16 +139,17 @@ body.dark-mode .modal-content {
 }
 
 h1 {
-  color: #f0edcc;
+  color: #368dbf;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 25px;
   position: absolute;
+  font-weight: bold;
   text-align: center;
   transform: translateY(-30px);
 }
 
 .custom-line {
-  background-color: #f0edcc;
+  background-color: #fa8072;
   border: none;
   clear: both;
   display: block;
@@ -202,7 +205,7 @@ body.dark-mode .custom-line {
 }
 
 #universal_seeds_container .clickable-result {
-  box-shadow: 0 0 25px 5px #02343f;
+  box-shadow: 0 0 25px 5px #fad4ab;
 }
 
 body.dark-mode #universal_seeds_container .clickable-result {
@@ -222,7 +225,7 @@ body.dark-mode #universal_seeds_container .clickable-result {
 .clickable-result {
   align-items: center;
   border-radius: 5px;
-  box-shadow: 0 0 55px 10px #f0edcc;
+  box-shadow: 0 0 55px 10px #5f95bb;
   cursor: pointer;
   display: flex;
   flex-flow: column nowrap;
@@ -277,7 +280,7 @@ h3 {
 h2,
 h3 {
   align-items: center;
-  color: #02343f;
+  color: #343434;
   display: flex;
   justify-content: center;
   position: relative;
@@ -324,7 +327,7 @@ h2 {
 }
 
 #universal_input::placeholder {
-  color: #02343f;
+  color: #343434;
   font-size: 16px;
   font-weight: 600;
 }
@@ -342,7 +345,7 @@ body.dark-mode #universal_input::placeholder {
 }
 
 #universal_input {
-  background-color: #f0edcc;
+  background-color: #fab898;
   border-color: transparent;
   border-radius: 8px;
   box-shadow:
@@ -355,7 +358,7 @@ body.dark-mode #universal_input::placeholder {
 }
 
 .main-container {
-  background-color: #f0edcc;
+  background-color: #daadaf;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
   display: flex;
@@ -395,7 +398,7 @@ body.dark-mode #universal_input::placeholder {
 .form-container limit,
 .form-container select {
   border-radius: 5px;
-  color: #f0edcc;
+  color: #faf0be;
   cursor: pointer;
   font-family: Futura, sans-serif;
   margin-bottom: 5px;
@@ -416,7 +419,7 @@ body.dark-mode .form-container select {
 }
 
 .form-container label {
-  color: #02343f;
+  color: #343434;
   display: flex;
   font-weight: 800;
   justify-content: center;
@@ -431,7 +434,7 @@ body.dark-mode .form-container label {
 .form-container input,
 .form-container select,
 .form-container button {
-  background-color: #02343f;
+  background-color: #343434;
 }
 
 body.dark-mode .form-container input,
@@ -648,7 +651,7 @@ audio {
 }
 
 .playlist-modal-content {
-  background-color: #02343f;
+  background-color: #DAADAF;
   border-radius: 5px;
   left: 40%;
   margin: 10% auto;

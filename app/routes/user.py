@@ -111,6 +111,19 @@ def refresh_data():
         return str(e), 500
 
 
+@bp.route('/get_mode', methods=['GET'])
+def get_mode():
+    access_token = verify_session(session)
+    res_data = fetch_user_data(access_token)
+    spotify_user_id = res_data.get("id")
+
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+    mode = 'dark' if user.isDarkMode else 'light'
+
+    return jsonify({'mode': mode})
+
+
 @bp.route('/update_mode', methods=['POST'])
 def update_mode():
     # Get the user ID and mode from the request
