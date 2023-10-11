@@ -29,12 +29,20 @@ def playlist():
     if not user_data_entry:
         return jsonify(error="User data not found"), 404
 
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # or any other desired value
+
     owner_name = session.get("DISPLAY_NAME")
-    playlists = [playlist for playlist in user_data_entry.playlist_info
+    start = (page - 1) * per_page
+    end = start + per_page
+    playlists = [playlist for playlist in user_data_entry.playlist_info[start:end]
                  if playlist["owner"] is not None
                  and playlist["owner"] == owner_name]
 
-    return render_template('playlist.html', data=res_data, playlists=playlists)
+    total_playlists = len(user_data_entry.playlist_info)
+    total_pages = -(-total_playlists // per_page)  # This calculates the ceiling of division
+
+    return render_template('playlist.html', data=res_data, playlists=playlists, page=page, total_pages=total_pages)
 
 
 @bp.route('/playlist/<string:playlist_id>')

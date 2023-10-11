@@ -9,7 +9,7 @@ body.dark-mode {
 }
 
 h1 {
-  color: #368DBF;
+  color: #368dbf;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
@@ -21,7 +21,7 @@ body.dark-mode h1 {
 }
 
 h2 {
-  color: #368DBF;
+  color: #368dbf;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -33,7 +33,7 @@ body.dark-mode h2 {
 }
 
 p {
-  color: #368DBF;
+  color: #368dbf;
   font-weight: 500;
   margin: 0;
   text-decoration: none;
@@ -174,4 +174,28 @@ body.dark-mode p {
 
 .playlist-item {
   margin-bottom: 20px;
+}
+
+.pagination {
+  text-align: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 100px;
+}
+
+.pagination a {
+  color: #fff;
+  padding: 8px 16px;
+  margin: 0 4px;
+  background-color: #368dbf;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.pagination a:hover {
+  background-color: #555;
+}
+
+body.dark-mode .pagination a {
+  background-color: #fbae3c;
 }

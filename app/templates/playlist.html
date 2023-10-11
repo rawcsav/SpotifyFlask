@@ -71,6 +71,13 @@
     </a>
     <h1>Spotify Playlists</h1>
     <ul id="playlist-container"></ul>
+    <div class="pagination">
+      {% if page > 1 %}
+      <a href="{{ url_for('playlist.playlist', page=page-1) }}"><</a>
+      {% endif %} {% if page < total_pages %}
+      <a href="{{ url_for('playlist.playlist', page=page+1) }}">></a>
+      {% endif %}
+    </div>
   </body>
   <script src="{{ url_for('static', filename='js/playlist.js') }}"></script>
 </html>
