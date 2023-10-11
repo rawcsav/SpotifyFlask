@@ -1,6 +1,15 @@
 let artGenFetched = false;
 var myPieChart;
 
+document.addEventListener('themeToggled', function () {
+  if (typeof myPieChart !== 'undefined') {
+    let isDarkMode = document.body.classList.contains('dark-mode');
+    let legendLabelColor = isDarkMode ? '#e9705a' : '#1c1d21';
+    myPieChart.options.plugins.legend.labels.color = legendLabelColor;
+    myPieChart.update();
+  }
+});
+
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toastMessage');
@@ -441,14 +450,6 @@ $(document).ready(function () {
           console.error('Error:', textStatus, errorThrown);
         },
       });
-    }
-  });
-  document.addEventListener('themeToggled', function () {
-    if (typeof myPieChart !== 'undefined') {
-      let isDarkMode = document.body.classList.contains('dark-mode');
-      let legendLabelColor = isDarkMode ? '#e9705a' : '#1c1d21';
-      myPieChart.options.plugins.legend.labels.color = legendLabelColor;
-      myPieChart.update();
     }
   });
 });
