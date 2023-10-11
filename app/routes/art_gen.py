@@ -16,14 +16,10 @@ def generate_images(playlist_id):
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
 
-        playlist = playlist_sql.query.get(playlist_id)
-
         user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
         encrypted_api_key = user_data.api_key_encrypted
 
         api_key = decrypt_data(encrypted_api_key)
-
-        # Randomly select a genre
 
         openai.api_key = api_key
 

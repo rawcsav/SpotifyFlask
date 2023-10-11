@@ -226,6 +226,7 @@ h2 {
   font-size: 25px;
   font-weight: bold;
   text-decoration: none;
+  margin-top: 0;
 }
 
 body.dark-mode h2 {
@@ -753,6 +754,10 @@ audio {
   width: 30%;
 }
 
+#generate-art-btn {
+  margin-bottom: 200px;
+}
+
 body.dark-mode li {
   color: #e9705a;
 }
@@ -775,13 +780,14 @@ body.dark-mode li {
   color: #191919;
   display: flex;
   font-family: Futura, sans-serif;
-  font-size: 1.3em;
+  font-size: 1.1em;
+  font-weight: bold;
   height: 20px;
   justify-content: space-between;
   padding: 10px 15px 10px 10px;
   text-decoration: none;
   transition: box-shadow 0.3s;
-  width: 200px;
+  width: 230px;
 }
 
 .login-button,
@@ -843,6 +849,11 @@ body.dark-mode li {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+#update-button {
+  top: 40px;
+  position: relative;
 }
 
 .toast.success {

@@ -83,6 +83,7 @@ class playlist_sql(db.Model):
 
 class artgen_sql(db.Model):
     genre_name = db.Column(db.String, index=True, primary_key=True)
+    parent_genre = db.Column(db.String)
     place_1 = db.Column(db.String)
     place_2 = db.Column(db.String)
     place_3 = db.Column(db.String)
@@ -126,6 +127,19 @@ class artgenurl_sql(db.Model):
     genre_name = db.Column(db.String, nullable=True)
     playlist_id = db.Column(db.String, nullable=False)  # Added this line to store the playlist ID
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class genre_sql(db.Model):
+    GENRE = db.Column(db.String, primary_key=True)
+    SIM_GENRES = db.Column(db.String, nullable=True)
+    SIM_WEIGHTS = db.Column(db.String, nullable=True)
+    OPP_GENRES = db.Column(db.String, nullable=True)
+    OPP_WEIGHTS = db.Column(db.String, nullable=True)
+    SPOTIFY_URL = db.Column(db.String, nullable=True)
+    color = db.Column(db.String, nullable=True)
+    font_size = db.Column(db.String, nullable=True)
+    left = db.Column(db.String, nullable=True)
+    top = db.Column(db.String, nullable=True)
 
 
 def add_artist_to_db(artist_data):
