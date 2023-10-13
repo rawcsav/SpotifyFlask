@@ -190,14 +190,23 @@
             <i class="fas fa-arrow-right"></i>
           </button>
         </form>
-        <button
-          id="generate-art-btn"
-          style="display: none"
-          onclick="generateArtForPlaylist()"
-        >
-          Generate Art
-        </button>
-        <div id="art-gen-results"></div>
+        <div class="gen-btns">
+          <button
+            id="generate-art-btn"
+            style="display: none"
+            onclick="generateArtForPlaylist()"
+          >
+            Generate Art
+          </button>
+          <i
+            id="gen-refresh-icon"
+            style="display: none"
+            class="fas fa-sync"
+          ></i>
+        </div>
+        <div id="art-info-container">
+          <div id="art-gen-results"></div>
+        </div>
         <p
           id="update-button"
           style="color: grey; font-size: small; cursor: pointer"

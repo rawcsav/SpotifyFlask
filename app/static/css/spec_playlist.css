@@ -13,6 +13,7 @@ body {
 
 body.dark-mode {
   background-color: #0c1c30;
+  color: #e9705a;
 }
 
 .top-right-nav {
@@ -221,12 +222,12 @@ body.dark-mode h1 {
 }
 
 h2 {
-  color: #3f4d56;
+  color: #296c93;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
-  text-decoration: none;
   margin-top: 0;
+  text-decoration: none;
 }
 
 body.dark-mode h2 {
@@ -248,6 +249,7 @@ body.dark-mode p {
 .homepage-link:hover img,
 .profile-link:hover,
 .pl-refresh:hover,
+#generate-art-btn:hover,
 .button-group button:hover,
 .plfunc-group button:hover,
 .plorder-group button:hover,
@@ -259,6 +261,7 @@ body.dark-mode p {
 
 .pl-refresh,
 .profile-link,
+#generate-art-btn:hover,
 .button-group button,
 .plfunc-group button,
 .plorder-group button {
@@ -573,7 +576,7 @@ canvas#YrPieChart {
 .decade-title,
 .top-artists-title,
 .utils-title {
-  color: #1c1d21;
+  color: #296c93;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -605,6 +608,10 @@ body.dark-mode .utils-title {
   align-items: center;
   display: flex;
   flex-flow: column;
+}
+
+#artgen-btn {
+  background-color: #ff506d;
 }
 
 #art-gen-title {
@@ -754,10 +761,6 @@ audio {
   width: 30%;
 }
 
-#generate-art-btn {
-  margin-bottom: 200px;
-}
-
 body.dark-mode li {
   color: #e9705a;
 }
@@ -801,6 +804,31 @@ body.dark-mode li {
   width: 100px;
 }
 
+#generate-art-btn {
+  background-color: #ff506d;
+  border: transparent;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-family: Futura, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  width: 100px;
+}
+
+body.dark-mode #generate-art-btn,
+body.dark-mode #artgen-btn {
+  background-color: #f9778c;
+}
+
+body.dark-mode #gen-refresh-icon,
+body.dark-mode .art-gen-icon-div {
+  color: #f9778c;
+}
+
 #apiKeyForm {
   align-items: center;
   background-color: #fff;
@@ -831,6 +859,72 @@ body.dark-mode li {
   padding: 0;
 }
 
+#art-gen-results {
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+}
+
+.art-gen-img {
+  border: 1px solid #000; /* add a border to the image */
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%); /* add a shadow to the image */
+  height: 300px;
+  margin: 10px; /* add some margin around the image */
+  width: 300px; /* or any other size */
+}
+.art-gen-img:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s ease-in-out;
+}
+
+.art-gen-icon-div {
+  color: #ff506d;
+  align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.art-gen-prompt {
+  color: #3f4d56;
+  font-size: 15px;
+  margin-top: -30px;
+  padding: 15px;
+  text-align: center;
+}
+
+body.dark-mode .art-gen-prompt {
+  color: #ff506d;
+}
+
+.art-gen-icon-div i {
+  cursor: pointer;
+  font-size: 20px;
+  margin: 5px;
+}
+
+#gen-refresh-icon {
+  color: #ff506d;
+  opacity: 0.5;
+  cursor: not-allowed;
+  font-size: 20px;
+}
+
+.gen-btns {
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+#art-info-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
 .toast {
   border-radius: 5px;
   bottom: 2%;
@@ -852,8 +946,13 @@ body.dark-mode li {
 }
 
 #update-button {
-  top: 40px;
   position: relative;
+  top: 40px;
+}
+
+#update-button:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s ease-in-out;
 }
 
 .toast.success {

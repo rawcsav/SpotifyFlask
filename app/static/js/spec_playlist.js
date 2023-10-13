@@ -501,6 +501,7 @@ function showArtGenContainer() {
         document.getElementById('connect-button').style.display = 'none';
         document.getElementById('update-button').style.display = 'block';
         document.getElementById('generate-art-btn').style.display = 'block';
+        document.getElementById('gen-refresh-icon').style.display = 'block';
       } else {
         // User does not have an API key, show the connect-button and hide the "Update API Key" text
         document.getElementById('connect-button').style.display = 'block';
@@ -537,6 +538,7 @@ function handleApiKeySubmit(e) {
       document.getElementById('connect-button').style.display = 'none'; // Hide the connect-button
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
+      document.getElementById('gen-refresh-icon').style.display = 'block';
 
       // Display a success toast
       showToast('API Key saved successfully!');
@@ -561,12 +563,14 @@ function displayInputField(event) {
       document.getElementById('update-button').style.display = 'block'; // This is the new "Update API Key" text
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
+      document.getElementById('gen-refresh-icon').style.display = 'block';
     } else {
       // User does not have an API key, show the input form and hide the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
       document.getElementById('update-button').style.display = 'none';
       document.getElementById('apiKeyForm').style.display = 'flex';
       document.getElementById('generate-art-btn').style.display = 'none';
+      document.getElementById('gen-refresh-icon').style.display = 'none';
     }
   }).fail(function (error) {
     console.error('Error checking API key:', error);
@@ -579,31 +583,39 @@ function showKeyFormAndHideUpdateButton() {
 
   // Hide the Generate Art button
   document.getElementById('generate-art-btn').style.display = 'none';
+  document.getElementById('gen-refresh-icon').style.display = 'none';
 
   // Display the API key form
   document.getElementById('apiKeyForm').style.display = 'flex';
 }
 
-function generateArtForPlaylist() {
-  // Set the flag
+function generateArtForPlaylist(genreName) {
   window.isArtGenerationRequest = true;
 
   // Show loading animation for 45 seconds
   window.showLoading(45000);
 
+  // Define the data payload
+  const dataPayload = genreName ? { genre_name: genreName } : {};
+
   $.ajax({
     url: `/generate_images/${playlistId}`,
     method: 'POST',
+    contentType: 'application/json', // Specify the content type
+    data: JSON.stringify(dataPayload), // Convert the payload to a JSON string
     success: function (response) {
       const images = response.images;
+      const prompt = response.prompt;
 
       // Hide loading animation
       window.hideLoading();
 
-      displayImages(images);
+      displayImages(response);
 
       // Reset the flag
       window.isArtGenerationRequest = false;
+
+      showToast('Image generated successfully.');
     },
     error: function (error) {
       console.error('Error generating images:', error);
@@ -613,23 +625,69 @@ function generateArtForPlaylist() {
 
       // Reset the flag
       window.isArtGenerationRequest = false;
+
+      // Show error toast
+      showToast('An error occurred while generating the image.', 'error');
     },
   });
 }
 
-function displayImages(images) {
-  const imageContainer = document.getElementById('art-gen-results'); // Replace with your image container's ID
+function displayImages(response) {
+  const artInfoContainer = document.getElementById('art-info-container');
+  const imageContainer = document.getElementById('art-gen-results');
+  const images = response.images;
+  const promptText = response.prompt;
 
   // Clear previous images
   while (imageContainer.firstChild) {
     imageContainer.removeChild(imageContainer.firstChild);
   }
 
+  // Check and remove existing prompt
+  const existingPrompt = document.querySelector('.art-gen-prompt');
+  if (existingPrompt) {
+    artInfoContainer.removeChild(existingPrompt);
+  }
+
+  // Display the prompt at the top
+  const promptDiv = document.createElement('div');
+  promptDiv.className = 'art-gen-prompt';
+  promptDiv.textContent = promptText;
+  artInfoContainer.insertBefore(promptDiv, imageContainer);
+
   images.forEach((imageUrl) => {
+    // Create a new div for each image
+    const imageDiv = document.createElement('div');
+    imageDiv.className = 'art-gen-img-div';
+
+    // Create the image
     const img = document.createElement('img');
     img.src = imageUrl;
     img.alt = 'Generated Cover Art';
+    img.className = 'art-gen-img';
 
-    imageContainer.appendChild(img);
+    // Create a div for the icons
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'art-gen-icon-div';
+
+    // Define the downloadIcon
+    const downloadIcon = document.createElement('i');
+    downloadIcon.className = 'fas fa-download';
+    downloadIcon.title = 'Download image';
+
+    const addPlaylistIcon = document.createElement('i');
+    addPlaylistIcon.className = 'fas fa-plus fa-cover';
+    addPlaylistIcon.title = 'Add to playlist';
+
+    // Append the icons to the icon div
+    iconDiv.appendChild(downloadIcon);
+    iconDiv.appendChild(addPlaylistIcon);
+
+    // Append the image and icon div to the image div
+    imageDiv.appendChild(img);
+    imageDiv.appendChild(iconDiv);
+
+    // Append the image div to the container
+    imageContainer.appendChild(imageDiv);
   });
 }

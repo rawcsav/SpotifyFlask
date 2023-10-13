@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, send_from_directory, jsonify, session
 import openai
 from requests import RequestException
-from app.util.art_gen_utils import generate_dalle_prompt, generate_images_dalle
+from app.util.art_gen_utils import generate_and_save_images
 from app.util.database_utils import artgenurl_sql, db, UserData, playlist_sql
 from app.util.session_utils import verify_session, fetch_user_data, decrypt_data
 
@@ -23,24 +23,12 @@ def generate_images(playlist_id):
 
         openai.api_key = api_key
 
-        prompt = generate_dalle_prompt()
+        # Check if genre is provided in the request data
+        genre_name = request.json.get('genre_name', None)
 
-        # Generate the images
-        images = generate_images_dalle(prompt)
-        current_time = datetime.utcnow()
+        images, prompt = generate_and_save_images(playlist_id, genre_name)
 
-        for img_url in images:
-            new_image_url = artgenurl_sql(
-                url=img_url,
-                playlist_id=playlist_id,
-                timestamp=current_time,
-            )
-            db.session.add(new_image_url)
-        db.session.commit()
-
-        return {"images": images}, 200
-
-
+        return {"images": images, "prompt": prompt}, 200
     except Exception as e:
         print(e)
         return jsonify(error="Internal server error"), 500

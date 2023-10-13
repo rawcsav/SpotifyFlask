@@ -126,7 +126,10 @@ class artgenurl_sql(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String, nullable=False)
     genre_name = db.Column(db.String, nullable=True)
-    playlist_id = db.Column(db.String, nullable=False)  # Added this line to store the playlist ID
+    art_style = db.Column(db.String, nullable=True)
+    random_attribute = db.Column(db.String, nullable=True)
+    prompt = db.Column(db.String, nullable=True)
+    playlist_id = db.Column(db.String, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
