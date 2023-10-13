@@ -1,12 +1,11 @@
-import logging
-
 from flask import Blueprint, render_template, jsonify, \
     session, redirect, url_for, request
 import json
 import random
-
-from time import sleep
-from requests.exceptions import RequestException
+import base64
+import requests
+from io import BytesIO
+from PIL import Image
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import db, playlist_sql, UserData, delete_expired_images_for_playlist
 from app.util.session_utils import verify_session, fetch_user_data
@@ -322,3 +321,34 @@ def get_pl_recommendations(playlist_id):
         format_track_info(track) for track in recommendations_data["tracks"]
     ]
     return jsonify({"recommendations": track_info_list})
+
+
+@bp.route('/playlist/<string:playlist_id>/cover-art', methods=['POST'])
+@require_spotify_auth
+def change_cover_art(playlist_id):
+    image_url = request.json.get('image_url')
+
+    if not image_url:
+        return jsonify(error="Image URL not provided"), 400
+
+    try:
+        # Fetch the image from the provided URL
+        response = requests.get(image_url)
+        image = Image.open(BytesIO(response.content))
+
+        buffered = BytesIO()
+        image.save(buffered, format="JPEG")
+        img_base64 = base64.b64encode(buffered.getvalue())
+
+        # Initialize the Spotify client
+        sp, error = init_session_client(session)
+        if error:
+            return jsonify(error=error), 401
+
+        # Use the Spotify API to update the cover art
+        sp.playlist_upload_cover_image(playlist_id, img_base64.decode('utf-8'))
+
+        return jsonify(status="Cover art updated successfully"), 200
+
+    except Exception as e:
+        return jsonify(error=str(e)), 500

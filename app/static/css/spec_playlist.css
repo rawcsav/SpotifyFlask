@@ -962,3 +962,12 @@ body.dark-mode .art-gen-prompt {
 .toast.error {
   background-color: #f44336;
 }
+
+#genre-dropdown {
+  width: 200px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 5px;
+}

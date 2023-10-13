@@ -502,6 +502,7 @@ function showArtGenContainer() {
         document.getElementById('update-button').style.display = 'block';
         document.getElementById('generate-art-btn').style.display = 'block';
         document.getElementById('gen-refresh-icon').style.display = 'block';
+        document.getElementById('genre-dropdown').style.display = 'block';
       } else {
         // User does not have an API key, show the connect-button and hide the "Update API Key" text
         document.getElementById('connect-button').style.display = 'block';
@@ -539,6 +540,7 @@ function handleApiKeySubmit(e) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
+      document.getElementById('genre-dropdown').style.display = 'block';
 
       // Display a success toast
       showToast('API Key saved successfully!');
@@ -564,6 +566,7 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
+      document.getElementById('genre-dropdown').style.display = 'block';
     } else {
       // User does not have an API key, show the input form and hide the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
@@ -571,6 +574,7 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'flex';
       document.getElementById('generate-art-btn').style.display = 'none';
       document.getElementById('gen-refresh-icon').style.display = 'none';
+      document.getElementById('genre-dropdown').style.display = 'none';
     }
   }).fail(function (error) {
     console.error('Error checking API key:', error);
@@ -584,6 +588,7 @@ function showKeyFormAndHideUpdateButton() {
   // Hide the Generate Art button
   document.getElementById('generate-art-btn').style.display = 'none';
   document.getElementById('gen-refresh-icon').style.display = 'none';
+  document.getElementById('genre-dropdown').style.display = 'none';
 
   // Display the API key form
   document.getElementById('apiKeyForm').style.display = 'flex';
@@ -639,6 +644,33 @@ function generateArtForPlaylist(input, isPrompt = false) {
   });
 }
 
+function addArtToPlaylist(imageUrl) {
+  $.ajax({
+    url: `/playlist/${playlistId}/cover-art`, // Using the endpoint you've provided
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      image_url: imageUrl,
+    }),
+    success: function (response) {
+      if (
+        response.status &&
+        response.status === 'Cover art updated successfully'
+      ) {
+        showToast('Playlist cover updated successfully.');
+      } else {
+        showToast(
+          'Failed to update the playlist cover. Please try again.',
+          'error',
+        );
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      showToast(`Error: ${jqXHR.responseJSON.error || textStatus}`, 'error');
+    },
+  });
+}
+
 function refreshArt() {
   if (lastPromptUsed) {
     generateArtForPlaylist(lastPromptUsed, true); // Assuming you've made changes to accept a prompt as mentioned in the previous answer
@@ -689,14 +721,21 @@ function displayImages(response) {
     const iconDiv = document.createElement('div');
     iconDiv.className = 'art-gen-icon-div';
 
-    // Define the downloadIcon
     const downloadIcon = document.createElement('i');
     downloadIcon.className = 'fas fa-download';
     downloadIcon.title = 'Download image';
 
+    // Add an onclick event to the downloadIcon
+    downloadIcon.onclick = function () {
+      window.open(imageUrl, '_blank');
+    };
+
     const addPlaylistIcon = document.createElement('i');
     addPlaylistIcon.className = 'fas fa-plus fa-cover';
     addPlaylistIcon.title = 'Add to playlist';
+    addPlaylistIcon.onclick = function () {
+      addArtToPlaylist(imageUrl);
+    };
 
     // Append the icons to the icon div
     iconDiv.appendChild(downloadIcon);

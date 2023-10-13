@@ -45,7 +45,8 @@ def login(loginout):
     scope = ' '.join([
         'user-read-private', 'user-top-read', 'user-read-recently-played',
         'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-private',
-        'playlist-modify-public', 'user-library-modify', 'user-library-read'
+        'playlist-modify-public', 'user-library-modify', 'user-library-read', 'ugc-image-upload'
+
     ])
     payload = prepare_auth_payload(state, scope, show_dialog=(loginout == 'logout'))
 
