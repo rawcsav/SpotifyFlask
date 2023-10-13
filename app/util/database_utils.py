@@ -130,12 +130,12 @@ class artgenurl_sql(db.Model):
 
 
 class genre_sql(db.Model):
-    GENRE = db.Column(db.String, primary_key=True)
-    SIM_GENRES = db.Column(db.String, nullable=True)
-    SIM_WEIGHTS = db.Column(db.String, nullable=True)
-    OPP_GENRES = db.Column(db.String, nullable=True)
-    OPP_WEIGHTS = db.Column(db.String, nullable=True)
-    SPOTIFY_URL = db.Column(db.String, nullable=True)
+    genre = db.Column(db.String, primary_key=True)
+    sim_genres = db.Column(db.String, nullable=True)
+    sim_weights = db.Column(db.String, nullable=True)
+    opp_genres = db.Column(db.String, nullable=True)
+    opp_weights = db.Column(db.String, nullable=True)
+    spotify_url = db.Column(db.String, nullable=True)
     color = db.Column(db.String, nullable=True)
     font_size = db.Column(db.String, nullable=True)
     left = db.Column(db.String, nullable=True)

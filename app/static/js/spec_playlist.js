@@ -585,16 +585,34 @@ function showKeyFormAndHideUpdateButton() {
 }
 
 function generateArtForPlaylist() {
+  // Set the flag
+  window.isArtGenerationRequest = true;
+
+  // Show loading animation for 45 seconds
+  window.showLoading(45000);
+
   $.ajax({
     url: `/generate_images/${playlistId}`,
     method: 'POST',
     success: function (response) {
       const images = response.images;
 
+      // Hide loading animation
+      window.hideLoading();
+
       displayImages(images);
+
+      // Reset the flag
+      window.isArtGenerationRequest = false;
     },
     error: function (error) {
       console.error('Error generating images:', error);
+
+      // Hide loading animation
+      window.hideLoading();
+
+      // Reset the flag
+      window.isArtGenerationRequest = false;
     },
   });
 }

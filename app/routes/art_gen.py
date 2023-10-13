@@ -40,9 +40,9 @@ def generate_images(playlist_id):
 
         return {"images": images}, 200
 
-    except RequestException:
-        return jsonify(error="Error calling OpenAI"), 500
+
     except Exception as e:
+        print(e)
         return jsonify(error="Internal server error"), 500
 
 

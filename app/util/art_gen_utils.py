@@ -16,7 +16,6 @@ def generate_dalle_prompt():
 
     all_styles = [style.art_style for style in artgenstyle_sql.query.all()]
 
-    # 2. Randomly select a column from the fetched record
     columns = [
         record.place_1, record.place_2, record.place_3, record.place_4, record.place_5,
         record.role_1, record.role_2, record.role_3, record.role_4, record.role_5,

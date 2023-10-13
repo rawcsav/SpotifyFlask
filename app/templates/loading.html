@@ -93,7 +93,8 @@
     return vinyls[randomIndex];
   }
 
-  window.showLoading = function () {
+  window.showLoading = function (duration = 7000) {
+    // Default duration is 7000ms
     console.log('showLoading called');
 
     let loadingOverlay = document.getElementById('loading-overlay');
@@ -120,7 +121,7 @@
     // Continue as before
     vinylElement.style.backgroundImage = `url(${getRandomVinyl()})`;
     loadingOverlay.style.display = 'flex';
-    timeoutId = setTimeout(window.hideLoading, 7000);
+    timeoutId = setTimeout(window.hideLoading, duration); // Use the passed duration
   };
 
   let animationDisplayedAt = new Date().getTime();
@@ -164,14 +165,14 @@
 
   $(document).ajaxStart(function () {
     ajaxRequestCount++;
-    if (ajaxRequestCount === 1) {
+    if (ajaxRequestCount === 1 && !window.isArtGenerationRequest) {
       window.showLoading();
     }
   });
 
   $(document).ajaxStop(function () {
     ajaxRequestCount--;
-    if (ajaxRequestCount === 0) {
+    if (ajaxRequestCount === 0 && !window.isArtGenerationRequest) {
       window.hideLoading();
     }
   });
