@@ -6,7 +6,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from app import config
-from app.util.database_utils import db, UserData
+from app.util.database_utils import db, UserData, load_data_into_artgen, load_data_into_artgenstyle
 
 
 def create_app():
@@ -56,6 +56,9 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    load_data_into_artgen()
+    load_data_into_artgenstyle()
 
     @app.before_request
     def apply_user_preference():

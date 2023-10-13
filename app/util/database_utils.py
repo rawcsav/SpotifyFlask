@@ -1,3 +1,4 @@
+import csv
 import json
 from datetime import datetime, timedelta
 
@@ -255,6 +256,65 @@ def get_or_fetch_audio_features(sp, track_ids):
     } for track_id, feature in existing_feature_ids.items()}
 
     return final_features
+
+
+def load_data_into_artgen():
+    with open('app/static/data/structured_genres_with_parents.csv', 'r') as f:
+        reader = csv.reader(f)
+        next(reader)  # Skip the header row
+
+        for row in reader:
+            record = artgen_sql(
+                genre_name=row[0],
+                parent_genre=row[1],
+                place_1=row[2],
+                place_2=row[3],
+                place_3=row[4],
+                place_4=row[5],
+                place_5=row[6],
+                role_1=row[7],
+                role_2=row[8],
+                role_3=row[9],
+                role_4=row[10],
+                role_5=row[11],
+                item_1=row[12],
+                item_2=row[13],
+                item_3=row[14],
+                item_4=row[15],
+                item_5=row[16],
+                symbol_1=row[17],
+                symbol_2=row[18],
+                symbol_3=row[19],
+                symbol_4=row[20],
+                symbol_5=row[21],
+                concept_1=row[22],
+                concept_2=row[23],
+                concept_3=row[24],
+                concept_4=row[25],
+                concept_5=row[26],
+                event_1=row[27],
+                event_2=row[28],
+                event_3=row[29],
+                event_4=row[30],
+                event_5=row[31]
+            )
+            db.session.merge(record)
+
+    db.session.commit()
+
+
+def load_data_into_artgenstyle():
+    with open('app/static/data/stylesgen.csv', 'r') as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            record = artgenstyle_sql(
+                id=row[0],
+                art_style=row[1],
+            )
+            db.session.merge(record)
+
+    db.session.commit()
 
 
 def delete_expired_images_for_playlist(playlist_id):
