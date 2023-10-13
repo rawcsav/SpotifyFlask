@@ -23,10 +23,12 @@ def generate_images(playlist_id):
 
         openai.api_key = api_key
 
-        # Check if genre is provided in the request data
+        # Check if genre and prompt are provided in the request data
         genre_name = request.json.get('genre_name', None)
+        prompt_text = request.json.get('prompt', None)
 
-        images, prompt = generate_and_save_images(playlist_id, genre_name)
+        # Pass the prompt_text (if available) to the generate_and_save_images function
+        images, prompt = generate_and_save_images(playlist_id, genre_name, prompt_text)
 
         return {"images": images, "prompt": prompt}, 200
     except Exception as e:

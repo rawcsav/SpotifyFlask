@@ -589,20 +589,27 @@ function showKeyFormAndHideUpdateButton() {
   document.getElementById('apiKeyForm').style.display = 'flex';
 }
 
-function generateArtForPlaylist(genreName) {
+function generateArtForPlaylist(input, isPrompt = false) {
   window.isArtGenerationRequest = true;
 
   // Show loading animation for 45 seconds
   window.showLoading(45000);
 
   // Define the data payload
-  const dataPayload = genreName ? { genre_name: genreName } : {};
+  let dataPayload = {};
+  if (isPrompt) {
+    dataPayload = { prompt: input };
+  } else if (input) {
+    dataPayload = { genre_name: input };
+  }
+
+  console.log('Sending payload:', dataPayload); // Add this log
 
   $.ajax({
     url: `/generate_images/${playlistId}`,
     method: 'POST',
-    contentType: 'application/json', // Specify the content type
-    data: JSON.stringify(dataPayload), // Convert the payload to a JSON string
+    contentType: 'application/json',
+    data: JSON.stringify(dataPayload),
     success: function (response) {
       const images = response.images;
       const prompt = response.prompt;
@@ -632,12 +639,24 @@ function generateArtForPlaylist(genreName) {
   });
 }
 
+function refreshArt() {
+  if (lastPromptUsed) {
+    generateArtForPlaylist(lastPromptUsed, true); // Assuming you've made changes to accept a prompt as mentioned in the previous answer
+  } else {
+    console.warn('No last prompt found. Cannot refresh images.');
+  }
+}
+
+let lastPromptUsed = null;
+
 function displayImages(response) {
   const artInfoContainer = document.getElementById('art-info-container');
   const imageContainer = document.getElementById('art-gen-results');
   const images = response.images;
   const promptText = response.prompt;
 
+  lastPromptUsed = promptText;
+  console.log('Saved prompt:', lastPromptUsed);
   // Clear previous images
   while (imageContainer.firstChild) {
     imageContainer.removeChild(imageContainer.firstChild);
@@ -689,5 +708,12 @@ function displayImages(response) {
 
     // Append the image div to the container
     imageContainer.appendChild(imageDiv);
+
+    // Check if there are any images
+    if (images.length > 0) {
+      // If there are images, set opacity to 1 and cursor to pointer
+      document.getElementById('gen-refresh-icon').style.opacity = '1';
+      document.getElementById('gen-refresh-icon').style.cursor = 'pointer';
+    }
   });
 }

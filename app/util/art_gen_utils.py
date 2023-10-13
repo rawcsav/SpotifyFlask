@@ -74,15 +74,19 @@ def generate_images_dalle(prompt):
     return image_urls
 
 
-def generate_and_save_images(playlist_id, genre_name=None):
-    # 1. Generate the prompt and other randomized attributes
-    genre_name, art_style, random_attribute = select_random_elements(genre_name)
+def generate_and_save_images(playlist_id, genre_name=None, prompt_text=None):
+    if prompt_text is None:
+        genre_name, art_style, random_attribute = select_random_elements(genre_name)
+        prompt = generate_dalle_prompt(genre_name, art_style, random_attribute)
+    else:
+        prompt = prompt_text
+        genre_name = "Refresh"
+        art_style = "Refresh"
+        random_attribute = "Refresh"
 
-    prompt = generate_dalle_prompt(genre_name, art_style, random_attribute)
     image_urls = generate_images_dalle(prompt)
     current_time = datetime.utcnow()
 
-    # 3. Save the details to the database
     for url in image_urls:
         new_artgenurl_record = artgenurl_sql(
             url=url,
