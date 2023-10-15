@@ -23,8 +23,8 @@ def generate_images(playlist_id):
 
         openai.api_key = api_key
 
-        # Check if genre and prompt are provided in the request data
         genre_name = request.json.get('genre_name', None)
+        print(genre_name)
         prompt_text = request.json.get('prompt', None)
 
         # Pass the prompt_text (if available) to the generate_and_save_images function

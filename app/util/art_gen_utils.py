@@ -6,17 +6,19 @@ from app.util.database_utils import artgen_sql, artgenstyle_sql, artgenurl_sql, 
 import openai
 
 
-def select_random_elements(genre_name=None):
-    # Genre Selection
-    all_genres = [record.genre_name for record in artgen_sql.query.all()]
+def select_random_elements(parent_genre=None):
+    # If parent_genre is specified, get its sub-genres
+    if parent_genre:
+        all_genres = [record.genre_name for record in artgen_sql.query.filter_by(parent_genre=parent_genre).all()]
+    else:
+        all_genres = [record.genre_name for record in artgen_sql.query.all()]
+
     if not all_genres:
         raise ValueError("No genres available in the database.")
 
-    if genre_name is None or genre_name not in all_genres:
-        genre_name = random.choice(all_genres)
+    genre_name = random.choice(all_genres)
     record = artgen_sql.query.filter_by(genre_name=genre_name).first()
 
-    # Random Style Selection
     all_styles = [style.art_style for style in artgenstyle_sql.query.all()]
     if not all_styles:
         raise ValueError("No styles available in the database.")
@@ -28,7 +30,6 @@ def select_random_elements(genre_name=None):
         record.role_1, record.role_2, record.role_3, record.role_4, record.role_5,
         record.item_1, record.item_2, record.item_3, record.item_4, record.item_5,
         record.symbol_1, record.symbol_2, record.symbol_3, record.symbol_4, record.symbol_5,
-        record.concept_1, record.concept_2, record.concept_3, record.concept_4, record.concept_5,
         record.event_1, record.event_2, record.event_3, record.event_4, record.event_5
     ]
 

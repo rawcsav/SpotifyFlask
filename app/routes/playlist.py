@@ -65,15 +65,19 @@ def show_playlist(playlist_id):
         year_count = temporal_stats.get('year_count', {})
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
-
         genre_info = {genre: data['count'] for genre, data in playlist_data['genre_counts'].items()}
-        parent_genres = find_parent_genres(genre_info, genre_sql)
+        top_genre_stat = find_parent_genres(genre_info, genre_sql)
+        top_genre_name = [genre for genre, distance in top_genre_stat]
+        parent_genres = json.dumps(top_genre_name)
 
-        return render_template('spec_playlist.html', data=res_data,
-                               playlist_id=playlist_id, playlist_url=playlist_url,
-                               playlist_data=playlist_data, top_10_genre_data=top_10_genre_data,
+        return render_template('spec_playlist.html', playlist_id=playlist_id,
+                               data=res_data,
+                               playlist_url=playlist_url,
+                               playlist_data=playlist_data,
+                               top_10_genre_data=top_10_genre_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
-                               is_collaborative=is_collaborative, is_public=is_public, parent_genres=parent_genres)
+                               is_collaborative=is_collaborative, is_public=is_public,
+                               parent_genres=parent_genres)
 
     sp, error = init_session_client(session)
     if error:
@@ -112,7 +116,9 @@ def show_playlist(playlist_id):
     sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
     top_10_genre_data = dict(sorted_genre_data[:10])
     genre_info = {genre: data['count'] for genre, data in playlist_data['genre_counts'].items()}
-    parent_genres = find_parent_genres(genre_info, genre_sql)
+    top_genre_stat = find_parent_genres(genre_info, genre_sql)
+    top_genre_name = [genre for genre, distance in top_genre_stat]
+    parent_genres = json.dumps(top_genre_name)
 
     return render_template('spec_playlist.html', playlist_id=playlist_id,
                            data=res_data,

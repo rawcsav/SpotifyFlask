@@ -33,6 +33,7 @@
     <meta name="theme-color" content="#ffffff" />
     <title>Playlist - {{ playlist_data['id'] }}</title>
     <script>
+      var parentGenres = JSON.parse('{{ parent_genres | safe }}');
       var yearCountData = JSON.parse('{{ year_count | safe }}');
       var playlistId = '{{ playlist_id }}';
     </script>
@@ -191,13 +192,6 @@
           </button>
         </form>
         <div class="gen-btns">
-          <button class="accordion-header" onclick="toggleAccordion(this)">
-            Parent Genre 1
-          </button>
-          <div class="accordion-content">
-            <!-- Subgenres here -->
-          </div>
-
           <button
             id="generate-art-btn"
             style="display: none"

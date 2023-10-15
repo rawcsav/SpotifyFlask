@@ -589,21 +589,29 @@ function showKeyFormAndHideUpdateButton() {
   document.getElementById('apiKeyForm').style.display = 'flex';
 }
 
-function generateArtForPlaylist(input, isPrompt = false) {
+function generateArtForPlaylist(isPrompt = false) {
   window.isArtGenerationRequest = true;
-
-  // Show loading animation for 45 seconds
   window.showLoading(45000);
 
-  // Define the data payload
-  let dataPayload = {};
-  if (isPrompt) {
-    dataPayload = { prompt: input };
-  } else if (input) {
-    dataPayload = { genre_name: input };
+  // Choose genre randomly if there are two
+  let genre;
+  if (parentGenres.length == 2) {
+    let coin = Math.round(Math.random());
+    genre = parentGenres[coin];
+  } else {
+    genre = parentGenres[0];
   }
 
-  console.log('Sending payload:', dataPayload); // Add this log
+  console.log('Selected genre:', genre); // Log the selected genre
+
+  let dataPayload = {};
+  if (isPrompt) {
+    dataPayload = { prompt: genre };
+  } else {
+    dataPayload = { genre_name: genre };
+  }
+
+  console.log('Sending payload:', dataPayload);
 
   $.ajax({
     url: `/generate_images/${playlistId}`,
