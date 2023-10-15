@@ -859,6 +859,14 @@ body.dark-mode .art-gen-icon-div {
   padding: 0;
 }
 
+#parent-toggle-icon {
+  color: black;
+  cursor: pointer;
+}
+#parent-toggle-icon.active {
+  color: red;
+}
+
 #art-gen-results {
   display: flex;
   flex-direction: row;

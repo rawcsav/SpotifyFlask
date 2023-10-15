@@ -340,7 +340,7 @@ def compute_weighted_centroid(normalized_genres, genre_sql):
     return centroid_x, centroid_y
 
 
-def determine_top_genres(centroid, threshold=0.35):
+def determine_top_genres(centroid, threshold=0.20):
     parent_genre_coordinates = {'Rap_HipHop': (0.9885514778148039, -0.7465850792581761),
                                 'Country_Folk': (0.06452836008422536, 0.47097089321261604),
                                 'Ambient_Experimental': (-0.8895377328341458, 0.4794552764082228),

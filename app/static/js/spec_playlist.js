@@ -502,6 +502,7 @@ function showArtGenContainer() {
         document.getElementById('update-button').style.display = 'block';
         document.getElementById('generate-art-btn').style.display = 'block';
         document.getElementById('gen-refresh-icon').style.display = 'block';
+        document.getElementById('parent-toggle-icon').style.display = 'block';
       } else {
         // User does not have an API key, show the connect-button and hide the "Update API Key" text
         document.getElementById('connect-button').style.display = 'block';
@@ -539,6 +540,7 @@ function handleApiKeySubmit(e) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
+      document.getElementById('parent-toggle-icon').style.display = 'block';
 
       // Display a success toast
       showToast('API Key saved successfully!');
@@ -564,6 +566,7 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
+      document.getElementById('parent-toggle-icon').style.display = 'block';
     } else {
       // User does not have an API key, show the input form and hide the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
@@ -571,6 +574,7 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'flex';
       document.getElementById('generate-art-btn').style.display = 'none';
       document.getElementById('gen-refresh-icon').style.display = 'none';
+      document.getElementById('parent-toggle-icon').style.display = 'none';
     }
   }).fail(function (error) {
     console.error('Error checking API key:', error);
@@ -584,22 +588,40 @@ function showKeyFormAndHideUpdateButton() {
   // Hide the Generate Art button
   document.getElementById('generate-art-btn').style.display = 'none';
   document.getElementById('gen-refresh-icon').style.display = 'none';
-
+  document.getElementById('parent-toggle-icon').style.display = 'none';
   // Display the API key form
   document.getElementById('apiKeyForm').style.display = 'flex';
+}
+
+function toggleCheckbox() {
+  var icon = document.getElementById('parent-toggle-icon');
+  var checkbox = document.getElementById('parent-toggle');
+  checkbox.checked = !checkbox.checked;
+
+  if (checkbox.checked) {
+    icon.classList.add('active');
+  } else {
+    icon.classList.remove('active');
+  }
 }
 
 function generateArtForPlaylist(isPrompt = false) {
   window.isArtGenerationRequest = true;
   window.showLoading(45000);
-
-  // Choose genre randomly if there are two
   let genre;
-  if (parentGenres.length == 2) {
-    let coin = Math.round(Math.random());
-    genre = parentGenres[coin];
+  // Check if the checkbox is checked
+  const isCheckboxChecked = document.getElementById('parent-toggle').checked;
+  if (isCheckboxChecked) {
+    // Use parentGenre
+    if (parentGenres.length == 2) {
+      let coin = Math.round(Math.random());
+      genre = parentGenres[coin];
+    } else {
+      genre = parentGenres[0];
+    }
   } else {
-    genre = parentGenres[0];
+    // No genre_name in the payload
+    genre = null;
   }
 
   console.log('Selected genre:', genre); // Log the selected genre
@@ -607,7 +629,7 @@ function generateArtForPlaylist(isPrompt = false) {
   let dataPayload = {};
   if (isPrompt) {
     dataPayload = { prompt: genre };
-  } else {
+  } else if (genre) {
     dataPayload = { genre_name: genre };
   }
 
