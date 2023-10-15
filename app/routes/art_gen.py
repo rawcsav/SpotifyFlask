@@ -3,7 +3,7 @@ from flask import Blueprint, request, send_from_directory, jsonify, session
 import openai
 from requests import RequestException
 from app.util.art_gen_utils import generate_and_save_images
-from app.util.database_utils import artgenurl_sql, db, UserData, playlist_sql
+from app.util.database_utils import artgenurl_sql, db, UserData, playlist_sql, artgen_sql
 from app.util.session_utils import verify_session, fetch_user_data, decrypt_data
 
 bp = Blueprint('art_gen', __name__)
@@ -40,3 +40,17 @@ def generate_images(playlist_id):
 def get_image(filename):
     directory = "images"
     return send_from_directory(directory, filename)
+
+
+@bp.route('/get_genres', methods=['GET'])
+def get_genres():
+    genres = artgen_sql.query.with_entities(artgen_sql.genre_name, artgen_sql.parent_genre).all()
+
+    # Convert the results into a nested dictionary structure
+    genre_structure = {}
+    for g in genres:
+        if g.parent_genre not in genre_structure:
+            genre_structure[g.parent_genre] = []
+        genre_structure[g.parent_genre].append(g.genre_name)
+
+    return jsonify(genre_structure)

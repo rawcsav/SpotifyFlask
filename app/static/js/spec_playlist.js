@@ -502,7 +502,6 @@ function showArtGenContainer() {
         document.getElementById('update-button').style.display = 'block';
         document.getElementById('generate-art-btn').style.display = 'block';
         document.getElementById('gen-refresh-icon').style.display = 'block';
-        document.getElementById('genre-dropdown').style.display = 'block';
       } else {
         // User does not have an API key, show the connect-button and hide the "Update API Key" text
         document.getElementById('connect-button').style.display = 'block';
@@ -540,7 +539,6 @@ function handleApiKeySubmit(e) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
-      document.getElementById('genre-dropdown').style.display = 'block';
 
       // Display a success toast
       showToast('API Key saved successfully!');
@@ -566,7 +564,6 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
-      document.getElementById('genre-dropdown').style.display = 'block';
     } else {
       // User does not have an API key, show the input form and hide the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
@@ -574,7 +571,6 @@ function displayInputField(event) {
       document.getElementById('apiKeyForm').style.display = 'flex';
       document.getElementById('generate-art-btn').style.display = 'none';
       document.getElementById('gen-refresh-icon').style.display = 'none';
-      document.getElementById('genre-dropdown').style.display = 'none';
     }
   }).fail(function (error) {
     console.error('Error checking API key:', error);
@@ -588,7 +584,6 @@ function showKeyFormAndHideUpdateButton() {
   // Hide the Generate Art button
   document.getElementById('generate-art-btn').style.display = 'none';
   document.getElementById('gen-refresh-icon').style.display = 'none';
-  document.getElementById('genre-dropdown').style.display = 'none';
 
   // Display the API key form
   document.getElementById('apiKeyForm').style.display = 'flex';

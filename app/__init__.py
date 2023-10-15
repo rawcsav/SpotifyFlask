@@ -57,8 +57,8 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    load_data_into_artgen()
-    load_data_into_artgenstyle()
+    # load_data_into_artgen()
+    # load_data_into_artgenstyle()
 
     @app.before_request
     def apply_user_preference():

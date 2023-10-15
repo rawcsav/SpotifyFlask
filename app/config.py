@@ -47,3 +47,24 @@ REDIRECT_URL = "http://webstats.rawcsav.com/"
 
 MAX_RETRIES = 3
 RETRY_WAIT_SECONDS = 2
+
+PARENT_GENRES = {
+    'Rap_HipHop': ['rap', 'hip hop', 'trap', 'r&b', 'urban contemporary', 'drill', 'grime', 'underground hip hop',
+                   'plugg'],
+    'Country_Folk': ['country', 'folk', 'folk-pop', 'country road', 'modern country rock', 'outlaw country',
+                     'americana', 'singer-songwriter', 'bluegrass'],
+    'Ambient_Experimental': ['ambient', 'experimental_ambient', 'experimental', 'electronica', 'abstract', 'drone',
+                             'soundtrack', 'video game music', 'noise'],
+    'Classical_Opera': ['classical', 'opera', 'orchestra', 'symphony', 'neoclassicism', 'early music', 'baroque',
+                        'minimalism', 'avant-garde'],
+    'Dance_EDM': ['dance', 'edm', 'house', 'trance', 'electro house', 'techno', 'electronic', 'big room',
+                  'deep house'],
+    'Jazz_Blues': ['jazz', 'blues', 'rythym and boogie', 'swing', 'jazz fusion', 'bebop', 'big band',
+                   'modern blues' 'blues rock'],
+    'Rock': ['rock', 'hard rock', 'classic rock', 'metal', 'punk', 'alternative rock', 'grunge', 'indie rock',
+             'post-punk'],
+    'Funk': ['funk', 'disco', 'soul', 'funk rock', 'adult standards', 'deep funk', 'rare groove', 'deep motown',
+             'classic soul'],
+    'Reggae_World': ['reggae', 'world', 'ska', 'dancehall', 'dub', 'modern reggae', 'reggae fusion', 'reggae rock',
+                     'afropop']
+}

@@ -105,11 +105,6 @@ class artgen_sql(db.Model):
     symbol_3 = db.Column(db.String)
     symbol_4 = db.Column(db.String)
     symbol_5 = db.Column(db.String)
-    concept_1 = db.Column(db.String)
-    concept_2 = db.Column(db.String)
-    concept_3 = db.Column(db.String)
-    concept_4 = db.Column(db.String)
-    concept_5 = db.Column(db.String)
     event_1 = db.Column(db.String)
     event_2 = db.Column(db.String)
     event_3 = db.Column(db.String)
@@ -140,10 +135,10 @@ class genre_sql(db.Model):
     opp_genres = db.Column(db.String, nullable=True)
     opp_weights = db.Column(db.String, nullable=True)
     spotify_url = db.Column(db.String, nullable=True)
-    color = db.Column(db.String, nullable=True)
-    font_size = db.Column(db.String, nullable=True)
-    left = db.Column(db.String, nullable=True)
-    top = db.Column(db.String, nullable=True)
+    color_hex = db.Column(db.String, nullable=True)
+    color_rgb = db.Column(db.String, nullable=True)
+    x = db.Column(db.String, nullable=True)
+    y = db.Column(db.String, nullable=True)
 
 
 def add_artist_to_db(artist_data):
@@ -262,7 +257,7 @@ def get_or_fetch_audio_features(sp, track_ids):
 
 
 def load_data_into_artgen():
-    with open('app/static/data/structured_genres_with_parents.csv', 'r') as f:
+    with open('app/static/data/new_genre_pool.csv', 'r') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
 
