@@ -19,13 +19,12 @@ def get_soup_from_url(url):
 
 def extract_style_attributes(style_str):
     """Extract attributes from style string using regular expressions."""
-    font_size = re.search(r"font-size:([^;]+)", style_str).group(1).strip()
     color_str = re.search(r"color:([^;]+)", style_str).group(1).strip()
     r, g, b = tuple(int(color_str[i:i + 2], 16) for i in (1, 3, 5))
     top = re.search(r"top:([^;]+)", style_str).group(1).strip()
     left = re.search(r"left:([^;]+)", style_str).group(1).strip()
 
-    return font_size, color_str, (r, g, b), top, left
+    return color_str, (r, g, b), top, left
 
 
 def parse_genres(soup):
@@ -34,16 +33,16 @@ def parse_genres(soup):
     genres_objs = []
 
     for genre in tqdm(genres_elems, desc="Parsing genres"):
-        font_size, color_str, (r, g, b), top, left = extract_style_attributes(genre['style'])
-        genre_obj = {
-            "genre": genre.text.replace("»", "").strip(),
-            "font_size": font_size,
-            "color": color_str,
-            "colors_rgb": f"rgb({r}, {g}, {b})",
-            "top": top,
-            "left": left
-        }
-        genres_objs.append(genre_obj)
+        if genre.text.replace("»", "").strip() in specific_genres:
+            color_str, (r, g, b), top, left = extract_style_attributes(genre['style'])
+            genre_obj = {
+                "genre": genre.text.replace("»", "").strip(),
+                "color_hex": color_str,
+                "color_rgb": f"rgb({r}, {g}, {b})",
+                "x": top.replace('px', ''),
+                "y": left.replace('px', '')
+            }
+            genres_objs.append(genre_obj)
 
     return genres_objs
 
@@ -59,6 +58,10 @@ async def scrape_genres_async(url):
             return None
 
 
+specific_genres = ["country road", "german hip hop", "houston rap", "indian indie", "musica sonorense", "swedish trap",
+                   "minimal techno", "instrumental worship", "spanish new wave", "rock urbano mexicano", "nu disco",
+                   "detroit trap", "rebel blues", "alabama rap"]
+
 url = "https://everynoise.com/engenremap.html"
 
 # Start asynchronous scraping
@@ -66,6 +69,6 @@ loop = asyncio.get_event_loop()
 genres_df = loop.run_until_complete(scrape_genres_async(url))
 
 if genres_df is not None:
-    genres_df.to_csv("/Users/gavinmason/PycharmProjects/BotifyStats/app/static/data/enao_pos.csv", index=False)
+    genres_df.to_csv("/Users/gavinmason/PycharmProjects/BotifyStats/app/data/enao_pos_missing.csv", index=False)
 
 genres_df.head()

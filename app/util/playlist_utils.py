@@ -1,6 +1,5 @@
 import json
-from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db, genre_sql, \
-    artgen_sql
+from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db
 from datetime import datetime
 from collections import defaultdict
 from flask import session
@@ -218,64 +217,24 @@ def get_temporal_stats(track_info_list, playlist_id):
     return temporal_stats
 
 
-def calculate_genre_weights(genre_info):
-    print(genre_info)
-    total_tracks = sum(genre_info.values())
-    print(total_tracks)
-    genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
-
-    # Sort genres by prevalence
-    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)
-
-    return sorted_genres
-
-
-def euclidean_distance(point1, point2):
-    if point1 is None or point2 is None:
-        return None  # or handle the error appropriately
-    return math.sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
-
-
-def find_artgen_ten(genre_counts, genre_sql, artgen_sql_data):
-    # Preparing genre_info from genre_counts
+def calculate_genre_weights(genre_counts, genre_sql):
     genre_info = {genre: data['count'] for genre, data in genre_counts.items()}
 
-    # Get the top 10 genres based on the user's playlist
-    sorted_genres = calculate_genre_weights(genre_info)[:10]
+    total_tracks = sum(genre_info.values())
+    genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
 
-    nearest_genres = {}
+    # Sort genres by prevalence and take the top 10
+    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)[:10]
 
-    # For each of the top 10 genres
+    # Create a dictionary to store the mapping of genre to closest_genre_stat
+    genre_to_stat_mapping = {}
+
     for genre, _ in sorted_genres:
-        # Get the x, y coordinates for the genre from genre_sql
-        genre_record = genre_sql.query.filter_by(genre=genre).first()
-        if genre_record:
-            genre_coords = (float(genre_record.x), float(genre_record.y))
-        else:
-            genre_coords = None
+        genre_entry = genre_sql.query.filter_by(genre=genre).first()
+        if genre_entry:
+            genre_to_stat_mapping[genre] = genre_entry.closest_stat_genres
 
-        min_distance = float('inf')
-        nearest_genre = None
-
-        # Query all artgen_sql records before looping
-        all_artgen_records = artgen_sql_data.query.all()
-
-        for artgen_record in all_artgen_records:
-            # Fetch associated genre_sql for artgen_record to get x, y values
-            associated_genre = genre_sql.query.filter_by(genre=artgen_record.genre_name).first()
-            if not associated_genre:
-                continue
-            artgen_coords = (float(associated_genre.x), float(associated_genre.y))
-
-            distance = euclidean_distance(genre_coords, artgen_coords)
-            if distance is not None and min_distance is not None:
-                if distance < min_distance:
-                    min_distance = distance
-                    nearest_genre = artgen_record.genre_name
-
-        nearest_genres[genre] = nearest_genre
-
-    return nearest_genres
+    return genre_to_stat_mapping
 
 
 def get_playlist_details(sp, playlist_id):
@@ -285,8 +244,7 @@ def get_playlist_details(sp, playlist_id):
     genre_counts, top_artists = get_genre_artists_count(track_info_list)
     audio_feature_stats = get_audio_features_stats(track_info_list)
     temporal_stats = get_temporal_stats(track_info_list, playlist_id)
-    artgen_ten = find_artgen_ten(genre_counts, genre_sql, artgen_sql)
-    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats, artgen_ten
+    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
 
 
 def update_playlist_data(playlist_id):
@@ -300,7 +258,7 @@ def update_playlist_data(playlist_id):
 
     # Fetch the new data
     pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats, pl_artgen_ten = get_playlist_details(sp, playlist_id)
+        pl_feature_stats, pl_temporal_stats = get_playlist_details(sp, playlist_id)
 
     # Update the playlist object
     playlist.name = pl_playlist_info['name']
@@ -315,7 +273,6 @@ def update_playlist_data(playlist_id):
     playlist.top_artists = pl_top_artists
     playlist.feature_stats = pl_feature_stats
     playlist.temporal_stats = pl_temporal_stats
-    playlist.artgen_ten = pl_artgen_ten
 
     db.session.merge(playlist)
     db.session.commit()

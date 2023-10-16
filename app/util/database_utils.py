@@ -1,6 +1,9 @@
 import csv
 import json
 from datetime import datetime, timedelta
+from scipy.spatial import distance_matrix
+import numpy as np
+import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 
@@ -82,7 +85,6 @@ class playlist_sql(db.Model):
     top_artists = db.Column(db.PickleType)
     feature_stats = db.Column(db.PickleType)
     temporal_stats = db.Column(db.PickleType)
-    artgen_ten = db.Column(db.PickleType)
 
 
 class artgen_sql(db.Model):
@@ -140,8 +142,9 @@ class genre_sql(db.Model):
     spotify_url = db.Column(db.String, nullable=True)
     color_hex = db.Column(db.String, nullable=True)
     color_rgb = db.Column(db.String, nullable=True)
-    x = db.Column(db.String, nullable=True)
-    y = db.Column(db.String, nullable=True)
+    x = db.Column(db.Float, nullable=True)
+    y = db.Column(db.Float, nullable=True)
+    closest_stat_genres = db.Column(db.String, nullable=True)
     artgen = relationship("artgen_sql", back_populates="genre")
 
 
@@ -373,3 +376,34 @@ def delete_expired_images_for_playlist(playlist_id):
 
     db.session.commit()
     db.session.close()
+
+
+def euclidean_distance(point1, point2):
+    return np.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
+
+def find_closest_artgen():
+    # Read the CSV files
+    pool_genres_df = pd.read_csv('/Users/gavinmason/PycharmProjects/BotifyStats/app/data/pool_genres.csv')
+    master_enao = pd.read_csv('/Users/gavinmason/PycharmProjects/BotifyStats/app/data/master_enao.csv')
+
+    # Merge the two dataframes on the genre column
+    merged_genres = pd.merge(pool_genres_df, master_enao, on='genre', how='left')
+    # Extract x and y coordinates for both dataframes
+    master_coords = master_enao[['x', 'y']].values
+    merged_coords = merged_genres[['x', 'y']].values
+
+    # Compute the distance matrix
+    dist_matrix = distance_matrix(master_coords, merged_coords)
+
+    # Get the indices of the minimum values in the distance matrix
+    min_indices = np.argmin(dist_matrix, axis=1)
+
+    # Map the indices to genres in merged_genres
+    closest_genres = merged_genres['genre'].iloc[min_indices].values
+    closest_distances = dist_matrix[np.arange(dist_matrix.shape[0]), min_indices]
+
+    # Update master_enao dataframe
+    master_enao['closest_genre'] = closest_genres
+
+    master_enao.to_csv('/Users/gavinmason/PycharmProjects/BotifyStats/app/data/master_enao.csv')
