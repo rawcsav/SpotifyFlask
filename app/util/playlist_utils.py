@@ -1,9 +1,10 @@
 import json
-from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db, genre_sql
+from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db, genre_sql, \
+    artgen_sql
 from datetime import datetime
 from collections import defaultdict
 from flask import session
-import openai
+import math
 from app.util.spotify_utils import init_session_client
 from app import config
 
@@ -217,6 +218,63 @@ def get_temporal_stats(track_info_list, playlist_id):
     return temporal_stats
 
 
+def calculate_genre_weights(genre_info):
+    print(genre_info)
+    total_tracks = sum(genre_info.values())
+    print(total_tracks)
+    genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
+
+    # Sort genres by prevalence
+    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)
+
+    return sorted_genres
+
+
+def euclidean_distance(point1, point2):
+    return math.sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
+
+
+def find_artgen_ten(genre_counts, genre_sql, artgen_sql_data):
+    # Preparing genre_info from genre_counts
+    genre_info = {genre: data['count'] for genre, data in genre_counts.items()}
+
+    # Get the top 10 genres based on the user's playlist
+    sorted_genres = calculate_genre_weights(genre_info)[:10]
+
+    nearest_genres = {}
+
+    # For each of the top 10 genres
+    for genre, _ in sorted_genres:
+        # Get the x, y coordinates for the genre from genre_sql
+        genre_record = genre_sql.query.filter_by(genre=genre).first()
+        if genre_record:
+            genre_coords = (float(genre_record.x), float(genre_record.y))
+        else:
+            genre_coords = None
+
+        min_distance = float('inf')
+        nearest_genre = None
+
+        # Query all artgen_sql records before looping
+        all_artgen_records = artgen_sql_data.query.all()
+
+        for artgen_record in all_artgen_records:
+            # Fetch associated genre_sql for artgen_record to get x, y values
+            associated_genre = genre_sql.query.filter_by(genre=artgen_record.genre_name).first()
+            if not associated_genre:
+                continue
+            artgen_coords = (float(associated_genre.x), float(associated_genre.y))
+
+            distance = euclidean_distance(genre_coords, artgen_coords)
+            if distance < min_distance:
+                min_distance = distance
+                nearest_genre = artgen_record.genre_name
+
+        nearest_genres[genre] = nearest_genre
+
+    return nearest_genres
+
+
 def get_playlist_details(sp, playlist_id):
     playlist_info = get_playlist_info(sp, playlist_id)
     tracks = get_playlist_tracks(sp, playlist_id)
@@ -224,8 +282,8 @@ def get_playlist_details(sp, playlist_id):
     genre_counts, top_artists = get_genre_artists_count(track_info_list)
     audio_feature_stats = get_audio_features_stats(track_info_list)
     temporal_stats = get_temporal_stats(track_info_list, playlist_id)
-
-    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
+    artgen_ten = find_artgen_ten(genre_counts, genre_sql, artgen_sql)
+    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats, artgen_ten
 
 
 def update_playlist_data(playlist_id):
@@ -239,7 +297,7 @@ def update_playlist_data(playlist_id):
 
     # Fetch the new data
     pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats = get_playlist_details(sp, playlist_id)
+        pl_feature_stats, pl_temporal_stats, pl_artgen_ten = get_playlist_details(sp, playlist_id)
 
     # Update the playlist object
     playlist.name = pl_playlist_info['name']
@@ -254,6 +312,7 @@ def update_playlist_data(playlist_id):
     playlist.top_artists = pl_top_artists
     playlist.feature_stats = pl_feature_stats
     playlist.temporal_stats = pl_temporal_stats
+    playlist.artgen_ten = pl_artgen_ten
 
     db.session.merge(playlist)
     db.session.commit()
@@ -297,86 +356,3 @@ def get_genres_seeds(sp, genre_info, top_n=10):
 
     print(valid_genres)
     return valid_genres[:2]
-
-
-def calculate_genre_weights(genre_info):
-    print(genre_info)
-    total_tracks = sum(genre_info.values())
-    print(total_tracks)
-    genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
-
-    # Sort genres by prevalence
-    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)
-
-    return sorted_genres
-
-
-def normalize_weights(sorted_genres):
-    total_weight = sum([weight for _, weight in sorted_genres])
-    return [(genre, weight / total_weight) for genre, weight in sorted_genres]
-
-
-def normalize_coordinates(x, y):
-    x_mean = 690.8233392597382
-    x_std = 314.8928293946568
-    y_mean = 10357.612574753515
-    y_std = 5236.511647844575
-
-    x_normalized = (x - x_mean) / x_std
-    y_normalized = (y - y_mean) / y_std
-    return x_normalized, y_normalized
-
-
-def compute_weighted_centroid(normalized_genres, genre_sql):
-    centroid_x, centroid_y = 0, 0
-
-    for genre, weight in normalized_genres:
-        genre_entry = genre_sql.query.filter_by(genre=genre).first()
-        if genre_entry:
-            x_normalized, y_normalized = normalize_coordinates(float(genre_entry.x), float(genre_entry.y))
-            centroid_x += weight * x_normalized
-            centroid_y += weight * y_normalized
-
-    return centroid_x, centroid_y
-
-
-def determine_top_genres(centroid, threshold=0.20):
-    parent_genre_coordinates = {'Rap_HipHop': (0.9885514778148039, -0.7465850792581761),
-                                'Country_Folk': (0.06452836008422536, 0.47097089321261604),
-                                'Ambient_Experimental': (-0.8895377328341458, 0.4794552764082228),
-                                'Classical_Opera': (-1.072820044550276, 2.02317652241016),
-                                'Dance_EDM': (0.7559200508153702, -1.635038526566332),
-                                'Jazz_Blues': (0.679098751845243, 1.6054684219739332),
-                                'Rock': (-0.8452293851998006, -0.0073525022441708705),
-                                'Funk': (0.4635051194992889, 0.3822198194061961),
-                                'Reggae_World': (1.1187545061874014, -0.1525509443494792)}
-
-    distances = {}
-
-    for genre, (x, y) in parent_genre_coordinates.items():
-        distances[genre] = ((centroid[0] - x) ** 2 + (centroid[1] - y) ** 2) ** 0.5
-
-    # Sort genres by distance
-    sorted_genres_by_distance = sorted(distances.items(), key=lambda x: x[1])
-
-    if abs(sorted_genres_by_distance[0][1] - sorted_genres_by_distance[1][1]) < threshold:
-        return sorted_genres_by_distance[:2]
-    else:
-        return [sorted_genres_by_distance[0]]
-
-
-def find_parent_genres(genre_info, genre_sql):
-    # Calculate genre weights
-    sorted_genres = calculate_genre_weights(genre_info)
-
-    # Normalize weights
-    normalized_genres = normalize_weights(sorted_genres)
-
-    # Compute weighted centroid
-    centroid = compute_weighted_centroid(normalized_genres, genre_sql)
-
-    # Determine top genres
-    parent_genres = determine_top_genres(centroid)
-
-    # Return the top genres
-    return parent_genres

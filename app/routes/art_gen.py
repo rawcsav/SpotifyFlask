@@ -18,19 +18,18 @@ def generate_images(playlist_id):
 
         user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
         encrypted_api_key = user_data.api_key_encrypted
-
         api_key = decrypt_data(encrypted_api_key)
-
         openai.api_key = api_key
 
-        genre_name = request.json.get('genre_name', None)
-        print(genre_name)
+        genres_list = request.json.get('genres_list', None)
+        print(genres_list)
         prompt_text = request.json.get('prompt', None)
 
-        # Pass the prompt_text (if available) to the generate_and_save_images function
-        images, prompt = generate_and_save_images(playlist_id, genre_name, prompt_text)
+        # Pass the genres_list and prompt_text (if available) to the generate_and_save_images function
+        images, prompt = generate_and_save_images(playlist_id, genres_list, prompt_text)
 
         return {"images": images, "prompt": prompt}, 200
+
     except Exception as e:
         print(e)
         return jsonify(error="Internal server error"), 500
@@ -40,17 +39,3 @@ def generate_images(playlist_id):
 def get_image(filename):
     directory = "images"
     return send_from_directory(directory, filename)
-
-
-@bp.route('/get_genres', methods=['GET'])
-def get_genres():
-    genres = artgen_sql.query.with_entities(artgen_sql.genre_name, artgen_sql.parent_genre).all()
-
-    # Convert the results into a nested dictionary structure
-    genre_structure = {}
-    for g in genres:
-        if g.parent_genre not in genre_structure:
-            genre_structure[g.parent_genre] = []
-        genre_structure[g.parent_genre].append(g.genre_name)
-
-    return jsonify(genre_structure)

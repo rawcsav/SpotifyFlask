@@ -5,11 +5,14 @@ import requests
 from app.util.database_utils import artgen_sql, artgenstyle_sql, artgenurl_sql, db
 import openai
 
+import random
 
-def select_random_elements(parent_genre=None):
-    # If parent_genre is specified, get its sub-genres
-    if parent_genre:
-        all_genres = [record.genre_name for record in artgen_sql.query.filter_by(parent_genre=parent_genre).all()]
+
+def select_random_elements(genres_list=None):
+    # If genres_list is provided, use it. Else, get all genres.
+    if genres_list:
+        all_genres = [record.genre_name for record in
+                      artgen_sql.query.filter(artgen_sql.genre_name.in_(genres_list)).all()]
     else:
         all_genres = [record.genre_name for record in artgen_sql.query.all()]
 

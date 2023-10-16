@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+data/
 # Distribution / packaging
 .Python
 build/
@@ -182,5 +182,5 @@ app/db.webstats
 node_modules/
 /app/db.webstats
 /Users/gavinmason/PycharmProjects/BotifyStats/app/db.webstats
-/app/static/data/
-/app/static/data/
+/app/data/
+/app/data/

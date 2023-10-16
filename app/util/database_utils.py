@@ -1,8 +1,10 @@
 import csv
 import json
 from datetime import datetime, timedelta
-
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
+
+from app.util.session_utils import encrypt_data
 
 db = SQLAlchemy()
 
@@ -80,11 +82,11 @@ class playlist_sql(db.Model):
     top_artists = db.Column(db.PickleType)
     feature_stats = db.Column(db.PickleType)
     temporal_stats = db.Column(db.PickleType)
+    artgen_ten = db.Column(db.PickleType)
 
 
 class artgen_sql(db.Model):
-    genre_name = db.Column(db.String, index=True, primary_key=True)
-    parent_genre = db.Column(db.String)
+    genre_name = db.Column(db.String, db.ForeignKey('genre_sql.genre'), primary_key=True)
     place_1 = db.Column(db.String)
     place_2 = db.Column(db.String)
     place_3 = db.Column(db.String)
@@ -110,6 +112,7 @@ class artgen_sql(db.Model):
     event_3 = db.Column(db.String)
     event_4 = db.Column(db.String)
     event_5 = db.Column(db.String)
+    genre = relationship("genre_sql", back_populates="artgen")
 
 
 class artgenstyle_sql(db.Model):
@@ -139,6 +142,52 @@ class genre_sql(db.Model):
     color_rgb = db.Column(db.String, nullable=True)
     x = db.Column(db.String, nullable=True)
     y = db.Column(db.String, nullable=True)
+    artgen = relationship("artgen_sql", back_populates="genre")
+
+
+class Songfull(db.Model):
+    name = db.Column(db.String(150), nullable=False)
+    artist = db.Column(db.String(150), nullable=False)
+    id = db.Column(db.String(150), primary_key=True)
+    artist_id = db.Column(db.String(150), nullable=False)
+    image_url = db.Column(db.String(250))
+    external_url = db.Column(db.String(250))  # External link to the song, e.g., on Spotify's main platform
+    spotify_preview_url = db.Column(db.String(250), nullable=False)
+    popularity = db.Column(db.Integer, nullable=False)
+    genre = db.Column(db.String(50), nullable=False)
+    current = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f"<Song {self.name} by {self.artist}>"
+
+
+class Archive(db.Model):
+    name = db.Column(db.String(150), nullable=False)
+    artist = db.Column(db.String(150), nullable=False)
+    id = db.Column(db.String(150), primary_key=True)
+    artist_id = db.Column(db.String(150), nullable=False)
+    image_url = db.Column(db.String(250))
+    external_url = db.Column(db.String(250))  # External link to the song, e.g., on Spotify's main platform
+    spotify_preview_url = db.Column(db.String(250), nullable=False)
+    popularity = db.Column(db.Integer, nullable=False)
+    genre = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+
+
+class PastGame(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String)  # Assuming you have user management
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    song_id = db.Column(db.String, db.ForeignKey('archive.id'), nullable=False)
+    attempts_made = db.Column(db.Integer, default=0)
+    correct_guess = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship
+    song = db.relationship('Archive', backref='past_games')
+
+    def __repr__(self):
+        return f"<PastGame on {self.date} for song {self.song_id}>"
 
 
 def add_artist_to_db(artist_data):
@@ -257,44 +306,40 @@ def get_or_fetch_audio_features(sp, track_ids):
 
 
 def load_data_into_artgen():
-    with open('app/static/data/new_genre_pool.csv', 'r') as f:
+    with open('app/data/pool_genres.csv', 'r') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header row
 
         for row in reader:
             record = artgen_sql(
                 genre_name=row[0],
-                parent_genre=row[1],
-                place_1=row[2],
-                place_2=row[3],
-                place_3=row[4],
-                place_4=row[5],
-                place_5=row[6],
-                role_1=row[7],
+                x=row[1],
+                y=row[2],
+                place_1=row[3],
+                place_2=row[4],
+                place_3=row[5],
+                place_4=row[6],
+                place_5=row[7],
+                role_1=row[8],
                 role_2=row[8],
-                role_3=row[9],
-                role_4=row[10],
-                role_5=row[11],
-                item_1=row[12],
-                item_2=row[13],
-                item_3=row[14],
-                item_4=row[15],
-                item_5=row[16],
-                symbol_1=row[17],
-                symbol_2=row[18],
-                symbol_3=row[19],
-                symbol_4=row[20],
-                symbol_5=row[21],
-                concept_1=row[22],
-                concept_2=row[23],
-                concept_3=row[24],
-                concept_4=row[25],
-                concept_5=row[26],
-                event_1=row[27],
-                event_2=row[28],
-                event_3=row[29],
-                event_4=row[30],
-                event_5=row[31]
+                role_3=row[10],
+                role_4=row[11],
+                role_5=row[12],
+                item_1=row[13],
+                item_2=row[14],
+                item_3=row[15],
+                item_4=row[16],
+                item_5=row[17],
+                symbol_1=row[18],
+                symbol_2=row[19],
+                symbol_3=row[20],
+                symbol_4=row[21],
+                symbol_5=row[22],
+                event_1=row[23],
+                event_2=row[24],
+                event_3=row[25],
+                event_4=row[26],
+                event_5=row[27],
             )
             db.session.merge(record)
 
@@ -302,7 +347,7 @@ def load_data_into_artgen():
 
 
 def load_data_into_artgenstyle():
-    with open('app/static/data/stylesgen.csv', 'r') as f:
+    with open('app/data/stylesgen.csv', 'r') as f:
         reader = csv.reader(f)
 
         for row in reader:

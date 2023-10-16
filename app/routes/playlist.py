@@ -7,9 +7,10 @@ import requests
 from io import BytesIO
 from PIL import Image
 from app.routes.auth import require_spotify_auth
-from app.util.database_utils import db, playlist_sql, UserData, delete_expired_images_for_playlist, genre_sql
+from app.util.database_utils import db, playlist_sql, UserData, delete_expired_images_for_playlist, genre_sql, \
+    artgen_sql
 from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds, \
-    find_parent_genres
+    find_artgen_ten
 from app.util.session_utils import verify_session, fetch_user_data
 from app.util.spotify_utils import init_session_client, format_track_info, get_recommendations
 
@@ -62,13 +63,11 @@ def show_playlist(playlist_id):
         is_collaborative = playlist_data['collaborative']
         is_public = playlist_data['public']
         temporal_stats = playlist_data.get('temporal_stats', {})
+        artgen_ten = playlist_data.get('artgen_ten', {})
         year_count = temporal_stats.get('year_count', {})
+
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
-        genre_info = {genre: data['count'] for genre, data in playlist_data['genre_counts'].items()}
-        top_genre_stat = find_parent_genres(genre_info, genre_sql)
-        top_genre_name = [genre for genre, distance in top_genre_stat]
-        parent_genres = json.dumps(top_genre_name)
 
         return render_template('spec_playlist.html', playlist_id=playlist_id,
                                data=res_data,
@@ -77,14 +76,14 @@ def show_playlist(playlist_id):
                                top_10_genre_data=top_10_genre_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public,
-                               parent_genres=parent_genres)
+                               artgen_ten=artgen_ten)
 
     sp, error = init_session_client(session)
     if error:
         return json.dumps(error), 401
 
     pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats, = \
+        pl_feature_stats, pl_temporal_stats, pl_artgen_ten = \
         get_playlist_details(sp, playlist_id)
 
     # Create a new playlist_sql object and save it to the SQL database
@@ -100,10 +99,12 @@ def show_playlist(playlist_id):
                                 genre_counts=pl_genre_counts,
                                 top_artists=pl_top_artists,
                                 feature_stats=pl_feature_stats,
-                                temporal_stats=pl_temporal_stats, )
+                                temporal_stats=pl_temporal_stats,
+                                artgen_ten=pl_artgen_ten)
 
     db.session.merge(new_playlist)
     db.session.commit()
+
     playlist_data = new_playlist.__dict__
     temporal_stats = playlist_data.get('temporal_stats', {})
     year_count = temporal_stats.get('year_count', {})
@@ -111,14 +112,11 @@ def show_playlist(playlist_id):
     total_tracks = playlist_data['total_tracks']
     is_collaborative = playlist_data['collaborative']
     is_public = playlist_data['public']
+    artgen_ten = playlist_data.get('artgen_ten', {})
 
     # Preprocess the genre_counts data in the Python route function
     sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
     top_10_genre_data = dict(sorted_genre_data[:10])
-    genre_info = {genre: data['count'] for genre, data in playlist_data['genre_counts'].items()}
-    top_genre_stat = find_parent_genres(genre_info, genre_sql)
-    top_genre_name = [genre for genre, distance in top_genre_stat]
-    parent_genres = json.dumps(top_genre_name)
 
     return render_template('spec_playlist.html', playlist_id=playlist_id,
                            data=res_data,
@@ -127,7 +125,7 @@ def show_playlist(playlist_id):
                            top_10_genre_data=top_10_genre_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public,
-                           parent_genres=parent_genres)
+                           artgen_ten=artgen_ten)
 
 
 @bp.route('/playlist/<string:playlist_id>/refresh', methods=['POST'])

@@ -33,7 +33,7 @@
     <meta name="theme-color" content="#ffffff" />
     <title>Playlist - {{ playlist_data['id'] }}</title>
     <script>
-      var parentGenres = JSON.parse('{{ parent_genres | safe }}');
+      var artgenTen = JSON.parse('{{ artgen_ten | tojson | safe }}');
       var yearCountData = JSON.parse('{{ year_count | safe }}');
       var playlistId = '{{ playlist_id }}';
     </script>

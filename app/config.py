@@ -68,3 +68,5 @@ PARENT_GENRES = {
     'Reggae_World': ['reggae', 'world', 'ska', 'dancehall', 'dub', 'modern reggae', 'reggae fusion', 'reggae rock',
                      'afropop']
 }
+
+CLIPS_DIR = "app/data/clips"

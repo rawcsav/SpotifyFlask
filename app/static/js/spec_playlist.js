@@ -608,29 +608,24 @@ function toggleCheckbox() {
 function generateArtForPlaylist(isPrompt = false) {
   window.isArtGenerationRequest = true;
   window.showLoading(45000);
-  let genre;
-  // Check if the checkbox is checked
+
+  let genresList = [];
+
+  // Check if the checkbox is clicked
   const isCheckboxChecked = document.getElementById('parent-toggle').checked;
+
   if (isCheckboxChecked) {
-    // Use parentGenre
-    if (parentGenres.length == 2) {
-      let coin = Math.round(Math.random());
-      genre = parentGenres[coin];
-    } else {
-      genre = parentGenres[0];
-    }
-  } else {
-    // No genre_name in the payload
-    genre = null;
+    genresList = Object.values(artgenTen);
   }
 
-  console.log('Selected genre:', genre); // Log the selected genre
+  console.log('Selected genres:', genresList); // Log the selected genres
 
   let dataPayload = {};
+
   if (isPrompt) {
-    dataPayload = { prompt: genre };
-  } else if (genre) {
-    dataPayload = { genre_name: genre };
+    dataPayload = { prompt: genresList[0] || null };
+  } else {
+    dataPayload = { genres_list: genresList };
   }
 
   console.log('Sending payload:', dataPayload);
