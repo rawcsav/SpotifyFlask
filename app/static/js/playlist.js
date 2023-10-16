@@ -1,3 +1,15 @@
+function handlePlaylistClick() {
+  window.isArtGenerationRequest = true;
+  window.showLoading(45000);
+  window.onload = function () {
+    if (window.isArtGenerationRequest) {
+      window.hideLoading();
+      // Reset the flag
+      window.isArtGenerationRequest = false;
+    }
+  };
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const colorThief = new ColorThief();
   const playlistContainer = document.getElementById('playlist-container');
@@ -35,18 +47,18 @@ document.addEventListener('DOMContentLoaded', function () {
       const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
 
       playlistContainer.innerHTML += `
-        <div class="playlist-item">
-          <a href="/playlist/${playlist.id}?playlist_name=${encodeURIComponent(
-            playlist.name,
-          )}" class="playlist-option">
-            <div class="image-container" style="box-shadow: ${boxShadow};">
-              <img src="${playlist.cover_art}" alt="${
-                playlist.name
-              }" class="playlist-image">
-              <div class="overlay-text">${playlist.name}</div>
-            </div>
-          </a>
-        </div>`;
+  <div class="playlist-item">
+    <a href="/playlist/${playlist.id}?playlist_name=${encodeURIComponent(
+      playlist.name,
+    )}" class="playlist-option">
+      <div class="image-container" style="box-shadow: ${boxShadow};">
+        <img src="${playlist.cover_art}" alt="${
+          playlist.name
+        }" class="playlist-image" onclick="handlePlaylistClick()">
+        <div class="overlay-text">${playlist.name}</div>
+      </div>
+    </a>
+  </div>`;
     };
   });
 });

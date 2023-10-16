@@ -231,6 +231,8 @@ def calculate_genre_weights(genre_info):
 
 
 def euclidean_distance(point1, point2):
+    if point1 is None or point2 is None:
+        return None  # or handle the error appropriately
     return math.sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
 
 
@@ -266,9 +268,10 @@ def find_artgen_ten(genre_counts, genre_sql, artgen_sql_data):
             artgen_coords = (float(associated_genre.x), float(associated_genre.y))
 
             distance = euclidean_distance(genre_coords, artgen_coords)
-            if distance < min_distance:
-                min_distance = distance
-                nearest_genre = artgen_record.genre_name
+            if distance is not None and min_distance is not None:
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_genre = artgen_record.genre_name
 
         nearest_genres[genre] = nearest_genre
 
