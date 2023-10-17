@@ -276,22 +276,56 @@
         </div>
       </div>
     </div>
-    <div id="genre-counts" class="data-view">
-      <h2>Genre Counts</h2>
-      <ul>
-        {% for genre, data in top_10_genre_data.items() %}
-        <li>
-          {{ genre }}: {{ data.count }}
-          <ul class="artist-genre-list" style="display: none">
-            {% for artist in data.artists %}
-            <li>{{ artist }}</li>
+    <div class="custom-line"></div>
+    <div class="genre-title-container">
+      <h2>Genre Info</h2>
+      <div class="genre-container">
+        <div id="genre-counts" class="data-view">
+          <h3 class="gen-titles">Genre Counts</h3>
+          <ul>
+            {% for genre, data in top_10_genre_data.items() %}
+            <li>
+              {{ genre }}: {{ data.count }}
+              <ul class="artist-genre-list" style="display: none">
+                {% for artist in data.artists %}
+                <li>{{ artist }}</li>
+                {% endfor %}
+              </ul>
+            </li>
             {% endfor %}
           </ul>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+        </div>
 
+        <!-- Most Similar Genres Section -->
+        <div id="most-similar" class="data-view">
+          <h3 class="gen-titles">Most Similar</h3>
+          <ul>
+            {% for entry in genre_scores['most_similar'] %}
+            <li>
+              <a href="{{ entry['spotify_url'] }}" target="_blank"
+                >{{ entry['genre'] }}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Most Opposite Genres Section -->
+        <div id="most-opposite" class="data-view">
+          <h3 class="gen-titles">Most Opposite</h3>
+          <ul>
+            {% for entry in genre_scores['most_opposite'] %}
+            <li>
+              <a href="{{ entry['spotify_url'] }}" target="_blank"
+                >{{ entry['genre'] }}</a
+              >
+              <!-- You can extend this section to include artists or other data if needed -->
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
     <div id="feature-stats" class="data-view">
       <h2>Feature Stats</h2>
       <ul>

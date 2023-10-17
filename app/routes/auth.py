@@ -12,7 +12,7 @@ from app.util.session_utils import generate_state, prepare_auth_payload, request
 bp = Blueprint('auth', __name__)
 
 
-@bp.route('/')
+@bp.route('/auth')
 def index():
     return render_template('landing.html')
 

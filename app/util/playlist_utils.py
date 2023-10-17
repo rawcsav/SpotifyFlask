@@ -217,14 +217,58 @@ def get_temporal_stats(track_info_list, playlist_id):
     return temporal_stats
 
 
+def compute_scores_for_playlist(genre_info, genre_sql):
+    results = []
+
+    # Fetch all relevant genres from the genre_sql table
+    genres = genre_sql.query.filter(
+        genre_sql.sim_genres.isnot(None),
+        genre_sql.opp_genres.isnot(None)
+    ).all()
+
+    for genre_entry in genres:
+        # Skip genres that are already in the playlist
+        if genre_entry.genre in genre_info:
+            continue
+
+        sim_genres = genre_entry.sim_genres.split(', ')
+        sim_weights = list(map(int, genre_entry.sim_weights.split(', ')))
+
+        opp_genres = genre_entry.opp_genres.split(', ')
+        opp_weights = list(map(int, genre_entry.opp_weights.split(', ')))
+
+        # Compute similarity score
+        sim_score = sum([genre_info.get(genre, 0) * weight for genre, weight in zip(sim_genres, sim_weights)])
+
+        # Compute opposition score
+        opp_score = sum([genre_info.get(genre, 0) * weight for genre, weight in zip(opp_genres, opp_weights)])
+
+        results.append({
+            'genre': genre_entry.genre,
+            'similarity_score': sim_score,
+            'opposition_score': opp_score
+        })
+
+    # Sort the results based on similarity_score and opposition_score
+    most_similar = sorted(results, key=lambda x: x['similarity_score'], reverse=True)[:10]
+    most_opposite = sorted(results, key=lambda x: x['opposition_score'], reverse=True)[:10]
+
+    return {
+        'most_similar': most_similar,
+        'most_opposite': most_opposite
+    }
+
+
 def calculate_genre_weights(genre_counts, genre_sql):
     genre_info = {genre: data['count'] for genre, data in genre_counts.items()}
+    genre_scores = compute_scores_for_playlist(genre_info, genre_sql)
 
     total_tracks = sum(genre_info.values())
     genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
 
-    # Sort genres by prevalence and take the top 10
-    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)[:10]
+    # Sort genres by prevalence and take the top 10, excluding genres already in the playlist
+    sorted_genres = [g for g in sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True) if
+                     g[0] not in genre_info][:10]
 
     # Create a dictionary to store the mapping of genre to closest_genre_stat
     genre_to_stat_mapping = {}
@@ -234,7 +278,29 @@ def calculate_genre_weights(genre_counts, genre_sql):
         if genre_entry:
             genre_to_stat_mapping[genre] = genre_entry.closest_stat_genres
 
-    return genre_to_stat_mapping
+    return genre_to_stat_mapping, genre_scores
+
+
+def calculate_genre_weights(genre_counts, genre_sql):
+    genre_info = {genre: data['count'] for genre, data in genre_counts.items()}
+    genre_scores = compute_scores_for_playlist(genre_info, genre_sql)
+
+    total_tracks = sum(genre_info.values())
+    genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
+
+    # Sort genres by prevalence and take the top 10, excluding genres already in the playlist
+    sorted_genres = [g for g in sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True) if
+                     g[0] not in genre_info][:10]
+
+    # Create a dictionary to store the mapping of genre to closest_genre_stat
+    genre_to_stat_mapping = {}
+
+    for genre, _ in sorted_genres:
+        genre_entry = genre_sql.query.filter_by(genre=genre).first()
+        if genre_entry:
+            genre_to_stat_mapping[genre] = genre_entry.closest_stat_genres
+
+    return genre_to_stat_mapping, genre_scores
 
 
 def get_playlist_details(sp, playlist_id):

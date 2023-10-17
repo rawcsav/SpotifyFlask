@@ -66,7 +66,7 @@ def show_playlist(playlist_id):
 
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
-        artgen_ten = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
+        artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
 
         return render_template('spec_playlist.html', playlist_id=playlist_id,
                                data=res_data,
@@ -75,7 +75,8 @@ def show_playlist(playlist_id):
                                top_10_genre_data=top_10_genre_data,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public,
-                               artgen_ten=artgen_ten)
+                               artgen_ten=artgen_ten,
+                               genre_scores=genre_scores)
 
     sp, error = init_session_client(session)
     if error:
@@ -115,8 +116,7 @@ def show_playlist(playlist_id):
     sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
     top_10_genre_data = dict(sorted_genre_data[:10])
 
-    artgen_ten = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
-
+    artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
     return render_template('spec_playlist.html', playlist_id=playlist_id,
                            data=res_data,
                            playlist_url=playlist_url,
@@ -124,7 +124,8 @@ def show_playlist(playlist_id):
                            top_10_genre_data=top_10_genre_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public,
-                           artgen_ten=artgen_ten)
+                           artgen_ten=artgen_ten,
+                           genre_scores=genre_scores)
 
 
 @bp.route('/playlist/<string:playlist_id>/refresh', methods=['POST'])
