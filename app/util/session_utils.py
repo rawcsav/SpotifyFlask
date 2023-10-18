@@ -3,6 +3,7 @@ import string
 from datetime import timezone, timedelta
 from cryptography.fernet import Fernet
 import openai
+import sshtunnel
 import os
 from flask import abort
 import requests
@@ -87,3 +88,15 @@ def is_api_key_valid(api_key):
         return False
     else:
         return True
+
+
+def get_tunnel():
+    tunnel = sshtunnel.SSHTunnelForwarder(
+        (config.SSH_HOST),
+        ssh_username=config.SSH_USER,
+        ssh_password=config.SSH_PASS,
+        remote_bind_address=(
+            config.SQL_HOSTNAME, 3306)
+    )
+    tunnel.start()
+    return tunnel

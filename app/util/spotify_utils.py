@@ -38,11 +38,113 @@ def init_session_client(session):
 
 
 def get_top_tracks(sp, period):
-    return sp.current_user_top_tracks(time_range=period, limit=50)
+    all_tracks = sp.current_user_top_tracks(time_range=period, limit=50)
+
+    # Global and track-specific keys to remove
+    global_keys_to_remove = ['href', 'next', 'previous', 'total']
+    track_keys_to_remove = ['available_markets', 'disc_number', 'external_ids', 'href',
+                            'linked_from', 'restrictions', 'preview_url',
+                            'track_number', 'uri', 'is_playable']
+    album_keys_to_remove = ['album_type', 'available_markets', 'external_urls', 'href',
+                            'total_tracks', 'restrictions', 'type',
+                            'uri', 'artists']
+    artist_keys_to_remove = ['href', 'uri']
+
+    # Remove global keys
+    for key in global_keys_to_remove:
+        all_tracks.pop(key, None)
+
+    # Ensure 'items' exists and is a list
+    if 'items' in all_tracks and isinstance(all_tracks['items'], list):
+        for track in all_tracks['items']:
+            # Remove track-specific keys
+            for key in track_keys_to_remove:
+                track.pop(key, None)
+
+            # Process the 'album' key for each track
+            if 'album' in track and isinstance(track['album'], dict):
+                for key in album_keys_to_remove:
+                    track['album'].pop(key, None)
+                # If you wish to only keep the first image and discard others:
+                if 'images' in track['album'] and isinstance(track['album']['images'], list):
+                    track['album']['images'] = track['album']['images'][:1]
+
+            # Ensure 'artists' exists and is a list for each track
+            if 'artists' in track and isinstance(track['artists'], list):
+                for artist in track['artists']:
+                    # Remove artist-specific keys
+                    for key in artist_keys_to_remove:
+                        artist.pop(key, None)
+
+    return all_tracks
 
 
 def get_top_artists(sp, period):
-    return sp.current_user_top_artists(time_range=period, limit=50)
+    all_artists = sp.current_user_top_artists(time_range=period, limit=50)
+
+    # Global keys to remove
+    global_keys_to_remove = ['href', 'next', 'previous', 'total']
+    artist_keys_to_remove = ['href', 'uri']
+
+    # Remove global keys
+    for key in global_keys_to_remove:
+        all_artists.pop(key, None)
+
+    # Ensure 'items' exists and is a list
+    if 'items' in all_artists and isinstance(all_artists['items'], list):
+        for artist in all_artists['items']:
+            # Remove artist-specific keys
+            for key in artist_keys_to_remove:
+                artist.pop(key, None)
+
+            # Retain only the first image for each artist
+            if 'images' in artist and isinstance(artist['images'], list) and artist['images']:
+                artist['images'] = artist['images'][:1]
+
+    return all_artists
+
+
+def get_recently_played_tracks(sp, limit=50):
+    recent_tracks = sp.current_user_recently_played(limit=limit)
+
+    # Global and track-specific keys to remove
+    global_keys_to_remove = ['href']
+    track_keys_to_remove = ['available_markets', 'disc_number', 'external_ids', 'href',
+                            'linked_from', 'restrictions', 'preview_url',
+                            'track_number', 'uri', 'is_playable']
+    album_keys_to_remove = ['album_type', 'available_markets', 'external_urls', 'href',
+                            'total_tracks', 'restrictions', 'type',
+                            'uri', 'artists']
+    artist_keys_to_remove = ['href', 'uri']
+
+    # Remove global keys
+    for key in global_keys_to_remove:
+        recent_tracks.pop(key, None)
+
+    # Ensure 'items' exists and is a list
+    if 'items' in recent_tracks and isinstance(recent_tracks['items'], list):
+        for item in recent_tracks['items']:
+            track = item.get('track')  # 'track' field wraps the actual track data
+            if track:
+                # Remove track-specific keys
+                for key in track_keys_to_remove:
+                    track.pop(key, None)
+
+                # Process the 'album' key for each track
+                if 'album' in track and isinstance(track['album'], dict):
+                    for key in album_keys_to_remove:
+                        track['album'].pop(key, None)
+                    # If you wish to only keep the first image and discard others:
+                    if 'images' in track['album'] and isinstance(track['album']['images'], list):
+                        track['album']['images'] = track['album']['images'][:1]
+
+                # Ensure 'artists' exists and is a list for each track
+                if 'artists' in track and isinstance(track['artists'], list):
+                    for artist in track['artists']:
+                        for key in artist_keys_to_remove:
+                            artist.pop(key, None)
+
+    return recent_tracks
 
 
 def spotify_search(sp, query, type, limit=6):
@@ -179,7 +281,7 @@ def fetch_and_process_data(sp, time_periods):
                     "top_tracks": top_genre_tracks,
                 }
 
-        recent_tracks = sp.current_user_recently_played(limit=50)["items"]
+        recent_tracks = get_recently_played_tracks(sp)['items']
 
         playlist_info = []
         offset = 0

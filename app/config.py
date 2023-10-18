@@ -3,6 +3,8 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
+from app.util.database_utils import db
+
 load_dotenv()
 
 # Spotify API details
@@ -15,20 +17,28 @@ AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 ME_URL = "https://api.spotify.com/v1/me"
 
-MAIN_USER_DIR = "app/user_data_dir"
-
 SECRET_KEY = os.getenv("SECRET_KEY")
-SESSION_TYPE = "filesystem"
+FLASK_ENV = os.getenv("FLASK_ENV")
+
+SESSION_TYPE = "sqlalchemy"
 SESSION_PERMANENT = True
 PERMANENT_SESSION_LIFETIME = timedelta(minutes=1440)
 
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE")
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Strict"
 
-SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
 SQL_ALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = False
+SQLALCHEMY_POOL_RECYCLE = 299
+
+SSH_HOST = os.getenv("SSH_HOST")
+SSH_USER = os.getenv("SSH_USER")
+SSH_PASS = os.getenv("SSH_PASS")
+SQL_HOSTNAME = os.getenv("SQL_HOSTNAME")
+SQL_USERNAME = os.getenv("SQL_USERNAME")
+SQL_PASSWORD = os.getenv("SQL_PASSWORD")
+SQL_DB_NAME = os.getenv("SQL_DB_NAME")
 
 AUDIO_FEATURES = [
     "acousticness",
