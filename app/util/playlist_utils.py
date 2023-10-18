@@ -3,11 +3,7 @@ from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio
 from datetime import datetime
 from collections import defaultdict
 from flask import session
-import math
 from app.util.spotify_utils import init_session_client
-from app import config
-
-parent_genres = config.PARENT_GENRES
 
 
 def get_playlist_info(sp, playlist_id):
