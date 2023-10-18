@@ -34,7 +34,7 @@ def create_app():
     app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
     app.config['SESSION_SQLALCHEMY'] = db
-    app.config['SESSION_SQLALCHEMY_TABLE'] = config.SESSION_KEY_PREFIX
+    app.config['SESSION_KEY_PREFIX'] = config.SESSION_KEY_PREFIX
     Session(app)
 
     db.create_all()
