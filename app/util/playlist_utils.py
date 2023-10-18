@@ -262,9 +262,7 @@ def calculate_genre_weights(genre_counts, genre_sql):
     total_tracks = sum(genre_info.values())
     genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
 
-    # Sort genres by prevalence and take the top 10, excluding genres already in the playlist
-    sorted_genres = [g for g in sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True) if
-                     g[0] not in genre_info][:10]
+    sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)[:10]
 
     # Create a dictionary to store the mapping of genre to closest_genre_stat
     genre_to_stat_mapping = {}

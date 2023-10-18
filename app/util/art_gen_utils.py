@@ -1,7 +1,4 @@
-import random
 from datetime import datetime
-from io import BytesIO
-import requests
 from app.util.database_utils import artgen_sql, artgenstyle_sql, artgenurl_sql, db
 import openai
 

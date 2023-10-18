@@ -66,8 +66,9 @@ def show_playlist(playlist_id):
 
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
-        artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
 
+        artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
+        print(f"artgen_ten: {artgen_ten}, genre_scores: {genre_scores}")  # Print the artgen_ten and genre_scores
         return render_template('spec_playlist.html', playlist_id=playlist_id,
                                data=res_data,
                                playlist_url=playlist_url,
@@ -115,7 +116,6 @@ def show_playlist(playlist_id):
     # Preprocess the genre_counts data in the Python route function
     sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
     top_10_genre_data = dict(sorted_genre_data[:10])
-
     artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
     return render_template('spec_playlist.html', playlist_id=playlist_id,
                            data=res_data,
