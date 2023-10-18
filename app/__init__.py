@@ -29,11 +29,12 @@ def create_app():
     db.init_app(app)
 
     app.config["SESSION_TYPE"] = config.SESSION_TYPE
-    app.config['SESSION_SQLALCHEMY'] = db
     app.config["SESSION_PERMANENT"] = config.SESSION_PERMANENT
     app.config["PERMANENT_SESSION_LIFETIME"] = config.PERMANENT_SESSION_LIFETIME
     app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
+    app.config['SESSION_SQLALCHEMY'] = db
+    app.config['SESSION_SQLALCHEMY_TABLE'] = config.SESSION_KEY_PREFIX
     Session(app)
 
     db.create_all()
