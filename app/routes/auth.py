@@ -121,10 +121,12 @@ def save_api_key():
 
     # If validation successful, encrypt and save the key
     encrypted_key = encrypt_data(api_key)
-
-    user_data.api_key_encrypted = encrypted_key
-
-    db.session.commit()
+    try:
+        user_data.api_key_encrypted = encrypted_key
+        session.commit()
+    except:
+        session.rollback()
+        raise
 
     return jsonify({"message": "API Key saved successfully"}), 200
 

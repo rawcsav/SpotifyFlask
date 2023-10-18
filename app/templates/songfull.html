@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Songfull</title>
+    <script src="{{ url_for('static', filename='css/songfull.css') }}"></script>
+  </head>
+  <body>
+    <button id="start-game">Start Game</button>
+    <audio id="song-clip" controls></audio>
+    <input type="text" id="song-guess" placeholder="Guess the song title" />
+    <button id="submit-guess">Guess</button>
+    <div id="game-status">
+      <p id="actual-guess"></p>
+      <p id="guesses-left"></p>
+    </div>
+  </body>
+  <script src="{{ url_for('static', filename='js/songfull.js') }}"></script>
+</html>

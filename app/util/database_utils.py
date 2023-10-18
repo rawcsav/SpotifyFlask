@@ -278,10 +278,13 @@ def get_or_fetch_audio_features(sp, track_ids):
                         tempo=feature['tempo'],
                         time_signature=feature['time_signature'],
                     )
-                    db.session.merge(new_feature)
-                    existing_feature_ids[feature['id']] = new_feature
-
-        db.session.commit()
+                    try:
+                        db.session.merge(new_feature)
+                        existing_feature_ids[feature['id']] = new_feature
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
+                        raise
 
     final_features = {track_id: {
         'id': feature.id,

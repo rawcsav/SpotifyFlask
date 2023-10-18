@@ -77,8 +77,12 @@ def profile():
                 playlist_info=playlist_info,
                 last_active=last_active  # Set the last_active timestamp for the new user
             )
-            db.session.merge(new_entry)
-            db.session.commit()
+            try:
+                db.session.merge(new_entry)
+                db.session.commit()
+            except:
+                db.session.rollback()
+                raise
 
         delete_old_user_data()
 

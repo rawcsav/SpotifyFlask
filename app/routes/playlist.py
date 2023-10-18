@@ -101,9 +101,12 @@ def show_playlist(playlist_id):
                                 top_artists=pl_top_artists,
                                 feature_stats=pl_feature_stats,
                                 temporal_stats=pl_temporal_stats)
-
-    db.session.merge(new_playlist)
-    db.session.commit()
+    try:
+        db.session.merge(new_playlist)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        raise
 
     playlist_data = new_playlist.__dict__
     temporal_stats = playlist_data.get('temporal_stats', {})

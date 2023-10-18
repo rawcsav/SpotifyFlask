@@ -312,8 +312,12 @@ def update_playlist_data(playlist_id):
     playlist.feature_stats = pl_feature_stats
     playlist.temporal_stats = pl_temporal_stats
 
-    db.session.merge(playlist)
-    db.session.commit()
+    try:
+        db.session.merge(playlist)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        raise
 
     return "Playlist updated successfully"
 

@@ -152,8 +152,12 @@ def spotify_search(sp, query, type, limit=6):
         results = sp.search(q=query, type=type, limit=limit)
         if results.get('artists', {}).get('items'):
             for artist_data in results['artists']['items']:
-                add_artist_to_db(artist_data)
-            db.session.commit()
+                try:
+                    add_artist_to_db(artist_data)
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+                    raise
         return results
     except SpotifyException as e:
         return {"error": str(e)}
