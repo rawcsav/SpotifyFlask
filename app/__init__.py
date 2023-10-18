@@ -26,7 +26,6 @@ def create_app():
         app.tunnel = None
         app.config[
             'SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{config.SQL_USERNAME}:{config.SQL_PASSWORD}@{config.SQL_HOSTNAME}/{config.SQL_DB_NAME}'
-    db.init_app(app)
 
     app.config["SESSION_TYPE"] = config.SESSION_TYPE
     app.config["SESSION_PERMANENT"] = config.SESSION_PERMANENT
@@ -35,6 +34,15 @@ def create_app():
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
     app.config['SESSION_SQLALCHEMY'] = db
     app.config['SESSION_KEY_PREFIX'] = config.SESSION_KEY_PREFIX
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_recycle': 1800,
+        'pool_pre_ping': True,
+        'pool_timeout': 30,
+        'pool_reset_on_return': 'rollback'
+    }
+
+    db.init_app(app)
+
     Session(app)
 
     db.create_all()
