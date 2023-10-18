@@ -9,7 +9,7 @@ body {
 }
 
 #background {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697554907/New_Project_2_hpzkrp.png');
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697573673/test_2_cnkfew.png');
   background-position: center;
   background-size: cover;
   height: 100vh;
@@ -32,7 +32,7 @@ body {
   background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695059778/top1_l9hfwh.png');
   height: 150%;
   left: 10%;
-  opacity: 0.4;
+  opacity: 0.3;
   top: 5%;
   width: 150%;
 }
@@ -41,7 +41,7 @@ body {
   background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695059779/bottom1_oew70i.png');
   bottom: 15%;
   height: 150%;
-  opacity: 0.4;
+  opacity: 0.3;
   right: 25%;
   width: 150%;
 }
@@ -51,14 +51,14 @@ body {
   bottom: 20%;
   height: 150%;
   left: 20%;
-  opacity: 0.4;
+  opacity: 0.3;
   width: 150%;
 }
 
 #top2 {
   background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695076173/pngwing.com_2_c0z0gs.png');
   height: 150%;
-  opacity: 0.4;
+  opacity: 0.3;
   right: 10%;
   top: 12%;
   width: 150%;
@@ -74,14 +74,14 @@ body {
 
 .homepage-link img {
   height: 60px;
+  opacity: 0.9;
   transition: transform 0.3s;
   width: auto;
-  z-index: 100;
-  opacity: 0.5;
+  z-index: 1;
 }
 
 .botifyweb-title {
-  color: #004e89;
+  color: #5fad56;
   font-size: 5.2em;
   font-weight: bolder;
   left: 42%;
@@ -108,23 +108,24 @@ body {
 
 .explore-section {
   left: 36%;
-  top: 33%;
+  top: 31%;
 }
 
 .songfull-section {
-  left: 66%; /* Adjust as necessary */
-  top: 42%;
+  left: 62%; /* Adjust as necessary */
+  top: 43%;
 }
 
 .explore-text {
   color: #e9705a;
 }
+
 .songfull-text,
 .explore-text,
 .github-repo-section span.github,
 .github-repo-section span.repo {
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  font-size: 3em; /* Adjust font size as needed */
+  font-size: 3.5em; /* Adjust font size as needed */
   font-weight: 800;
   text-shadow: 2px 3px 4px #00000070;
 }
@@ -134,7 +135,7 @@ body {
 }
 
 .github-repo-section {
-  left: 40%;
+  left: 43%;
   top: 70%; /* Adjust as necessary */
 }
 
@@ -149,8 +150,8 @@ a {
 
 .github-repo-section span.repo {
   display: inline-block;
-  margin-left: -50px; /* Space between the words. Adjust as necessary. */
-  margin-top: 100px;
+  margin-left: -100px; /* Space between the words. Adjust as necessary. */
+  margin-top: 120px;
   vertical-align: middle;
 }
 

@@ -6,7 +6,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from app import config
-from app.util.database_utils import db, UserData, load_data_into_artgen, load_data_into_artgenstyle
+from app.util.database_utils import db, UserData, load_data_into_artgen, load_data_into_artgenstyle, genre_sql, \
+    artgen_sql
 
 
 def create_app():
@@ -42,8 +43,9 @@ def create_app():
 
     Session(app)
 
-    from .routes import auth, user, stats, search, recommendations, playlist, art_gen
+    from .routes import home, auth, user, stats, search, recommendations, playlist, art_gen
 
+    app.register_blueprint(home.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(user.bp)
     app.register_blueprint(stats.bp)
@@ -51,6 +53,7 @@ def create_app():
     app.register_blueprint(recommendations.bp)
     app.register_blueprint(playlist.bp)
     app.register_blueprint(art_gen.bp)
+    #app.register_blueprint(songfull.bp)
 
     db.init_app(app)
 
