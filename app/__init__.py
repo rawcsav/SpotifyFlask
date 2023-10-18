@@ -27,20 +27,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQL_ALCHEMY_TRACK_MODIFICATIONS
     app.config['SQLALCHEMY_ECHO'] = config.SQLALCHEMY_ECHO
 
-    if not app.debug:
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
-
-        file_handler = RotatingFileHandler('logs/webstats.log', maxBytes=1024000, backupCount=10)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-        ))
-        file_handler.setLevel(logging.INFO)
-        app.logger.addHandler(file_handler)
-
-        app.logger.setLevel(logging.DEBUG)
-        app.logger.info('Your Flask application startup')
-
     Session(app)
 
     from .routes import home, auth, user, stats, search, recommendations, playlist, art_gen
@@ -53,7 +39,7 @@ def create_app():
     app.register_blueprint(recommendations.bp)
     app.register_blueprint(playlist.bp)
     app.register_blueprint(art_gen.bp)
-    #app.register_blueprint(songfull.bp)
+    # app.register_blueprint(songfull.bp)
 
     db.init_app(app)
 
