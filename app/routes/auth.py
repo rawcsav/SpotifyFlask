@@ -123,9 +123,9 @@ def save_api_key():
     encrypted_key = encrypt_data(api_key)
     try:
         user_data.api_key_encrypted = encrypted_key
-        session.commit()
+        db.session.commit()
     except:
-        session.rollback()
+        db.session.rollback()
         raise
 
     return jsonify({"message": "API Key saved successfully"}), 200

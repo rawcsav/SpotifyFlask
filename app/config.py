@@ -15,7 +15,7 @@ AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 ME_URL = "https://api.spotify.com/v1/me"
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 FLASK_ENV = os.getenv("FLASK_ENV")
 
 SESSION_TYPE = "sqlalchemy"
@@ -24,7 +24,7 @@ PERMANENT_SESSION_LIFETIME = timedelta(minutes=1440)
 
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Lax"
 
 SQL_ALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = False

@@ -293,8 +293,6 @@ def reorder_playlist(playlist_id):
 
 @bp.route('/get_pl_recommendations/<string:playlist_id>/recommendations', methods=['POST'])
 def get_pl_recommendations(playlist_id):
-    print(f"playlist_id: {playlist_id}")  # Print the playlist_id
-
     sp, error = init_session_client(session)
     if error:
         print(f"error: {error}")  # Print the error

@@ -115,12 +115,12 @@ class artgen_sql(db.Model):
 
 
 class artgenstyle_sql(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     art_style = db.Column(db.String(255), nullable=False)
 
 
 class artgenurl_sql(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     url = db.Column(db.VARCHAR(255), nullable=False)
     genre_name = db.Column(db.VARCHAR(255), nullable=True)
     art_style = db.Column(db.VARCHAR(255), nullable=True)
@@ -175,7 +175,7 @@ class Archive(db.Model):
 
 
 class PastGame(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.VARCHAR(255))  # Assuming you have user management
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     song_id = db.Column(db.VARCHAR(255), db.ForeignKey('archive.id'), nullable=False)
