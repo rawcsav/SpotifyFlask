@@ -3,8 +3,6 @@ from datetime import timedelta
 
 from dotenv import load_dotenv
 
-from app.util.database_utils import db
-
 load_dotenv()
 
 # Spotify API details
@@ -21,7 +19,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 FLASK_ENV = os.getenv("FLASK_ENV")
 
 SESSION_TYPE = "sqlalchemy"
-SESSION_KEY_PREFIX = 'session:'
 SESSION_PERMANENT = True
 PERMANENT_SESSION_LIFETIME = timedelta(minutes=1440)
 

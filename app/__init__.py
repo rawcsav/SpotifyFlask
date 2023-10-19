@@ -35,7 +35,7 @@ def create_app():
     app.config['SESSION_SQLALCHEMY'] = db
     app.config['SESSION_KEY_PREFIX'] = config.SESSION_KEY_PREFIX
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_recycle': 1800,
+        'pool_recycle': 280,
         'pool_pre_ping': True,
         'pool_timeout': 30,
         'pool_reset_on_return': 'rollback'
@@ -46,6 +46,7 @@ def create_app():
     Session(app)
 
     db.create_all()
+
     app.secret_key = config.SECRET_KEY
 
     from .routes import home, auth, user, stats, search, recommendations, playlist, \
