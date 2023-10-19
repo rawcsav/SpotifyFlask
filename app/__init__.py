@@ -73,4 +73,10 @@ def create_app():
         else:
             g.is_dark_mode = False
 
+    @app.teardown_request
+    def session_teardown(exception=None):
+        if exception:
+            db.session.rollback()
+        db.session.remove()
+
     return app
