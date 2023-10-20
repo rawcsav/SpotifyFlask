@@ -243,7 +243,8 @@ def compute_scores_for_playlist(genre_info, genre_sql):
         results.append({
             'genre': genre_entry.genre,
             'similarity_score': sim_score,
-            'opposition_score': opp_score
+            'opposition_score': opp_score,
+            'spotify_url': genre_entry.spotify_url  # Including the spotify_url attribute
         })
 
     # Sort the results based on similarity_score and opposition_score
