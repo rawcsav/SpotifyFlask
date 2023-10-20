@@ -93,12 +93,19 @@
   .drop-item:last-child {
     border-bottom: none;
   }
+
+  #homeLink:hover {
+    text-decoration: none;
+    background-color: #f9efa5;
+    color: #5fad56;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
   .drop-item[href*='profile']:hover {
     text-decoration: none;
     color: #ffe5ec;
     background-color: #a26769;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
   }
   /* Applying specific color styles as per your request */
   .drop-item[href*='stats']:hover {
@@ -137,6 +144,8 @@
     font-weight: bold;
     border-color: transparent;
     cursor: pointer;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
   }
 
   /* Dark Mode button appearance */
@@ -170,10 +179,11 @@
       onclick="toggleSettings(event)"
       style="display: none"
     ></i>
-    <!-- Font Awesome settings icon -->
-    <!-- Font Awesome settings icon -->
   </div>
   <div class="drop-menu" id="menu">
+    <a id="homeLink" class="drop-item" href="{{ url_for('home.home') }}"
+      >Home</a
+    >
     <a class="drop-item" href="{{ url_for('user.profile') }}">Profile</a>
     <a class="drop-item" href="{{ url_for('stats.stats') }}">Music Stats</a>
     <a class="drop-item" href="{{ url_for('recommendations.recommendations') }}"
