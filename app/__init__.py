@@ -4,6 +4,7 @@ from app.util.database_utils import load_data_into_artgen, load_data_into_artgen
 from app.database import db, UserData, artgen_sql, genre_sql
 import sshtunnel
 from app.util.session_utils import get_tunnel
+from flask_migrate import Migrate
 
 
 def create_app():
@@ -38,6 +39,7 @@ def create_app():
         app.config["SESSION_COOKIE_SECURE"] = True
 
     db.init_app(app)
+    migrate = Migrate(app, db)  # this line is new
 
     with app.app_context():
         from .routes import home, auth, user, stats, search, recommendations, playlist, \
