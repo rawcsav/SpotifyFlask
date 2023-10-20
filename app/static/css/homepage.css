@@ -9,7 +9,7 @@ body {
 }
 
 #background {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697573673/test_2_cnkfew.png');
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697741136/test_2_-svg_3_lbgqli.svg');
   background-position: center;
   background-size: cover;
   height: 100vh;
@@ -117,7 +117,7 @@ body {
 }
 
 .explore-text {
-  color: #e9705a;
+  color: #c55469;
 }
 
 .songfull-text,
@@ -141,7 +141,7 @@ body {
 
 .github-repo-section span.github,
 .github-repo-section span.repo {
-  color: #c55469;
+  color: #e9705a;
 }
 
 a {
@@ -156,7 +156,7 @@ a {
 }
 
 .explore-text:hover {
-  text-shadow: 0 0 15px #e34b31; /* Faint glow in the color of the text */
+  text-shadow: 0 0 15px #b33d53; /* Faint glow in the color of the text */
 }
 
 .songfull-text:hover {
@@ -165,7 +165,7 @@ a {
 
 .github-repo-section span.github:hover,
 .github-repo-section span.repo:hover {
-  text-shadow: 0 0 15px #b33d53; /* Faint glow in the color of the text */
+  text-shadow: 0 0 15px #e34b31; /* Faint glow in the color of the text */
 }
 
 a:hover {

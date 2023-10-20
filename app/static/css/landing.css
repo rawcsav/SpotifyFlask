@@ -1,7 +1,7 @@
 body {
   background-attachment: fixed;
-  background-color: #faf0be;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697025520/yacryum4bs5cf4j31oux.svg');
+  background-color: #f9efa5;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697815069/New_Project_1_1_gapkf8.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -60,7 +60,6 @@ body.dark-mode {
 }
 
 h1 {
-  color: #fff;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 3rem;
   font-weight: 800;
@@ -73,18 +72,18 @@ h1 {
 }
 
 h2 {
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 800;
   line-height: 1;
   text-align: center;
+  text-shadow: 2px 3px 4px #00000070;
 }
 
 h1,
 h2,
 p {
   animation: fadeIn 2s;
-  color: #368dbf;
+  color: #c55469;
 }
 
 body.dark-mode h1,
@@ -99,6 +98,7 @@ p {
   line-height: 1;
   margin-top: 15px;
   text-align: center;
+  text-shadow: 2px 3px 4px #00000070;
 }
 
 .container p {
