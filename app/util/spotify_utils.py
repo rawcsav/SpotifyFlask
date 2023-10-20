@@ -5,9 +5,10 @@ from spotipy import Spotify
 from spotipy.client import SpotifyException
 
 from app import config
+from app.database import db, UserData
 from app.routes.auth import refresh
 from app.util.database_utils import add_artist_to_db, get_or_fetch_artist_info, \
-    get_or_fetch_audio_features, db, UserData, genre_sql, artgen_sql
+    get_or_fetch_audio_features
 
 FEATURES = config.AUDIO_FEATURES
 

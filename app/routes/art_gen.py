@@ -1,7 +1,7 @@
 from flask import Blueprint, request, send_from_directory, jsonify, session
 import openai
 from app.util.art_gen_utils import generate_and_save_images
-from app.util.database_utils import UserData
+from app.database import UserData
 from app.util.session_utils import verify_session, fetch_user_data, decrypt_data
 
 bp = Blueprint('art_gen', __name__)

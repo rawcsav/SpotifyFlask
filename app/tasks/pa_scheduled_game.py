@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
 from run import app
-from app.util.database_utils import Songfull, Archive, db
+from app.database import Songfull, Archive
 from app.util.game_util import trim_audio
 from sqlalchemy.sql.expression import func
-from app import config
+from app import config, db
 
 CLIPS_DIR = os.getenv('CLIPS_DIR')
 

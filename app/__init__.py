@@ -1,8 +1,7 @@
 from flask import Flask, session, g
-from flask_session import Session
 from app import config
-from app.util.database_utils import UserData, load_data_into_artgen, load_data_into_artgenstyle, genre_sql, \
-    artgen_sql, db
+from app.util.database_utils import load_data_into_artgen, load_data_into_artgenstyle
+from app.database import db, UserData, artgen_sql, genre_sql
 import sshtunnel
 from app.util.session_utils import get_tunnel
 

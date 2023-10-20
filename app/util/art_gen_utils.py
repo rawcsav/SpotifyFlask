@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.util.database_utils import artgen_sql, artgenstyle_sql, artgenurl_sql, db
+from app.database import artgenstyle_sql, artgenurl_sql, db, artgen_sql
 import openai
 
 import random

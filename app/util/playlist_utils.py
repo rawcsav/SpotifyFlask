@@ -1,5 +1,6 @@
 import json
-from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features, playlist_sql, db
+from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
+from app.database import playlist_sql, db
 from datetime import datetime
 from collections import defaultdict
 from flask import session

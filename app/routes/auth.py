@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 from flask import (Blueprint, abort, make_response, redirect, render_template,
                    request, session, url_for, jsonify)
 from app import config
-from app.util.database_utils import UserData, db
+from app.database import UserData, db
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, load_key_from_env, \
     is_api_key_valid, encrypt_data, verify_session, fetch_user_data
 

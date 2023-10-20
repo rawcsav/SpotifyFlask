@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, session, request, jsonify, send_from_directory
 
-from app.util.database_utils import Songfull, PastGame, db
+from app.database import Songfull, PastGame, db
 
 bp = Blueprint('songfull', __name__)
 

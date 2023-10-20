@@ -2,7 +2,8 @@ import os
 import shutil
 from datetime import datetime
 from sqlalchemy.sql.expression import func, or_
-from app.util.database_utils import Songfull, Archive, db
+from app.database import Songfull, Archive
+from app import db
 from app.util.game_util import trim_audio, download_song
 
 CLIPS_DIR = os.getenv('CLIPS_DIR')

@@ -2,7 +2,7 @@ from random import random
 
 from flask import session
 
-from app.util.database_utils import PastGame, Songfull, db
+from app.database import Songfull, PastGame, db
 
 import subprocess
 

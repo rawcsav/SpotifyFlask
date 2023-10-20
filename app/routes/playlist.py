@@ -7,7 +7,8 @@ import requests
 from io import BytesIO
 from PIL import Image
 from app.routes.auth import require_spotify_auth
-from app.util.database_utils import db, playlist_sql, UserData, delete_expired_images_for_playlist, genre_sql
+from app.util.database_utils import delete_expired_images_for_playlist
+from app.database import playlist_sql, db, UserData, genre_sql
 from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds, \
     calculate_genre_weights
 from app.util.session_utils import verify_session, fetch_user_data
