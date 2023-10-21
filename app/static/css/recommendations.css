@@ -1,7 +1,10 @@
 body {
   align-items: center;
   background-attachment: fixed;
-  background-color: #faf0be;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697846954/ffflux_2_wjf8nw.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   font-family: Futura, sans-serif;
@@ -13,6 +16,7 @@ body {
 }
 
 body.dark-mode {
+  background-image: none;
   background-color: #0c1c30;
 }
 
@@ -217,7 +221,7 @@ body.dark-mode #universal_seeds_container .clickable-result {
   flex-flow: row nowrap;
   flex-direction: row;
   gap: 10px;
-  margin-top: 35px;
+  margin-top: 30px;
   padding-bottom: 80px;
   position: absolute;
 }
@@ -225,14 +229,14 @@ body.dark-mode #universal_seeds_container .clickable-result {
 .clickable-result {
   align-items: center;
   border-radius: 5px;
-  box-shadow: 0 0 55px 10px #5f95bb;
+  box-shadow: 0 0 14px 3px #5f95bb;
   cursor: pointer;
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
   margin-top: 10px;
-  max-height: 75px;
-  max-width: 75px;
+  max-height: 70px;
+  max-width: 70px;
   overflow: hidden;
   position: relative;
 }
@@ -352,23 +356,24 @@ body.dark-mode #universal_input::placeholder {
     0 4px 8px 0 rgb(0 0 0 / 20%),
     0 6px 20px 0 rgb(0 0 0 / 19%);
   color: #02343f;
-  min-height: 30px;
+  min-height: 25px;
   padding-right: 30px;
   width: 30%;
 }
 
 .main-container {
-  background-color: #daadaf;
+  background-color: #f4bc96;
   border-radius: 10px;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
+  box-shadow: 0 3px 10px 10px rgb(0 0 0 / 20%);
   display: flex;
   height: 100vh;
   justify-content: space-around;
-  margin-top: -10px;
-  max-height: 100vh;
+  margin-top: -15px;
+  max-height: 68vh;
   overflow-x: hidden;
   overflow-y: hidden;
   padding: 10px;
+  padding-bottom: 15px;
   width: 100%;
 }
 
@@ -651,7 +656,7 @@ audio {
 }
 
 .playlist-modal-content {
-  background-color: #DAADAF;
+  background-color: #daadaf;
   border-radius: 5px;
   left: 40%;
   margin: 10% auto;

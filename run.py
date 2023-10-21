@@ -3,4 +3,4 @@ from app import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, threaded=True, static_files={'.app/static': 'app/static'})
+    app.run(debug=True, port=8080, static_files={'/static': '/Users/gavinmason/PycharmProjects/BotifyStats/app/static'})

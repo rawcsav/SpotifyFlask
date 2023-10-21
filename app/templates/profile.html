@@ -71,36 +71,11 @@
     </a>
     <div class="container">
       <div class="row d-flex">
-        <!-- Add the d-flex class here -->
-        <!-- Add the align-items-center class here -->
-
-        <!-- User Information (Left Aligned) -->
         <div class="col-md-6 flex-fill">
-          <!-- Add the flex-fill class here -->
           <section class="card">
             <div class="user-info-row">
               <h3>Hello <em>{{ data.display_name }}</em>!</h3>
               <br />
-              <div class="row">
-                <!-- User ID -->
-                <div class="col-md-4">
-                  <dt>User ID:</dt>
-                  <dd>{{ data.id }}</dd>
-                </div>
-
-                <!-- Followers -->
-                <div class="col-md-4">
-                  <dt>Followers:</dt>
-                  <dd>{{ data.followers.total }}</dd>
-                </div>
-
-                <!-- Account Type -->
-                <div class="col-md-4">
-                  <dt>Account Type:</dt>
-                  <dd>{{ data.product }}</dd>
-                </div>
-              </div>
-              <!-- Actions section -->
               <div class="text-center mt-4 d-flex justify-content-center">
                 <a href="{{ url_for('stats.stats') }}" class="btn btn-info mr-2"
                   >Personal Music Stats</a

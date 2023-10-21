@@ -19,7 +19,7 @@ body {
   animation: fadeIn 1s ease-out;
   background-attachment: fixed;
   background-color: #faf0be;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697025898/blob-scene-haikei_4_metzxs.svg');
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697841536/ffflux-svg_1_vrj1ue.svg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -38,7 +38,7 @@ body.dark-mode {
 }
 
 h1 {
-  color: #368dbf;
+  color: #004e89;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 3rem;
   font-weight: bold;
@@ -90,8 +90,8 @@ h3 {
 }
 
 .card {
-  background-color: #ffb894;
-  border-color: transparent;
+  background-color: #f2b280;
+  border-color: #c55469;
   border-radius: 8px;
   position: relative;
   box-shadow:
@@ -239,7 +239,7 @@ dl dt {
   margin-bottom: 10px;
 }
 p {
-  color: #4297FF;
+  color: #4297ff;
 }
 
 body.dark-mode p {

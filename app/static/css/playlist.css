@@ -4,12 +4,13 @@ body {
   overflow-x: hidden;
   width: 100%;
 }
+
 body.dark-mode {
   background-color: #0c1c30;
 }
 
 h1 {
-  color: #004e89;
+  color: #368dbf;
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 45px;
   font-weight: bold;
