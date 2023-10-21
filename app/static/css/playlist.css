@@ -17,6 +17,7 @@ h1 {
   margin-top: 20px;
   text-align: center;
 }
+
 body.dark-mode h1 {
   color: #fbae3c;
 }

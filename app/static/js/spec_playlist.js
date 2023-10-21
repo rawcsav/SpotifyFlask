@@ -100,7 +100,6 @@ $(document).ready(function () {
       };
       artistImage.src = src;
     } else {
-      console.log('No artist image found in container', container);
     }
   });
 
@@ -345,9 +344,7 @@ $(document).ready(function () {
         // Append the custom line
         $('.results-title-spot').append(customLine);
       },
-    ).fail(function () {
-      console.log('An error occurred while getting the recommendations.');
-    });
+    ).fail(function () {});
   }
 
   $(document).on('click', '.add-to-playlist', function (event) {
@@ -474,7 +471,6 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById('apiKeyForm').onsubmit = function (e) {
   e.preventDefault(); // Prevent form from being submitted normally
   var apiKey = document.getElementById('apiKey').value;
-  console.log('API Key: ' + apiKey); // Just for testing
   document.getElementById('connect-button').style.display = 'block';
   document.getElementById('apiKeyForm').style.display = 'none';
 };
@@ -618,8 +614,6 @@ function generateArtForPlaylist(isPrompt = false) {
     genresList = Object.values(artgenTen);
   }
 
-  console.log('Selected genres:', genresList); // Log the selected genres
-
   let dataPayload = {};
 
   if (isPrompt) {
@@ -627,8 +621,6 @@ function generateArtForPlaylist(isPrompt = false) {
   } else {
     dataPayload = { genres_list: genresList };
   }
-
-  console.log('Sending payload:', dataPayload);
 
   $.ajax({
     url: `/generate_images/${playlistId}`,
@@ -708,7 +700,6 @@ function displayImages(response) {
   const promptText = response.prompt;
 
   lastPromptUsed = promptText;
-  console.log('Saved prompt:', lastPromptUsed);
   // Clear previous images
   while (imageContainer.firstChild) {
     imageContainer.removeChild(imageContainer.firstChild);

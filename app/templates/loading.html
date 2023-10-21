@@ -94,8 +94,6 @@
   }
 
   window.showLoading = function (duration = 4000) {
-    console.log('showLoading called');
-
     let loadingOverlay = document.getElementById('loading-overlay');
     let vinylElement = document.getElementById('vinyl');
 
@@ -126,8 +124,6 @@
   let animationDisplayedAt = new Date().getTime();
 
   window.hideLoading = function () {
-    console.log('hideLoading called');
-
     clearTimeout(timeoutId);
     const loadingOverlay = document.getElementById('loading-overlay');
     const fadeOutDuration = 500;
@@ -152,11 +148,9 @@
     }
   };
 
-  // Show the loading animation as soon as the JavaScript is executed
   window.showLoading();
 
   window.addEventListener('load', function () {
-    // Hide the loading animation once the page is fully loaded
     window.hideLoading();
   });
 

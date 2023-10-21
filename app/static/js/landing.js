@@ -10,3 +10,15 @@ function toggleMode() {
     toggleButton.innerText = 'Light Mode';
   }
 }
+
+function handleAuthClick() {
+  window.isArtGenerationRequest = true;
+  window.showLoading(20000);
+  window.onload = function () {
+    if (window.isArtGenerationRequest) {
+      window.hideLoading();
+      // Reset the flag
+      window.isArtGenerationRequest = false;
+    }
+  };
+}

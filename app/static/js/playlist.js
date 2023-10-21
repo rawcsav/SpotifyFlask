@@ -1,10 +1,9 @@
 function handlePlaylistClick() {
   window.isArtGenerationRequest = true;
-  window.showLoading(45000);
+  window.showLoading(20000);
   window.onload = function () {
     if (window.isArtGenerationRequest) {
       window.hideLoading();
-      // Reset the flag
       window.isArtGenerationRequest = false;
     }
   };

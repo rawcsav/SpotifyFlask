@@ -39,9 +39,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/homepage.css') }}"
     />
+    {% from "loading.html" import loading_animation %}
   </head>
   <div id="background"></div>
   <body>
+    {{ loading_animation() }}
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697564135/PhotopeaLogo_4_vz7eec.png"

@@ -50,15 +50,17 @@
     />
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
-    <title>Stats & Recs</title>
+    <title>Explore</title>
 
-    <!-- Link to the external CSS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/landing.css') }}"
     />
+    {% from "loading.html" import loading_animation %}
   </head>
   <body>
+    {{ loading_animation() }}
     <div class="outter-container">
       <div class="block-element">
         <div class="logo-container">
@@ -81,7 +83,7 @@
     <div class="center_column">
       <br />
       <br />
-      <a class="login-button" href="/login">
+      <a class="login-button" href="/login" onclick="handleAuthClick()">
         <img
           alt="Spotify"
           src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694705409/download_hydbbh.svg"
