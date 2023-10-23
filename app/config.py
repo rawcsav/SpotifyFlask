@@ -5,12 +5,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Spotify API details
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 
-# Spotify API endpoints
+SEARCH_ID = os.getenv("SEARCH_ID")
+SEARCH_SECRET = os.getenv("SEARCH_SECRET")
+
 AUTH_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 ME_URL = "https://api.spotify.com/v1/me"
@@ -20,7 +21,7 @@ FLASK_ENV = os.getenv("FLASK_ENV")
 
 SESSION_TYPE = "sqlalchemy"
 SESSION_PERMANENT = True
-PERMANENT_SESSION_LIFETIME = timedelta(minutes=1440)
+PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True

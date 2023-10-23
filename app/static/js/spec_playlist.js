@@ -288,8 +288,8 @@ $(document).ready(function () {
         let recommendations = data['recommendations'];
         const customLine = '<div class="custom-line"></div>';
         const title = '<h2 id="recommendations-title">Recommendations</h2>';
-        $('.results-title-spot').prepend(title); // Append the title to the results-title-spot div
-        $('.results-title-spot').css('display', 'block'); // Display the results-title-spot div
+        $('.results-title-spot').prepend(title);
+        $('.results-title-spot').css('display', 'block');
         $('#results').empty();
         recommendations.forEach((trackInfo) => {
           let audioElement = new Audio(trackInfo['preview']);
@@ -341,7 +341,6 @@ $(document).ready(function () {
           });
         });
 
-        // Append the custom line
         $('.results-title-spot').append(customLine);
       },
     ).fail(function () {});
@@ -354,21 +353,17 @@ $(document).ready(function () {
     let trackId = $(this).attr('data-trackid');
 
     if (plusIcon.hasClass('fas fa-minus')) {
-      // The track is already added, remove it
       $.ajax({
         url: '/remove_from_playlist',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
         success: function (data) {
-          // Display the toast message on successful removal
           showToast('Track removed from playlist successfully!');
 
-          // Change to plus icon
           plusIcon.removeClass('fas fa-minus added').addClass('fas fa-plus');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          // Display error toast
           showToast(
             'An error occurred while removing the track from the playlist.',
             'error',
@@ -377,21 +372,17 @@ $(document).ready(function () {
         },
       });
     } else {
-      // The track is not added yet, add it
       $.ajax({
         url: '/add_to_playlist',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ playlist_id: playlistId, track_id: trackId }),
         success: function (data) {
-          // Display the toast message on successful addition
           showToast('Track added to playlist successfully!');
 
-          // Change to minus icon
           plusIcon.removeClass('fas fa-plus').addClass('fas fa-minus added');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          // Display error toast
           showToast(
             'An error occurred while adding the track to the playlist.',
             'error',
@@ -415,34 +406,27 @@ $(document).ready(function () {
         contentType: 'application/json',
         data: JSON.stringify({ track_id: trackId }),
         success: function (data) {
-          // Display the toast message on successful unsave
           showToast('Track unsaved successfully!');
 
-          // Change to empty heart
           heartIcon.removeClass('fas fa-heart liked').addClass('far fa-heart');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          // Display error toast
           showToast('An error occurred while unsaving the track.', 'error');
           console.error('Error:', textStatus, errorThrown);
         },
       });
     } else {
-      // The track is not saved yet, save it
       $.ajax({
         url: '/save_track',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ track_id: trackId }),
         success: function (data) {
-          // Display the toast message on successful save
           showToast('Track saved successfully!');
 
-          // Change to filled heart
           heartIcon.removeClass('far fa-heart').addClass('fas fa-heart liked');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          // Display error toast
           showToast('An error occurred while saving the track.', 'error');
           console.error('Error:', textStatus, errorThrown);
         },
@@ -469,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.getElementById('apiKeyForm').onsubmit = function (e) {
-  e.preventDefault(); // Prevent form from being submitted normally
+  e.preventDefault();
   var apiKey = document.getElementById('apiKey').value;
   document.getElementById('connect-button').style.display = 'block';
   document.getElementById('apiKeyForm').style.display = 'none';
@@ -482,25 +466,20 @@ function showArtGenContainer() {
     const title =
       '<h2 id="art-gen-title" style="text-align: center;">Cover Art Gen</h2>';
 
-    // Insert the title at the beginning of the art gen container
     artGenContainer.innerHTML = title + artGenContainer.innerHTML;
 
     artGenFetched = true;
 
-    // Display the container
     artGenContainer.style.display = 'flex';
 
-    // Check for the API key when the container is shown
     $.get('/check-api-key', function (response) {
       if (response.has_key) {
-        // User has an existing API key, hide the connect-button and show the "Update API Key" text
         document.getElementById('connect-button').style.display = 'none';
         document.getElementById('update-button').style.display = 'block';
         document.getElementById('generate-art-btn').style.display = 'block';
         document.getElementById('gen-refresh-icon').style.display = 'block';
         document.getElementById('parent-toggle-icon').style.display = 'block';
       } else {
-        // User does not have an API key, show the connect-button and hide the "Update API Key" text
         document.getElementById('connect-button').style.display = 'block';
         document.getElementById('update-button').style.display = 'none';
       }
@@ -508,7 +487,6 @@ function showArtGenContainer() {
       console.error('Error checking API key:', error);
     });
   } else {
-    // For subsequent clicks, simply toggle the visibility
     if (
       artGenContainer.style.display === 'none' ||
       artGenContainer.style.display === ''
@@ -521,7 +499,7 @@ function showArtGenContainer() {
 }
 
 function handleApiKeySubmit(e) {
-  e.preventDefault(); // Prevent form from being submitted normally
+  e.preventDefault();
 
   var apiKey = document.getElementById('apiKey').value;
 
@@ -531,40 +509,35 @@ function handleApiKeySubmit(e) {
     contentType: 'application/json',
     data: JSON.stringify({ api_key: apiKey }),
     success: function (response) {
-      document.getElementById('update-button').style.display = 'block'; // Show the update-button
-      document.getElementById('connect-button').style.display = 'none'; // Hide the connect-button
+      document.getElementById('update-button').style.display = 'block';
+      document.getElementById('connect-button').style.display = 'none';
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
       document.getElementById('parent-toggle-icon').style.display = 'block';
 
-      // Display a success toast
       showToast('API Key saved successfully!');
     },
     error: function (error) {
       console.error('Error saving API key:', error);
 
-      // Display an error toast
       showToast('An error occurred while saving the API key.', 'error');
     },
   });
 }
 
-// Function to display Input Field
 function displayInputField(event) {
-  event.preventDefault(); // Prevent the default link behavior
+  event.preventDefault();
 
   $.get('/check-api-key', function (response) {
     if (response.has_key) {
-      // User has an existing API key, display the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
-      document.getElementById('update-button').style.display = 'block'; // This is the new "Update API Key" text
+      document.getElementById('update-button').style.display = 'block';
       document.getElementById('apiKeyForm').style.display = 'none';
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
       document.getElementById('parent-toggle-icon').style.display = 'block';
     } else {
-      // User does not have an API key, show the input form and hide the "Update API Key" text
       document.getElementById('connect-button').style.display = 'none';
       document.getElementById('update-button').style.display = 'none';
       document.getElementById('apiKeyForm').style.display = 'flex';
@@ -578,14 +551,12 @@ function displayInputField(event) {
 }
 
 function showKeyFormAndHideUpdateButton() {
-  // Hide the update-button
   document.getElementById('update-button').style.display = 'none';
 
-  // Hide the Generate Art button
   document.getElementById('generate-art-btn').style.display = 'none';
   document.getElementById('gen-refresh-icon').style.display = 'none';
   document.getElementById('parent-toggle-icon').style.display = 'none';
-  // Display the API key form
+
   document.getElementById('apiKeyForm').style.display = 'flex';
 }
 
@@ -607,7 +578,6 @@ function generateArtForPlaylist(isPrompt = false) {
 
   let genresList = [];
 
-  // Check if the checkbox is clicked
   const isCheckboxChecked = document.getElementById('parent-toggle').checked;
 
   if (isCheckboxChecked) {
@@ -631,12 +601,10 @@ function generateArtForPlaylist(isPrompt = false) {
       const images = response.images;
       const prompt = response.prompt;
 
-      // Hide loading animation
       window.hideLoading();
 
       displayImages(response);
 
-      // Reset the flag
       window.isArtGenerationRequest = false;
 
       showToast('Image generated successfully.');
@@ -644,13 +612,10 @@ function generateArtForPlaylist(isPrompt = false) {
     error: function (error) {
       console.error('Error generating images:', error);
 
-      // Hide loading animation
       window.hideLoading();
 
-      // Reset the flag
       window.isArtGenerationRequest = false;
 
-      // Show error toast
       showToast('An error occurred while generating the image.', 'error');
     },
   });
@@ -658,7 +623,7 @@ function generateArtForPlaylist(isPrompt = false) {
 
 function addArtToPlaylist(imageUrl) {
   $.ajax({
-    url: `/playlist/${playlistId}/cover-art`, // Using the endpoint you've provided
+    url: `/playlist/${playlistId}/cover-art`,
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({
@@ -685,7 +650,7 @@ function addArtToPlaylist(imageUrl) {
 
 function refreshArt() {
   if (lastPromptUsed) {
-    generateArtForPlaylist(lastPromptUsed, true); // Assuming you've made changes to accept a prompt as mentioned in the previous answer
+    generateArtForPlaylist(lastPromptUsed, true);
   } else {
     console.warn('No last prompt found. Cannot refresh images.');
   }
@@ -700,35 +665,30 @@ function displayImages(response) {
   const promptText = response.prompt;
 
   lastPromptUsed = promptText;
-  // Clear previous images
+
   while (imageContainer.firstChild) {
     imageContainer.removeChild(imageContainer.firstChild);
   }
 
-  // Check and remove existing prompt
   const existingPrompt = document.querySelector('.art-gen-prompt');
   if (existingPrompt) {
     artInfoContainer.removeChild(existingPrompt);
   }
 
-  // Display the prompt at the top
   const promptDiv = document.createElement('div');
   promptDiv.className = 'art-gen-prompt';
   promptDiv.textContent = promptText;
   artInfoContainer.insertBefore(promptDiv, imageContainer);
 
   images.forEach((imageUrl) => {
-    // Create a new div for each image
     const imageDiv = document.createElement('div');
     imageDiv.className = 'art-gen-img-div';
 
-    // Create the image
     const img = document.createElement('img');
     img.src = imageUrl;
     img.alt = 'Generated Cover Art';
     img.className = 'art-gen-img';
 
-    // Create a div for the icons
     const iconDiv = document.createElement('div');
     iconDiv.className = 'art-gen-icon-div';
 
@@ -736,7 +696,6 @@ function displayImages(response) {
     downloadIcon.className = 'fas fa-download';
     downloadIcon.title = 'Download image';
 
-    // Add an onclick event to the downloadIcon
     downloadIcon.onclick = function () {
       window.open(imageUrl, '_blank');
     };
@@ -748,20 +707,15 @@ function displayImages(response) {
       addArtToPlaylist(imageUrl);
     };
 
-    // Append the icons to the icon div
     iconDiv.appendChild(downloadIcon);
     iconDiv.appendChild(addPlaylistIcon);
 
-    // Append the image and icon div to the image div
     imageDiv.appendChild(img);
     imageDiv.appendChild(iconDiv);
 
-    // Append the image div to the container
     imageContainer.appendChild(imageDiv);
 
-    // Check if there are any images
     if (images.length > 0) {
-      // If there are images, set opacity to 1 and cursor to pointer
       document.getElementById('gen-refresh-icon').style.opacity = '1';
       document.getElementById('gen-refresh-icon').style.cursor = 'pointer';
     }

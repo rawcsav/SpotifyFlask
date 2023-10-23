@@ -102,6 +102,11 @@
     border-top-right-radius: 5px;
   }
 
+  #gameLink:hover {
+    text-decoration: none;
+    background-color: #f9efa5;
+    color: #e34b31;
+  }
   .drop-item[href*='profile']:hover {
     text-decoration: none;
     color: #ffe5ec;
@@ -117,6 +122,12 @@
   .drop-item[href*='recommendations']:hover {
     background-color: #02343f;
     color: #f0edcc;
+    text-decoration: none;
+  }
+
+  .drop-item[href*='game'] {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
     text-decoration: none;
   }
 
@@ -163,14 +174,16 @@
 <!-- Dropdown Structure -->
 <div id="spotifyUserDropdown" onclick="toggleDropdown(event)">
   <div class="menu-container">
-    {% if data.images and data.images[0] %}
-    <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
-    {% else %}
+    {% if songfull_menu %}
     <img
       src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1696536571/bd33260dec7cd00233c444cda31ba12a-removebg-preview_cgobu0.png"
       alt="Placeholder Image"
       class="profile-img"
     />
+    <span class="truncate">Guest</span>
+    <!-- Placeholder for guest user -->
+    {% else %} {% if data.images and data.images[0] %}
+    <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
     {% endif %}
     <span class="truncate">{{ data.display_name }}</span>
     <i
@@ -179,6 +192,7 @@
       onclick="toggleSettings(event)"
       style="display: none"
     ></i>
+    {% endif %}
   </div>
   <div class="drop-menu" id="menu">
     <a id="homeLink" class="drop-item" href="{{ url_for('home.home') }}"
@@ -192,125 +206,128 @@
     <a class="drop-item" href="{{ url_for('playlist.playlist') }}"
       >Playlist Explorer</a
     >
+    <a id="gameLink" class="drop-item" href="{{ url_for('songfull.game') }}"
+      >Songfull</a
+    >
     <div id="settingsDropdown">
       <div class="drop-menu" id="settings-menu">
         <button class="drop-item" id="modeToggle" onclick="toggleMode()">
           Dark Mode
         </button>
-        <a class="drop-item" href="/logout">Logout</a>
+        <a class="drop-item" href="/logout/index">Logout</a>
       </div>
     </div>
+    <script>
+          function toggleDropdown(event) {
+            event.stopPropagation(); // Prevents the dropdown from closing
+            const menu = document.getElementById('menu');
+            const settingsCog = document.getElementById('settingsCog');
+            if (menu.style.display === 'none' || menu.style.display === '') {
+              menu.style.display = 'block';
+              settingsCog.style.display = 'inline-block'; // Show the settings cog
+            } else {
+              menu.style.display = 'none';
+              settingsCog.style.display = 'none'; // Hide the settings cog
+            }
+          }
+
+          function toggleSettings(event) {
+            event.stopPropagation(); // Prevents the dropdown from closing
+            const settingsCog = document.getElementById('settingsCog');
+            const settingsMenu = document.getElementById('settings-menu');
+            if (
+              settingsMenu.style.display === 'none' ||
+              settingsMenu.style.display === ''
+            ) {
+              settingsMenu.style.display = 'block';
+            } else {
+              settingsMenu.style.display = 'none';
+            }
+          }
+
+          // Close the dropdown if clicked outside
+          window.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('spotifyUserDropdown');
+            if (!dropdown.contains(event.target)) {
+              document.getElementById('menu').style.display = 'none';
+            }
+          });
+          function toggleMode() {
+            const body = document.body;
+            const isDarkMode = body.classList.contains('dark-mode');
+            const modeToSave = isDarkMode ? 'light' : 'dark';
+
+            fetch('/update_mode', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                mode: modeToSave,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data.message);
+
+                const toggleButton = document.getElementById('modeToggle');
+                const modeSensitiveImage =
+                  document.getElementById('modeSensitiveImage');
+
+                if (isDarkMode) {
+                  body.classList.remove('dark-mode');
+                  toggleButton.innerText = 'Dark Mode';
+                  modeSensitiveImage.src =
+                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
+                } else {
+                  body.classList.add('dark-mode');
+                  toggleButton.innerText = 'Light Mode';
+                  modeSensitiveImage.src =
+                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
+                }
+                document.dispatchEvent(new Event('themeToggled'));
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+          }
+
+          function checkMode() {
+            fetch('/get_mode', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                const body = document.body;
+                const toggleButton = document.getElementById('modeToggle');
+                const modeSensitiveImage =
+                  document.getElementById('modeSensitiveImage');
+
+                if (data.mode === 'dark') {
+                  body.classList.add('dark-mode');
+                  toggleButton.innerText = 'Light Mode';
+                  modeSensitiveImage.src =
+                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Your light mode image URL
+                } else {
+                  body.classList.remove('dark-mode');
+                  toggleButton.innerText = 'Dark Mode';
+                  modeSensitiveImage.src =
+                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png';
+                }
+                document.dispatchEvent(new Event('themeToggled'));
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+          }
+      window.onload = function () {
+        {% if logged_in %}
+          checkMode();
+        {% endif %}
+      };
+    </script>
   </div>
-  <script>
-    function toggleDropdown(event) {
-      event.stopPropagation(); // Prevents the dropdown from closing
-      const menu = document.getElementById('menu');
-      const settingsCog = document.getElementById('settingsCog');
-      if (menu.style.display === 'none' || menu.style.display === '') {
-        menu.style.display = 'block';
-        settingsCog.style.display = 'inline-block'; // Show the settings cog
-      } else {
-        menu.style.display = 'none';
-        settingsCog.style.display = 'none'; // Hide the settings cog
-      }
-    }
-
-    function toggleSettings(event) {
-      event.stopPropagation(); // Prevents the dropdown from closing
-      const settingsCog = document.getElementById('settingsCog');
-      const settingsMenu = document.getElementById('settings-menu');
-      if (
-        settingsMenu.style.display === 'none' ||
-        settingsMenu.style.display === ''
-      ) {
-        settingsMenu.style.display = 'block';
-      } else {
-        settingsMenu.style.display = 'none';
-      }
-    }
-
-    // Close the dropdown if clicked outside
-    window.addEventListener('click', function (event) {
-      const dropdown = document.getElementById('spotifyUserDropdown');
-      if (!dropdown.contains(event.target)) {
-        document.getElementById('menu').style.display = 'none';
-      }
-    });
-    function toggleMode() {
-      const body = document.body;
-      const isDarkMode = body.classList.contains('dark-mode');
-      const modeToSave = isDarkMode ? 'light' : 'dark';
-
-      fetch('/update_mode', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          mode: modeToSave,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data.message);
-
-          const toggleButton = document.getElementById('modeToggle');
-          const modeSensitiveImage =
-            document.getElementById('modeSensitiveImage');
-
-          if (isDarkMode) {
-            body.classList.remove('dark-mode');
-            toggleButton.innerText = 'Dark Mode';
-            modeSensitiveImage.src =
-              'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
-          } else {
-            body.classList.add('dark-mode');
-            toggleButton.innerText = 'Light Mode';
-            modeSensitiveImage.src =
-              'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
-          }
-          document.dispatchEvent(new Event('themeToggled'));
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-    }
-
-    function checkMode() {
-      fetch('/get_mode', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const body = document.body;
-          const toggleButton = document.getElementById('modeToggle');
-          const modeSensitiveImage =
-            document.getElementById('modeSensitiveImage');
-
-          if (data.mode === 'dark') {
-            body.classList.add('dark-mode');
-            toggleButton.innerText = 'Light Mode';
-            modeSensitiveImage.src =
-              'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Your light mode image URL
-          } else {
-            body.classList.remove('dark-mode');
-            toggleButton.innerText = 'Dark Mode';
-            modeSensitiveImage.src =
-              'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png';
-          }
-          document.dispatchEvent(new Event('themeToggled'));
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-    }
-
-    // Fetch the user's mode from the server when the page loads
-    window.onload = function () {
-      checkMode();
-    };
-  </script>
 </div>

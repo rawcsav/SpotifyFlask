@@ -1,13 +1,13 @@
 import asyncio
-from datetime import date, datetime
+import re
+from datetime import datetime
 
 import aiohttp
-import requests
-import re
-from bs4 import BeautifulSoup
-from tqdm import tqdm
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
+from tqdm import tqdm
 
 ua = UserAgent(browsers=['edge', 'chrome', 'safari', 'firefox'])
 
@@ -16,7 +16,7 @@ headers = {
 }
 
 MAX_RETRIES = 3
-DELAY_BETWEEN_REQUESTS = 1  # in seconds
+DELAY_BETWEEN_REQUESTS = 1
 CONCURRENT_REQUESTS = 5
 
 
@@ -36,8 +36,8 @@ async def fetch_genre_page(session, subgenre):
 
 
 async def process_genre(session, genre_div):
-    unformatted_genre = genre_div.text.strip().replace("»", "")  # Store unformatted genre
-    genre = re.sub("[:'+»&\s-]", '', unformatted_genre)  # Continue with your existing code
+    unformatted_genre = genre_div.text.strip().replace("»", "")
+    genre = re.sub("[:'+»&\s-]", '', unformatted_genre)
     soup2 = await fetch_genre_page(session, genre)
 
     spotify_link = soup2.find_all("a", text='playlist')
@@ -76,11 +76,11 @@ async def process_genres_and_create_csv(output_filename, genres_to_process=None)
     results = []
 
     if genres_to_process:
-        # Filter the all_genre_divs based on the provided genres_to_process list
+
         genre_divs_to_process = [div for div in all_genre_divs if
                                  div.text.strip().replace("»", "") in genres_to_process]
     else:
-        # If no specific genres provided, process all genres
+
         genre_divs_to_process = all_genre_divs
 
     progress_bar = tqdm(total=len(genre_divs_to_process), desc="Processing genres", dynamic_ncols=True)

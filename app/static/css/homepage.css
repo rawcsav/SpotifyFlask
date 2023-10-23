@@ -9,7 +9,7 @@ body {
 }
 
 #background {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697741136/test_2_-svg_3_lbgqli.svg');
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697944042/test_2_-svg_3_lbgqli-svg_ejbke8.svg');
   background-position: center;
   background-size: cover;
   height: 100vh;
@@ -28,47 +28,13 @@ body {
   z-index: 2;
 }
 
-#top1 {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695059778/top1_l9hfwh.png');
-  height: 150%;
-  left: 10%;
-  opacity: 0.3;
-  top: 5%;
-  width: 150%;
-}
-
-#bottom1 {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695059779/bottom1_oew70i.png');
-  bottom: 15%;
-  height: 150%;
-  opacity: 0.3;
-  right: 25%;
-  width: 150%;
-}
-
-#bottom2 {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695059778/bottom2_m4gw9l.png');
-  bottom: 20%;
-  height: 150%;
-  left: 20%;
-  opacity: 0.3;
-  width: 150%;
-}
-
-#top2 {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1695076173/pngwing.com_2_c0z0gs.png');
-  height: 150%;
-  opacity: 0.3;
-  right: 10%;
-  top: 12%;
-  width: 150%;
-}
-
 .homepage-link {
   cursor: pointer;
   left: 3px;
   position: absolute;
   top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
   z-index: 100;
 }
 
@@ -82,21 +48,24 @@ body {
 
 .botifyweb-title {
   color: #5fad56;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   font-size: 5.2em;
   font-weight: bolder;
   left: 42%;
   margin-top: 0;
   position: absolute;
-  text-shadow: 2px 3px 4px #00000070;
+  text-shadow: 0 0 15px #32a725;
   top: 0;
+  -webkit-touch-callout: none;
+  user-select: none;
   z-index: 3;
 }
 
 .botifyweb-title span.web {
   display: inline-block;
-  margin-left: 5px; /* Space between the words. Adjust as necessary. */
-  padding-top: 40px; /* Pushes the word 'Web' downwards. Adjust this value as necessary to achieve the desired staggered effect. */
-  vertical-align: middle; /* Adjusts the alignment of the span. */
+  margin-left: 5px;
+  padding-top: 40px;
+  vertical-align: middle;
 }
 
 .explore-section,
@@ -112,7 +81,7 @@ body {
 }
 
 .songfull-section {
-  left: 62%; /* Adjust as necessary */
+  left: 62%;
   top: 43%;
 }
 
@@ -125,9 +94,11 @@ body {
 .github-repo-section span.github,
 .github-repo-section span.repo {
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  font-size: 3.5em; /* Adjust font size as needed */
+  font-size: 3.5em;
   font-weight: 800;
   text-shadow: 2px 3px 4px #00000070;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .songfull-text {
@@ -136,7 +107,7 @@ body {
 
 .github-repo-section {
   left: 43%;
-  top: 70%; /* Adjust as necessary */
+  top: 70%;
 }
 
 .github-repo-section span.github,
@@ -150,13 +121,13 @@ a {
 
 .github-repo-section span.repo {
   display: inline-block;
-  margin-left: -100px; /* Space between the words. Adjust as necessary. */
+  margin-left: -100px;
   margin-top: 120px;
   vertical-align: middle;
 }
 
 .explore-text:hover {
-  text-shadow: 0 0 15px #b33d53; /* Faint glow in the color of the text */
+  text-shadow: 0 0 15px #b33d53;
 }
 
 .songfull-text:hover {
@@ -165,7 +136,7 @@ a {
 
 .github-repo-section span.github:hover,
 .github-repo-section span.repo:hover {
-  text-shadow: 0 0 15px #e34b31; /* Faint glow in the color of the text */
+  text-shadow: 0 0 15px #e34b31;
 }
 
 a:hover {
@@ -174,5 +145,5 @@ a:hover {
   transition:
     transform 0.3s ease,
     filter 0.3s ease,
-    box-shadow 0.3s ease; /* Smoothens the transition effects */
+    box-shadow 0.3s ease;
 }

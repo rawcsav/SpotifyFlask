@@ -93,6 +93,8 @@ body.dark-mode .center-text {
   left: 3px;
   position: absolute;
   top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .homepage-link img {
@@ -183,22 +185,20 @@ body.dark-mode .row li {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 50%;
-  border-radius: 50%; /* make it a circle */
-  box-shadow: 0 0 10px rgb(0 0 0 / 50%); /* shadow around the control */
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%);
   height: 30px;
   width: 30px;
 }
 
 .carousel-control-next-icon {
-  background-color: rgb(
-    255 255 255 / 70%
-  ); /* semi-transparent white background */
+  background-color: rgb(255 255 255 / 70%);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23000000' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3e%3c/svg%3e");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 50%;
-  border-radius: 50%; /* make it a circle */
-  box-shadow: 0 0 10px rgb(0 0 0 / 50%); /* shadow around the control */
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%);
   height: 30px;
   width: 30px;
 }

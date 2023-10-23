@@ -1,9 +1,11 @@
 import json
-from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
-from app.database import playlist_sql, db
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+
 from flask import session
+
+from app.database import playlist_sql, db
+from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
 from app.util.spotify_utils import init_session_client
 
 
@@ -42,7 +44,6 @@ def get_track_info_list(sp, tracks):
     track_features_dict = get_or_fetch_audio_features(sp, track_ids)
     track_info_list = []
 
-    # Pre-fetch all artist info at once to minimize API calls.
     unique_artist_ids = list(set(
         artist['id'] for track_data in tracks for artist in track_data['track']['artists'] if artist['id'] is not None))
     all_artist_info = get_or_fetch_artist_info(sp, unique_artist_ids)
@@ -50,7 +51,6 @@ def get_track_info_list(sp, tracks):
     for track_data in tracks:
         track = track_data['track']
 
-        # Remove unwanted columns
         track.pop('available_markets', None)
         track.pop('disc_number', None)
         track.pop('external_ids', None)
@@ -68,17 +68,17 @@ def get_track_info_list(sp, tracks):
             if artist_id is not None and artist_id in all_artist_info:
                 artist_info.append(all_artist_info[artist_id])
         audio_features = track_features_dict.get(track['id'], {})
-        is_local = track.get('is_local', False)  # Extracting the is_local attribute
+        is_local = track.get('is_local', False)
 
         track_info = {
             'id': track['id'],
             'name': track['name'],
             'is_local': is_local,
-            'added_at': track_data.get('added_at', None),  # Adding the "added_at" field
+            'added_at': track_data.get('added_at', None),
             'album': track['album']['name'],
             'release_date': track['album']['release_date'],
             'explicit': track['explicit'],
-            'popularity': None if is_local else track['popularity'],  # Set to None if track is local
+            'popularity': None if is_local else track['popularity'],
             'cover_art': cover_art,
             'artists': artist_info,
             'audio_features': audio_features,
@@ -90,11 +90,11 @@ def get_track_info_list(sp, tracks):
 
 
 def get_genre_artists_count(track_info_list, top_n=10):
-    genre_info = {}  # Will store both counts and artist lists for each genre
+    genre_info = {}
     artist_counts = {}
     artist_images = {}
     artist_urls = {}
-    artist_ids = {}  # New dictionary to store artist IDs
+    artist_ids = {}
 
     for track_info in track_info_list:
         for artist_dict in track_info['artists']:
@@ -109,16 +109,15 @@ def get_genre_artists_count(track_info_list, top_n=10):
                 artist_image_url = None
 
             for genre in artist_genres:
-                # Initialize genre info if it's not present
+
                 if genre not in genre_info:
                     genre_info[genre] = {"count": 0, "artists": set()}
 
-                # Increment genre count and add artist
                 genre_info[genre]["count"] += 1
                 genre_info[genre]["artists"].add(artist_name)
 
             artist_counts[artist_name] = artist_counts.get(artist_name, 0) + 1
-            artist_ids[artist_name] = artist_id  # Store the artist ID
+            artist_ids[artist_name] = artist_id
 
             if artist_image_url:
                 artist_images[artist_name] = artist_image_url
@@ -129,7 +128,6 @@ def get_genre_artists_count(track_info_list, top_n=10):
     top_artists = [(name, count, artist_images.get(name, None), artist_urls.get(name), artist_ids.get(name)) for
                    name, count in sorted_artists[:top_n]]
 
-    # Convert genre_info artists sets back to lists for consistency
     for genre, info in genre_info.items():
         info["artists"] = list(info["artists"])
 
@@ -143,7 +141,7 @@ def get_audio_features_stats(track_info_list):
 
     for idx, track_info in enumerate(track_info_list):
         if track_info['is_local'] or track_info['popularity'] is None:
-            continue  # Skip local tracks and tracks with 'None' popularity
+            continue
 
         for feature, value in track_info['audio_features'].items():
             if feature != 'id':
@@ -158,7 +156,6 @@ def get_audio_features_stats(track_info_list):
                         f"KeyError at track index {idx}, track name: {track_info['name']}, missing feature: {feature}")
                     continue
 
-        # Calculate min, max, and total for popularity
         pop = track_info['popularity']
         if audio_feature_stats['popularity']['min'] is None or pop < audio_feature_stats['popularity']['min'][1]:
             audio_feature_stats['popularity']['min'] = (track_info['name'], pop)

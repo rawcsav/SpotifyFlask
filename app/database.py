@@ -135,41 +135,37 @@ class Songfull(db.Model):
     artist = db.Column(db.String(150), nullable=False)
     id = db.Column(db.String(150), primary_key=True)
     artist_id = db.Column(db.String(150), nullable=False)
+    album = db.Column(db.String(150))  # added
+    release = db.Column(db.String(4))  # added
     image_url = db.Column(db.String(250))
-    external_url = db.Column(db.String(250))  # External link to the song, e.g., on Spotify's main platform
+    external_url = db.Column(db.String(250))
     spotify_preview_url = db.Column(db.String(250), nullable=False)
     popularity = db.Column(db.Integer, nullable=False)
     genre = db.Column(db.String(50), nullable=False)
-    current = db.Column(db.Boolean, default=False)
+    current = db.Column(db.SmallInteger, default=0)
+    date_played = db.Column(db.Date, db.ForeignKey('past_game.date'))
 
     def __repr__(self):
         return f"<Song {self.name} by {self.artist}>"
 
 
-class Archive(db.Model):
-    name = db.Column(db.String(150), nullable=False)
-    artist = db.Column(db.String(150), nullable=False)
-    id = db.Column(db.String(150), primary_key=True)
-    artist_id = db.Column(db.String(150), nullable=False)
-    image_url = db.Column(db.String(250))
-    external_url = db.Column(db.String(250))  # External link to the song, e.g., on Spotify's main platform
-    spotify_preview_url = db.Column(db.String(250), nullable=False)
-    popularity = db.Column(db.Integer, nullable=False)
-    genre = db.Column(db.String(50), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-
-
 class PastGame(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.VARCHAR(255))  # Assuming you have user management
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    song_id = db.Column(db.VARCHAR(255), db.ForeignKey('archive.id'), nullable=False)
-    attempts_made = db.Column(db.Integer, default=0)
-    correct_guess = db.Column(db.Boolean, default=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Relationship
-    song = db.relationship('Archive', backref='past_games')
+    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)  # replaces the user_id column
+    date = db.Column(db.Date, nullable=False, index=True)
+    attempts_made_general = db.Column(db.Integer, default=0)
+    attempts_made_rock = db.Column(db.Integer, default=0)
+    attempts_made_hiphop = db.Column(db.Integer, default=0)
+    correct_guess_general = db.Column(db.Boolean, default=False)
+    correct_guess_rock = db.Column(db.Boolean, default=False)
+    correct_guess_hiphop = db.Column(db.Boolean, default=False)
+    songs = db.relationship('Songfull', backref='game', lazy=True)
 
     def __repr__(self):
-        return f"<PastGame on {self.date} for song {self.song_id}>"
+        return f"<PastGame on {self.date} for user/session {self.user_id_or_session}>"
+
+
+class CurrentGame(db.Model):
+    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
+    current_genre = db.Column(db.String(50), default='General')
+    guesses_left = db.Column(db.Integer, default=6)
+    date = db.Column(db.Date, default=datetime.utcnow().date)

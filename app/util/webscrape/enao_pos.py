@@ -1,9 +1,10 @@
+import asyncio
+import re
+from concurrent.futures import ThreadPoolExecutor
+
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-import re
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 
 
@@ -64,7 +65,6 @@ specific_genres = ["country road", "german hip hop", "houston rap", "indian indi
 
 url = "https://everynoise.com/engenremap.html"
 
-# Start asynchronous scraping
 loop = asyncio.get_event_loop()
 genres_df = loop.run_until_complete(scrape_genres_async(url))
 

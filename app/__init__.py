@@ -1,20 +1,27 @@
-from flask import Flask, session, g
-from app import config
-from app.util.database_utils import load_data_into_artgen, load_data_into_artgenstyle
-from app.database import db, UserData, artgen_sql, genre_sql
+import uuid
+
 import sshtunnel
-from app.util.session_utils import get_tunnel
+from flask import Flask, session, g
 from flask_migrate import Migrate
+
+from app import config
+from app.database import db, UserData, artgen_sql, genre_sql
+from app.util.database_utils import load_data_into_artgen, load_data_into_artgenstyle
+from app.util.session_utils import get_tunnel
+from flask_cors import CORS
 
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
+
     app.secret_key = config.SECRET_KEY
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQL_ALCHEMY_TRACK_MODIFICATIONS
     app.config['SQLALCHEMY_ECHO'] = config.SQLALCHEMY_ECHO
     app.config["SESSION_PERMANENT"] = config.SESSION_PERMANENT
-    app.config["PERMANENT_SESSION_LIFETIME"] = config.PERMANENT_SESSION_LIFETIME
+    app.config['PERMANENT_SESSION_LIFETIME'] = config.PERMANENT_SESSION_LIFETIME
+
     app.config["SESSION_COOKIE_SAMESITE"] = config.SESSION_COOKIE_SAMESITE
     app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
@@ -39,11 +46,11 @@ def create_app():
         app.config["SESSION_COOKIE_SECURE"] = True
 
     db.init_app(app)
-    migrate = Migrate(app, db)  # this line is new
+    migrate = Migrate(app, db)
 
     with app.app_context():
         from .routes import home, auth, user, stats, search, recommendations, playlist, \
-            art_gen  # songfull
+            art_gen, songfull
 
         app.register_blueprint(home.bp)
         app.register_blueprint(auth.bp)
@@ -53,8 +60,7 @@ def create_app():
         app.register_blueprint(recommendations.bp)
         app.register_blueprint(playlist.bp)
         app.register_blueprint(art_gen.bp)
-
-        # app.register_blueprint(songfull.bp)
+        app.register_blueprint(songfull.bp)
 
         @app.before_request
         def apply_user_preference():
@@ -66,6 +72,13 @@ def create_app():
                     g.is_dark_mode = False
             else:
                 g.is_dark_mode = False
+
+        @app.before_request
+        def ensure_session_id():
+            if 'id' not in session:
+                session['id'] = str(uuid.uuid4())
+            session.permanent = True
+            session.modified = True
 
         @app.teardown_request
         def session_teardown(exception=None):

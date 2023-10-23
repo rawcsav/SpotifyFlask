@@ -1,14 +1,16 @@
-from flask import Blueprint, render_template, jsonify, \
-    session, redirect, url_for, request
+import base64
 import json
 import random
-import base64
-import requests
 from io import BytesIO
+
+import requests
 from PIL import Image
+from flask import Blueprint, render_template, jsonify, \
+    session, redirect, url_for, request
+
+from app.database import playlist_sql, db, UserData, genre_sql
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import delete_expired_images_for_playlist
-from app.database import playlist_sql, db, UserData, genre_sql
 from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds, \
     calculate_genre_weights
 from app.util.session_utils import verify_session, fetch_user_data
@@ -24,7 +26,6 @@ def playlist():
     access_token = verify_session(session)
     res_data = fetch_user_data(access_token)
 
-    # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
     if not user_data_entry:

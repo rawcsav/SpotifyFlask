@@ -35,6 +35,8 @@ body.dark-mode {
   left: 3px;
   position: absolute;
   top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .homepage-link img {
@@ -409,7 +411,7 @@ body.dark-mode p {
 .custom-line {
   background-size: 100% 2px;
   border-bottom: 1px solid #fa8072;
-  border-radius: 50%; /* This makes the ends rounded */
+  border-radius: 50%;
   box-shadow: 0 1px 1px #fa8072;
   height: 2px;
   margin: 40px auto;
@@ -598,10 +600,10 @@ body.dark-mode .utils-title body.dark-mode .gen-titles {
   display: flex;
   flex-flow: column nowrap;
   justify-content: start;
-  margin: 0 auto; /* This centers the div with equal margin on each side */
+  margin: 0 auto;
   overflow-x: auto;
   position: relative;
-  text-align: center; /* This will center the inline and inline-block children */
+  text-align: center;
   width: 95%;
 }
 
@@ -745,8 +747,8 @@ audio {
 
 .heart-icon:hover,
 .plus-icon:hover {
-  transform: scale(1.1); /* scales the icon up to 110% of original size */
-  transition: transform 0.3s; /* smooth transition effect */
+  transform: scale(1.1);
+  transition: transform 0.3s;
 }
 
 #genre-counts ul {
@@ -876,11 +878,11 @@ body.dark-mode .art-gen-icon-div {
 }
 
 .art-gen-img {
-  border: 1px solid #000; /* add a border to the image */
-  box-shadow: 0 0 10px rgb(0 0 0 / 10%); /* add a shadow to the image */
+  border: 1px solid #000;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   height: 300px;
-  margin: 10px; /* add some margin around the image */
-  width: 300px; /* or any other size */
+  margin: 10px;
+  width: 300px;
 }
 
 .art-gen-img:hover {
@@ -1004,7 +1006,7 @@ body.dark-mode .art-gen-prompt {
 .accordion-content {
   background-color: #f9f9f9;
   border-radius: 5px;
-  display: none; /* Hide by default */
+  display: none;
   padding: 0 10px;
 }
 

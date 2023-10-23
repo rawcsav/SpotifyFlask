@@ -17,7 +17,7 @@ function handleAuthClick() {
   window.onload = function () {
     if (window.isArtGenerationRequest) {
       window.hideLoading();
-      // Reset the flag
+
       window.isArtGenerationRequest = false;
     }
   };

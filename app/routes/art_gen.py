@@ -1,7 +1,8 @@
-from flask import Blueprint, request, send_from_directory, jsonify, session
 import openai
-from app.util.art_gen_utils import generate_and_save_images
+from flask import Blueprint, request, send_from_directory, jsonify, session
+
 from app.database import UserData
+from app.util.art_gen_utils import generate_and_save_images
 from app.util.session_utils import verify_session, fetch_user_data, decrypt_data
 
 bp = Blueprint('art_gen', __name__)
@@ -23,7 +24,6 @@ def generate_images(playlist_id):
         print(genres_list)
         prompt_text = request.json.get('prompt', None)
 
-        # Pass the genres_list and prompt_text (if available) to the generate_and_save_images function
         images, prompt = generate_and_save_images(playlist_id, genres_list, prompt_text)
 
         return {"images": images, "prompt": prompt}, 200

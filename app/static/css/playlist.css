@@ -49,6 +49,8 @@ body.dark-mode p {
   left: 3px;
   position: absolute;
   top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .homepage-link img {

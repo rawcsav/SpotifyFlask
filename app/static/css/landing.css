@@ -38,6 +38,8 @@ body.dark-mode {
   position: absolute;
   top: 1px;
   z-index: 100;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .homepage-link img {
@@ -194,7 +196,7 @@ html {
 
 .logo-container {
   position: relative;
-  display: inline-block; /* Added to wrap content around the text */
+  display: inline-block;
 }
 @keyframes fadeInZoom {
   from {
@@ -209,12 +211,12 @@ html {
 
 @keyframes slideIn {
   0% {
-    transform: translate(20px, 20px); /* Starting position */
+    transform: translate(20px, 20px);
     opacity: 0;
   }
   100% {
-    transform: translate(10px, 10px); /* Ending position */
-    opacity: 0.3; /* Adjust the ending opacity if necessary */
+    transform: translate(10px, 10px);
+    opacity: 0.3;
   }
 }
 
@@ -244,22 +246,22 @@ body.dark-mode .logo-text {
   position: absolute;
   top: 0;
   left: 0;
-  color: rgba(0, 0, 0, 0.3); /* Black with 30% opacity */
-  transform: translate(15px, 15px); /* Move the overlaid text slightly */
+  color: rgba(0, 0, 0, 0.3);
+  transform: translate(15px, 15px);
   z-index: 2;
   animation: slideIn 0.5s forwards;
-  transition: all 0.3s ease-out; /* Adjust the timing if necessary */
+  transition: all 0.3s ease-out;
 }
 
 body.dark-mode .overlay {
   position: absolute;
   top: 0;
   left: 0;
-  color: rgba(0, 0, 0, 0.3); /* Black with 30% opacity */
-  transform: translate(15px, 15px); /* Move the overlaid text slightly */
+  color: rgba(0, 0, 0, 0.3);
+  transform: translate(15px, 15px);
   z-index: 2;
   animation: slideIn 0.5s forwards;
-  transition: all 0.3s ease-out; /* Adjust the timing if necessary */
+  transition: all 0.3s ease-out;
 }
 
 .outter-container {

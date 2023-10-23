@@ -20,7 +20,7 @@ body.dark-mode {
   background-color: #0c1c30;
 }
 
-.noselect {
+.no-select {
   -webkit-touch-callout: none;
   user-select: none;
 }

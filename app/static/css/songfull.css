@@ -1,0 +1,170 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: #f9efa5;
+  color: #e34b31;
+  font-family: Futura, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-link {
+  cursor: pointer;
+  left: 3px;
+  position: absolute;
+  top: 1px;
+  z-index: 100;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.homepage-link img {
+  height: 60px;
+  transition: transform 0.3s;
+  width: auto;
+  z-index: 100;
+}
+
+.homepage-link:hover img {
+  transform: scale(1.05);
+}
+
+.game-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgb(197, 84, 105);
+  box-shadow: 3px 3px 10px rgb(233, 112, 90);
+  padding: 20px;
+  padding-bottom: 50px;
+  padding-top: 50px;
+  border-radius: 10px;
+}
+
+.login-button {
+  align-items: center;
+  position: absolute;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+  color: #191919;
+  display: flex;
+  top: 10px;
+  right: 20px;
+  height: 40px;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  transition: background 0.3s;
+}
+
+body.dark-mode .login-button {
+  background-color: #f1f9f2;
+  color: #001220;
+}
+
+.login-button,
+.login-button img {
+  line-height: normal;
+  vertical-align: middle;
+}
+
+.spotify-logo {
+  height: 20px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  width: 20px;
+}
+
+.spotify-logo img {
+  overflow: clip;
+  overflow-clip-margin: content-box;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.login-button:hover {
+  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+h1 {
+  position: absolute;
+  margin-top: 0;
+  top: 0;
+  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-size: 5rem;
+  margin-bottom: 150px;
+  text-shadow: 2px 3px 4px #00000070;
+}
+
+#filter-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#song-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#audio-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#search-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input[type='text'] {
+  width: 80%;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #1d1d1d;
+  color: #fff;
+}
+
+#bottom-buttons {
+  display: flex;
+  gap: 10px;
+}

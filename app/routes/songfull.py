@@ -3,7 +3,8 @@ from datetime import datetime
 
 from flask import Blueprint, render_template, session, request, jsonify, send_from_directory
 
-from app.database import Songfull, PastGame, db
+from app.database import Songfull, PastGame, db, CurrentGame
+from app.util.session_utils import check_login_status, verify_session, fetch_user_data
 
 bp = Blueprint('songfull', __name__)
 
@@ -12,33 +13,77 @@ CLIPS_DIR = os.getenv('CLIPS_DIR')
 
 @bp.route('/songfull')
 def game():
-    return render_template('songfull.html')
+    logged_in = check_login_status()
+    user_id_or_session = session['id']  # default to session ID
+
+    if logged_in:
+        access_token = verify_session(session)
+        res_data = fetch_user_data(access_token)
+        songfull_menu = False
+        user_id_or_session = res_data.get("id")
+    else:
+        songfull_menu = True
+        res_data = None
+
+    current_game = CurrentGame.query.get(user_id_or_session)
+    if not current_game:
+        current_game = CurrentGame(user_id_or_session=user_id_or_session)
+        db.session.add(current_game)
+        db.session.commit()
+
+    # Load or create PastGame
+    past_game = PastGame.query.get(user_id_or_session)
+    if not past_game:
+        past_game = PastGame(user_id_or_session=user_id_or_session)
+        db.session.add(past_game)
+        db.session.commit()
+
+    return render_template('songfull.html', songfull_menu=songfull_menu, data=res_data)
+
+
+genre_sequence = {1: 'General', 2: 'Rock', 3: 'Hip Hop'}
 
 
 @bp.route('/start', methods=['POST'])
 def start_game():
-    try:
-        current_songs = Songfull.query.filter_by(current=True).all()
+    if not session.get('selected_songs'):  # if there are no songs selected yet
+        try:
+            current_songs = Songfull.query.filter(Songfull.current > 0).order_by(Songfull.current).all()
 
-        session['selected_songs'] = [song.id for song in current_songs]
-        session['guesses_left'] = 7
-        session['current_clip_length'] = 0.1
+            session['selected_songs'] = [song.id for song in current_songs]
+            session['guesses_left'] = 6
+            session['current_clip_length'] = 0.5
 
-        return jsonify({'song_id': session['selected_songs'][0], 'clip_length': session['current_clip_length']})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+            first_song = Songfull.query.get(session['selected_songs'][0])
+            session['current_genre'] = genre_sequence[first_song.current]
+
+            return jsonify({
+                'song_id': session['selected_songs'][0],
+                'clip_length': session['current_clip_length'],
+                'current_genre': session['current_genre']  # make sure to include this
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    else:
+        try:
+            next_song_id = session['selected_songs'][0]
+            next_song = Songfull.query.get(next_song_id)
+
+            session['current_genre'] = genre_sequence[next_song.current]
+
+            return jsonify({
+                'song_id': next_song_id,
+                'clip_length': session['current_clip_length'],
+                'current_genre': session['current_genre'],
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
 
 @bp.route('/clip/<string:song_id>', methods=['GET'])
 def get_clip(song_id):
     try:
-        clip_length = session.get('current_clip_length', 0.1)
-        if clip_length == 0.1:
-            clip_length_str = '01'
-        else:
-            clip_length_str = str(int(clip_length))  # convert to string after truncating to integer
-        file_name = f"{song_id}_{clip_length_str}.mp3"
-
+        file_name = f"{song_id}.mp3"
         print(f"CLIPS_DIR: {CLIPS_DIR}")
         print(f"File path: {os.path.join(CLIPS_DIR, file_name)}")
 
@@ -46,7 +91,6 @@ def get_clip(song_id):
             return jsonify({'error': 'Clip not found'}), 404
 
         return send_from_directory(CLIPS_DIR, file_name)
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -57,70 +101,99 @@ def submit_guess():
         user_guess = request.form['song_guess']
         current_song = Songfull.query.get(session['selected_songs'][0])
 
-        # Initialize 'guesses' in session if not already present
-        if 'guesses' not in session:
-            session['guesses'] = []
+        # Fetch the PastGame record
+        past_game = PastGame.query.filter_by(user_id_or_session=session['id']).first()
 
-        # Add the current guess to the session
-        session['guesses'].append(user_guess)
+        if (user_guess.lower() == current_song.name.lower() or
+                user_guess.lower() == f"{current_song.name} - {current_song.artist}".lower() or
+                user_guess.lower() == current_song.id.lower()):
 
-        if user_guess.lower() == current_song.name.lower():
-            # Get the genre of the next song
-            if session['selected_songs'][1:]:
-                next_song = Songfull.query.get(session['selected_songs'][1])
-                next_genre = next_song.genre
-            else:
-                next_genre = None
+            # Update the correct guess stats
+            if session['current_genre'] == 'General':
+                past_game.correct_guess_general = True
+            elif session['current_genre'] == 'Rock':
+                past_game.correct_guess_rock = True
+            elif session['current_genre'] == 'Hip Hop':
+                past_game.correct_guess_hiphop = True
 
-            # Reset guesses_left if the genre changes
-            if session.get('current_genre') != next_genre:
-                session['guesses_left'] = 7
-                session['current_genre'] = next_genre
-
-            session['selected_songs'].pop(0)
-            if not session['selected_songs']:
-                # Save to database before returning the result
-                game_result = PastGame(user_id=session['user_id'], result="win", date=datetime.utcnow())
-                try:
-                    db.session.add(game_result)
-                    db.session.commit()
-                except:
-                    db.session.rollback()
-                    raise
-
-                return jsonify({'status': 'win'})
-            next_song = Songfull.query.get(session['selected_songs'][0])
-            return jsonify({'status': 'correct', 'next_song_id': next_song.id})
+            return jsonify({'status': 'correct', 'next_song_id': session['selected_songs'][0]})
         else:
             session['guesses_left'] -= 1
-            if session['guesses_left'] == 0:
-                # Save to database before returning the result
-                game_result = PastGame(user_id=session['user_id'], result="loss", date=datetime.utcnow())
-                try:
-                    db.session.add(game_result)
-                    db.session.commit()
-                except:
-                    db.session.rollback()
-                    raise
 
-                return jsonify({'status': 'lose'})
+            # Update the attempts made stats
+            if session['current_genre'] == 'General':
+                past_game.attempts_made_general += 1
+            elif session['current_genre'] == 'Rock':
+                past_game.attempts_made_rock += 1
+            elif session['current_genre'] == 'Hip Hop':
+                past_game.attempts_made_hiphop += 1
+
+            db.session.commit()
+            if session['guesses_left'] == 0:
+                session['selected_songs'].pop(0)
+
+                if not session['selected_songs']:
+                    return jsonify({'status': 'lose'})
+
+                next_song = Songfull.query.get(session['selected_songs'][0])
+                session['guesses_left'] = 6
+                session['current_genre'] = genre_sequence[next_song.current]
+
+                session['current_clip_length'] += 5
+                return jsonify({
+                    'status': 'wrong',
+                    'clip_length': session['current_clip_length'],
+                    'song_id': next_song.id,
+                    'guesses_left': session['guesses_left'],
+                    'current_genre': session['current_genre']  # make sure to include this
+
+                })
 
             session['current_clip_length'] += 5
             return jsonify({
                 'status': 'wrong',
                 'clip_length': session['current_clip_length'],
                 'song_id': session['selected_songs'][0],
-                'guesses': session['guesses'],  # Return the guesses
-                'guesses_left': session['guesses_left']  # Return the remaining guesses
+                'guesses_left': session['guesses_left'],
+                'current_genre': session['current_genre']
             })
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
 @bp.route('/archive', methods=['GET'])
 def get_archive():
-    # Retrieve and return archived game results from the database.
-    # This is where you would query the database for past game records and return them.
     past_games = PastGame.query.all()
     return jsonify({'archive': [game.to_dict() for game in past_games]})
+
+
+@bp.route('/bonus', methods=['POST'])
+def submit_bonus():
+    try:
+        album_guess = request.form['album_guess']
+        release_year_guess = request.form['release_year_guess']
+
+        current_song = Songfull.query.get(session['selected_songs'][0])
+
+        correct_album = current_song.album.lower() == album_guess.lower()
+        correct_release_year = current_song.release.lower() == release_year_guess.lower()
+
+        session['selected_songs'].pop(0)
+
+        if not session['selected_songs']:
+            return jsonify({'status': 'win'})
+
+        next_song = Songfull.query.get(session['selected_songs'][0])
+        session['guesses_left'] = 6
+        session['current_genre'] = genre_sequence[next_song.current]
+
+        return jsonify({
+            'status': 'correct',
+            'next_song_id': next_song.id,
+            'correct_album': correct_album,
+            'correct_release_year': correct_release_year,
+            'current_genre': session['current_genre'],
+            'guesses_left': session['guesses_left']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

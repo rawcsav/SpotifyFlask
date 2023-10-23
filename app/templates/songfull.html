@@ -1,19 +1,116 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='favicon/site.webmanifest') }}"
+    />
+    <link
+      rel="mask-icon"
+      href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}"
+      color="#5bbad5"
+    />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    <link
+      href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
+      rel="stylesheet"
+    />
     <title>Songfull</title>
-    <script src="{{ url_for('static', filename='css/songfull.css') }}"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/songfull.css') }}"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
+  {% include 'menu.html' %}
   <body>
-    <button id="start-game">Start Game</button>
-    <audio id="song-clip" controls></audio>
-    <input type="text" id="song-guess" placeholder="Guess the song title" />
-    <button id="submit-guess">Guess</button>
-    <div id="game-status">
-      <p id="actual-guess"></p>
-      <p id="guesses-left"></p>
+    <h1>SONGFULL</h1>
+    <a href="https://rawcsav.com" class="homepage-link">
+      <img
+        id="modeSensitiveImage"
+        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697815559/PhotopeaLogo_5_pwdjzg.png"
+        alt="Homepage"
+      />
+    </a>
+    {% if songfull_menu %}
+    <a class="login-button" href="/login/songfull">
+      <img
+        alt="Spotify"
+        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694705409/download_hydbbh.svg"
+        class="spotify-logo"
+      />
+      Connect Spotify
+    </a>
+    {% endif %}
+
+    <!-- Start Game Screen -->
+    <div class="start-screen" style="display: block">
+      <button id="start-game">Start Game</button>
+    </div>
+
+    <!-- Game Content -->
+    <div class="game-column" style="display: none">
+      <div id="current-genre"></div>
+
+      <!-- Guess Rows -->
+      <div id="guesses">
+        <div class="guess-input"></div>
+        <div class="guess-input"></div>
+        <div class="guess-input"></div>
+        <div class="guess-input"></div>
+        <div class="guess-input"></div>
+        <div class="guess-input"></div>
+      </div>
+
+      <!-- Search Input, Results, and Hidden Field for Track ID -->
+
+      <!-- Audio Controls -->
+      <button id="play-clip">Play Clip</button>
+      <audio id="song-clip"></audio>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search or Submit Guess"
+      />
+      <div id="results"></div>
+      <input type="hidden" id="selectedTrackId" />
+      <!-- Bottom Buttons -->
+      <div id="bottom-buttons">
+        <button id="submit-guess">Guess</button>
+      </div>
+
+      <!-- Bonus Questions -->
+      <div id="bonus-questions" style="display: none">
+        <h3>Bonus Questions</h3>
+        <label for="album-guess">Album Name:</label>
+        <input type="text" id="album-guess" />
+        <label for="release-year-guess">Release Year:</label>
+        <input type="text" id="release-year-guess" />
+        <button id="submit-bonus">Submit Bonus Answers</button>
+        <button id="skip-bonus">Skip</button>
+        <div id="bonus-feedback"></div>
+      </div>
     </div>
   </body>
   <script src="{{ url_for('static', filename='js/songfull.js') }}"></script>
-  {% include 'footer.html' %}
 </html>

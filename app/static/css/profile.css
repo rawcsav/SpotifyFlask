@@ -77,6 +77,8 @@ h3 {
   left: 3px;
   position: fixed;
   top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .homepage-link img {

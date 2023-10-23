@@ -1,13 +1,13 @@
+import os
 import secrets
 import string
 from datetime import timezone, timedelta
-from cryptography.fernet import Fernet
-import openai
-import sshtunnel
-import os
-from flask import abort
-import requests
 
+import openai
+import requests
+import sshtunnel
+from cryptography.fernet import Fernet
+from flask import abort, session
 from app import config
 
 
@@ -22,6 +22,12 @@ def fetch_user_data(access_token):
     res = requests.get(config.ME_URL, headers=headers)
     if res.status_code != 200:
         abort(res.status_code)
+        
+    spotify_user_id = res.get("id")
+    spotify_user_display_name = res.get("display_name")
+
+    session["DISPLAY_NAME"] = spotify_user_display_name
+    session["USER_ID"] = spotify_user_id
     return res.json()
 
 
@@ -75,7 +81,6 @@ def decrypt_data(encrypted_data):
 
 
 def is_api_key_valid(api_key):
-    # Set the API Key for openai
     openai.api_key = api_key
 
     try:
@@ -100,3 +105,7 @@ def get_tunnel():
     )
     tunnel.start()
     return tunnel
+
+
+def check_login_status():
+    return 'tokens' in session

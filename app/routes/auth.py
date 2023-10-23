@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
-from functools import wraps
 from urllib.parse import urlencode
 
 from flask import (Blueprint, abort, make_response, redirect, render_template,
                    request, session, url_for, jsonify)
+
 from app import config
 from app.database import UserData, db
-from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, load_key_from_env, \
-    is_api_key_valid, encrypt_data, verify_session, fetch_user_data
+from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, is_api_key_valid, encrypt_data, \
+    verify_session, fetch_user_data
 
 bp = Blueprint('auth', __name__)
 
@@ -15,6 +15,11 @@ bp = Blueprint('auth', __name__)
 @bp.route('/auth')
 def index():
     return render_template('landing.html')
+
+
+from flask import session, redirect, url_for, request
+from functools import wraps
+from datetime import datetime
 
 
 def require_spotify_auth(f):
@@ -30,13 +35,22 @@ def require_spotify_auth(f):
             session['original_request_url'] = request.url
             return redirect(url_for('auth.refresh'))
 
+        access_token = verify_session(session)
+        res_data = fetch_user_data(access_token)
+        spotify_user_id = res_data.get("id")
+
+        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+        if not user_data_entry:
+            return redirect(url_for('user.profile'))
+
         return f(*args, **kwargs)
 
     return decorated_function
 
 
-@bp.route('/<loginout>')
-def login(loginout):
+@bp.route('/<loginout>/<next>')
+def login(loginout, next):
     if loginout == 'logout':
         session.clear()
         return redirect(url_for('auth.index'))
@@ -52,6 +66,7 @@ def login(loginout):
 
     res = make_response(redirect(f'{config.AUTH_URL}/?{urlencode(payload)}'))
     res.set_cookie('spotify_auth_state', state)
+    res.set_cookie('next_url', next)
     return res
 
 
@@ -80,7 +95,8 @@ def callback():
         'expiry_time': expiry_time.isoformat()
     }
 
-    return redirect(url_for('user.profile'))
+    next_url = request.cookies.get('next_url', url_for('user.profile'))
+    return redirect(next_url)
 
 
 @bp.route('/refresh')
@@ -115,11 +131,9 @@ def save_api_key():
 
     api_key = request.json.get('api_key')
 
-    # Validate the key by using is_api_key_valid function
     if not is_api_key_valid(api_key):
         return jsonify({"message": "Invalid OpenAI API Key"}), 400
 
-    # If validation successful, encrypt and save the key
     encrypted_key = encrypt_data(api_key)
     try:
         user_data.api_key_encrypted = encrypted_key

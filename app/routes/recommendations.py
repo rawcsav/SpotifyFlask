@@ -1,8 +1,9 @@
 import json
+
 from flask import Blueprint, jsonify, render_template, request, session
 
-from app.routes.auth import require_spotify_auth
 from app.database import UserData
+from app.routes.auth import require_spotify_auth
 from app.util.session_utils import verify_session, fetch_user_data
 from app.util.spotify_utils import (
     init_session_client,
@@ -28,7 +29,6 @@ def recommendations():
     access_token = verify_session(session)
     res_data = fetch_user_data(access_token)
 
-    # Retrieve the user's data entry from the database
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
     if not user_data_entry:

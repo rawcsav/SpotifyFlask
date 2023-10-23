@@ -1,9 +1,10 @@
 import csv
 import json
 from datetime import datetime, timedelta
-from scipy.spatial import distance_matrix
+
 import numpy as np
 import pandas as pd
+from scipy.spatial import distance_matrix
 
 from app.database import artist_sql, features_sql, artgenstyle_sql, artgenurl_sql, artgen_sql, db
 
@@ -56,21 +57,20 @@ def get_or_fetch_artist_info(sp, artist_ids):
                 images=json.dumps(artist['images']),
                 popularity=artist['popularity'],
             )
-            existing_artist_ids[new_artist.id] = new_artist  # Update the existing artists dict
+            existing_artist_ids[new_artist.id] = new_artist
             db.session.merge(new_artist)
     db.session.commit()
 
-    # Create the final dictionary
     final_artists = {}
     for artist_id in artist_ids:
-        artist = existing_artist_ids.get(artist_id)  # Use .get() to avoid KeyError
-        if artist:  # Check if artist exists in the dict
+        artist = existing_artist_ids.get(artist_id)
+        if artist:
             final_artists[artist_id] = {
                 'id': artist.id,
                 'name': artist.name,
                 'external_url': json.loads(artist.external_url),
                 'followers': artist.followers,
-                'genres': json.loads(artist.genres or '[]'),  # Handle null genres
+                'genres': json.loads(artist.genres or '[]'),
                 'images': json.loads(artist.images),
                 'popularity': artist.popularity,
             }
@@ -137,7 +137,7 @@ def get_or_fetch_audio_features(sp, track_ids):
 def load_data_into_artgen():
     with open('app/data/pool_genres.csv', 'r') as f:
         reader = csv.reader(f)
-        next(reader)  # Skip the header row
+        next(reader)
 
         for row in reader:
             record = artgen_sql(
@@ -209,27 +209,21 @@ def euclidean_distance(point1, point2):
 
 
 def find_closest_artgen():
-    # Read the CSV files
     pool_genres_df = pd.read_csv('app/data/pool_genres.csv')
     master_enao = pd.read_csv('app/data/master_enao.csv')
 
-    # Merge the two dataframes on the genre column
     merged_genres = pd.merge(pool_genres_df, master_enao, on='genre', how='left')
-    # Extract x and y coordinates for both dataframes
+
     master_coords = master_enao[['x', 'y']].values
     merged_coords = merged_genres[['x', 'y']].values
 
-    # Compute the distance matrix
     dist_matrix = distance_matrix(master_coords, merged_coords)
 
-    # Get the indices of the minimum values in the distance matrix
     min_indices = np.argmin(dist_matrix, axis=1)
 
-    # Map the indices to genres in merged_genres
     closest_genres = merged_genres['genre'].iloc[min_indices].values
     closest_distances = dist_matrix[np.arange(dist_matrix.shape[0]), min_indices]
 
-    # Update master_enao dataframe
     master_enao['closest_genre'] = closest_genres
 
     master_enao.to_csv('app/data/master_enao.csv')

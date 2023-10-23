@@ -1,12 +1,12 @@
+import random
 from datetime import datetime
-from app.database import artgenstyle_sql, artgenurl_sql, db, artgen_sql
+
 import openai
 
-import random
+from app.database import artgenstyle_sql, artgenurl_sql, db, artgen_sql
 
 
 def select_random_elements(genres_list=None):
-    # If genres_list is provided, use it. Else, get all genres.
     if genres_list:
         all_genres = [record.genre_name for record in
                       artgen_sql.query.filter(artgen_sql.genre_name.in_(genres_list)).all()]
@@ -24,7 +24,6 @@ def select_random_elements(genres_list=None):
         raise ValueError("No styles available in the database.")
     art_style = random.choice(all_styles)
 
-    # Random Value (Focal Point) Selection
     columns = [
         record.place_1, record.place_2, record.place_3, record.place_4, record.place_5,
         record.role_1, record.role_2, record.role_3, record.role_4, record.role_5,
@@ -58,7 +57,6 @@ def generate_images_dalle(prompt):
     image_urls = []
 
     for i in range(3):
-        # Call the OpenAI API
         generation_response = openai.Image.create(
             prompt=prompt,
             n=1,
@@ -66,10 +64,8 @@ def generate_images_dalle(prompt):
             response_format="url",
         )
 
-        # Extract the generated image URL
         generated_image_url = generation_response["data"][0]["url"]
 
-        # Add the URL to the list of image URLs
         image_urls.append(generated_image_url)
 
     return image_urls
