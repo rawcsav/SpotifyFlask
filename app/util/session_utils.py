@@ -23,11 +23,6 @@ def fetch_user_data(access_token):
     if res.status_code != 200:
         abort(res.status_code)
         
-    spotify_user_id = res.get("id")
-    spotify_user_display_name = res.get("display_name")
-
-    session["DISPLAY_NAME"] = spotify_user_display_name
-    session["USER_ID"] = spotify_user_id
     return res.json()
 
 
