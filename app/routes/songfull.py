@@ -29,12 +29,13 @@ def game():
     if not current_game:
         current_game = CurrentGame(user_id_or_session=user_id_or_session)
         db.session.add(current_game)
+        CurrentGame
         db.session.commit()
 
     # Load or create PastGame
     past_game = PastGame.query.get(user_id_or_session)
     if not past_game:
-        past_game = PastGame(user_id_or_session=user_id_or_session)
+        past_game = PastGame(user_id_or_session=user_id_or_session, date=datetime.utcnow().date)
         db.session.add(past_game)
         db.session.commit()
 
