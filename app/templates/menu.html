@@ -289,13 +289,11 @@
                 if (isDarkMode) {
                   body.classList.remove('dark-mode');
                   toggleButton.innerText = 'Dark Mode';
-                  modeSensitiveImage.src =
-                    '/secure_image?public_id=v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
+                  modeSensitiveImage.src="{{ url_for('static', filename='logo/PhotopeaLogo_3_kqya4t.png') }}"
                 } else {
                   body.classList.add('dark-mode');
                   toggleButton.innerText = 'Light Mode';
-                  modeSensitiveImage.src =
-                    '/secure_image?public_id=v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
+                  modeSensitiveImage.src="{{ url_for('static', filename='logo/PhotopeaLogo_2_gfjzyh.png') }}"
                 }
                 document.dispatchEvent(new Event('themeToggled'));
               })
@@ -321,13 +319,12 @@
                 if (data.mode === 'dark') {
                   body.classList.add('dark-mode');
                   toggleButton.innerText = 'Light Mode';
-                  modeSensitiveImage.src =
-                    '/secure_image?public_id=v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Your light mode image URL
+                  modeSensitiveImage.src="{{ url_for('static', filename='logo/PhotopeaLogo_2_gfjzyh.png') }}"
                 } else {
                   body.classList.remove('dark-mode');
                   toggleButton.innerText = 'Dark Mode';
-                  modeSensitiveImage.src =
-                    '/secure_image?public_id=v1697028662/PhotopeaLogo_3_kqya4t.png';
+                  modeSensitiveImage.src="{{ url_for('static', filename='logo/PhotopeaLogo_3_kqya4t.png') }}"
+
                 }
                 document.dispatchEvent(new Event('themeToggled'));
               })

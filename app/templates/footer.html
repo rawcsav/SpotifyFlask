@@ -3,12 +3,13 @@
     .footer {
       position: fixed;
       bottom: 0;
-      width: 100%;
       height: 30px;
+      overflow-x: hidden;
       font-family: Futura, sans-serif;
       display: flex;
       background-color: rgba(255, 255, 255, 0.3);
-
+      left: 0;
+      right: 0;
       justify-content: space-between;
       align-items: center;
       padding: 0 30px;
@@ -18,8 +19,14 @@
       margin: 0; /* Remove or adjust margins */
       color: #333;
     }
-    body.dark-mode .footer p {
-      color: #333;
+
+    body.dark-mode .footer {
+      background-color: rgb(139, 137, 137, 0.6);
+    }
+    body.dark-mode .footer p,
+    body.dark-mode .footer a,
+    body.dark-mode .footer a::after {
+      color: #fff;
     }
     .footer a:hover {
       color: #555; /* Slightly lighter gray on hover */
