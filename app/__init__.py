@@ -1,5 +1,6 @@
 import uuid
 
+import cloudinary
 import sshtunnel
 from flask import Flask, session, g
 from flask_migrate import Migrate
@@ -39,11 +40,23 @@ def create_app():
             'SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{config.SQL_USERNAME}:{config.SQL_PASSWORD}@127.0.0.1:{app.tunnel.local_bind_port}/{config.SQL_DB_NAME}'
         app.config["SESSION_COOKIE_SECURE"] = False
 
+        cloudinary.config(
+            cloud_name=config.CLOUD_NAME,
+            api_key=config.CLOUD_API_KEY,
+            api_secret=config.CLOUD_SECRET,
+        )
     else:
         app.tunnel = None
         app.config[
             'SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{config.SQL_USERNAME}:{config.SQL_PASSWORD}@{config.SQL_HOSTNAME}/{config.SQL_DB_NAME}'
         app.config["SESSION_COOKIE_SECURE"] = True
+
+        cloudinary.config(
+            cloud_name=config.CLOUD_NAME,
+            api_key=config.CLOUD_API_KEY,
+            api_secret=config.CLOUD_SECRET,
+            api_proxy="http://proxy.server:3128"
+        )
 
     db.init_app(app)
     migrate = Migrate(app, db)

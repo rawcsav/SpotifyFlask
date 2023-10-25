@@ -42,26 +42,17 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   {% include 'menu.html' %}
+  <div id="background"></div>
+
   <body>
     <h1>SONGFULL</h1>
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         id="modeSensitiveImage"
-        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697815559/PhotopeaLogo_5_pwdjzg.png"
+        src="/secure_image?public_id=v1697815559/PhotopeaLogo_5_pwdjzg.png"
         alt="Homepage"
       />
     </a>
-    {% if songfull_menu %}
-    <a class="login-button" href="/login/songfull">
-      <img
-        alt="Spotify"
-        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694705409/download_hydbbh.svg"
-        class="spotify-logo"
-      />
-      Connect Spotify
-    </a>
-    {% endif %}
-
     <!-- Start Game Screen -->
     <div class="start-screen" style="display: block">
       <button id="start-game">Start Game</button>

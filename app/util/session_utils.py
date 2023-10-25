@@ -1,7 +1,7 @@
 import os
 import secrets
 import string
-from datetime import timezone, timedelta
+from datetime import timezone, timedelta, datetime
 
 import openai
 import requests
@@ -22,7 +22,7 @@ def fetch_user_data(access_token):
     res = requests.get(config.ME_URL, headers=headers)
     if res.status_code != 200:
         abort(res.status_code)
-        
+
     return res.json()
 
 
@@ -102,5 +102,44 @@ def get_tunnel():
     return tunnel
 
 
+def refresh_tokens():
+    if 'tokens' not in session:
+        return False
+
+    payload = {
+        'grant_type': 'refresh_token',
+        'refresh_token': session['tokens'].get('refresh_token')
+    }
+
+    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
+    if error:
+        return False
+
+    new_access_token = res_data.get('access_token')
+    new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
+    expires_in = res_data.get('expires_in')
+    new_expiry_time = datetime.now() + timedelta(seconds=expires_in)
+
+    session['tokens'].update({
+        'access_token': new_access_token,
+        'refresh_token': new_refresh_token,
+        'expiry_time': new_expiry_time.isoformat()
+    })
+
+    return True
+
+
 def check_login_status():
-    return 'tokens' in session
+    tokens = session.get('tokens', None)
+    if not tokens:
+        return False
+
+    expiry_time = datetime.fromisoformat(tokens.get('expiry_time')) if tokens else None
+    if expiry_time and expiry_time < datetime.now():
+        # If tokens are expired, attempt to refresh them.
+        if not refresh_tokens():
+            # If refresh fails, user is not logged in.
+            return False
+
+    # If tokens exist and are not expired, or if they were successfully refreshed, user is logged in.
+    return True

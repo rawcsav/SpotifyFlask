@@ -1,30 +1,31 @@
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('start-game').addEventListener('click', function () {
-    fetch('/start', { method: 'POST' })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data); // Log the entire response data
-
-        document.getElementById('song-clip').src = `/clip/${data.song_id}`;
-        document.getElementById('current-genre').innerText = data.current_genre;
-      });
-  });
-  let playButton = document.getElementById('play-clip');
-  let audioPlayer = document.getElementById('song-clip');
-
   let isPlaying = false;
-  const maxAttempts = 6;
-  let attempts = 0;
-  let durations = [0.5, 1, 3, 5, 10, 30];
-  let durationIndex = 0;
-  let clipDuration = durations[durationIndex];
+  const audioPlayer = document.getElementById('song-clip');
+
   audioPlayer.addEventListener('playing', () => {
     isPlaying = true;
   });
-  let trackIds = {};
 
-  playButton.addEventListener('click', function () {
-    playClip(clipDuration);
+  // Store the clip length globally to access it later
+  let currentClipLength = 0;
+
+  document.getElementById('start-game').addEventListener('click', function () {
+    document.querySelector('.start-screen').style.display = 'none';
+    document.querySelector('.game-column').style.display = 'block';
+
+    fetch('/start', { method: 'POST' })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById('song-clip').src = `/clip/${data.song_id}`;
+        document.getElementById('current-genre').innerText = data.current_genre;
+        // Save the clip length for later use
+        currentClipLength = data.clip_length;
+      });
+  });
+
+  document.getElementById('play-clip').addEventListener('click', function () {
+    // Play the audio for the clip length only, not the full duration
+    playClip(currentClipLength);
   });
 
   function playClip(clipDuration) {
@@ -34,25 +35,14 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
       if (isPlaying) {
         audioPlayer.pause();
+        isPlaying = false; // Reset the isPlaying flag after pausing
       }
-      playButton.disabled = false; // Enable the play button after the clip is paused
     }, clipDuration * 1000);
   }
-
   document
     .getElementById('submit-guess')
     .addEventListener('click', function () {
       const guess = document.getElementById('searchInput').value;
-
-      const emptyGuessDiv = Array.from(
-        document
-          .getElementById('guesses')
-          .getElementsByClassName('guess-input'),
-      ).find((div) => !div.textContent);
-
-      if (emptyGuessDiv) {
-        emptyGuessDiv.textContent += guess;
-      }
 
       fetch('/guess', {
         method: 'POST',
@@ -62,42 +52,46 @@ document.addEventListener('DOMContentLoaded', function () {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'correct') {
-            playClip(audioPlayer.duration);
             document.getElementById('bonus-questions').style.display = 'block';
-            emptyGuessDiv.style.backgroundColor = 'green';
-          } else {
-            attempts++;
-            if (attempts < maxAttempts) {
-              if (durationIndex < durations.length - 1) {
-                durationIndex++;
+          } else if (data.status === 'wrong') {
+            if (data.guesses_left > 0) {
+              alert(`Wrong! You have ${data.guesses_left} guesses left.`);
+            } else {
+              if (data.current_genre === 'Hip Hop') {
+                displayEndResults(data);
+              } else {
+                loadNextSong();
               }
-              clipDuration = durations[durationIndex];
-              emptyGuessDiv.style.backgroundColor = 'red';
             }
-            if (attempts === maxAttempts) {
-              // Reset attempts count and duration index for the next genre
-              attempts = 0;
-              durationIndex = 0;
-              // Refresh the game column
-              document.getElementById('searchInput').value = '';
-              let guessRows = document.querySelectorAll('.guess-input');
-              for (let row of guessRows) {
-                row.textContent = '';
-              }
-              // Fetch the next song for the new genre
-              fetch('/start', { method: 'POST' })
-                .then((response) => response.json())
-                .then((data) => {
-                  document.getElementById(
-                    'song-clip',
-                  ).src = `/clip/${data.song_id}`;
-                  document.getElementById('current-genre').innerText =
-                    data.current_genre;
-                });
-            }
+          } else if (data.status === 'lose') {
+            displayEndResults(data);
           }
         });
     });
+
+  function loadNextSong() {
+    fetch('/start', { method: 'POST' })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById('song-clip').src = `/clip/${data.song_id}`;
+        document.getElementById('current-genre').innerText = data.current_genre;
+        playClip(data.clip_length);
+      });
+  }
+
+  function displayEndResults(data) {
+    const correctGuesses =
+      (data.correct_guess_general ? 1 : 0) +
+      (data.correct_guess_rock ? 1 : 0) +
+      (data.correct_guess_hiphop ? 1 : 0);
+    const totalGuesses =
+      data.attempts_made_general +
+      data.attempts_made_rock +
+      data.attempts_made_hiphop;
+    alert(
+      `You guessed ${correctGuesses} out of 3 songs correctly in ${totalGuesses} total guesses.`,
+    );
+  }
 
   function debounce(func, delay) {
     let timeout;
@@ -114,20 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('results').innerHTML = '';
       return;
     }
-
     fetch(`/songfull_search?query=${query}`)
       .then((response) => response.json())
       .then((data) => {
         let htmlResults = '';
         for (let song of data) {
           htmlResults += `<button class="song-btn">${song.title} - ${song.artist}</button>`;
-          trackIds[`${song.title} - ${song.artist}`] = song.track_id;
         }
         document.getElementById('results').innerHTML = htmlResults;
         document.querySelectorAll('.song-btn').forEach((btn) => {
           btn.addEventListener('click', function () {
             document.getElementById('searchInput').value = this.textContent;
-            selectedTrackId = trackIds[this.textContent];
           });
         });
       })
@@ -142,16 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .getElementById('searchInput')
     .addEventListener('input', debouncedSearch);
 
-  document.getElementById('start-game').addEventListener('click', function () {
-    document.querySelector('.start-screen').style.display = 'none';
-    document.querySelector('.game-column').style.display = 'block';
-  });
-
   document.getElementById('skip-bonus').addEventListener('click', function () {
-    document.getElementById('album-guess').value = '';
-    document.getElementById('release-year-guess').value = '';
-
-    // Make a POST request to the '/bonus' route with empty bonus answers
     fetch('/bonus', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -159,25 +141,23 @@ document.addEventListener('DOMContentLoaded', function () {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Refresh the game column
-        document.getElementById('searchInput').value = '';
-        document.getElementById('selectedTrackId').value = '';
-
-        // Clear the guess rows
-        let guessRows = document.querySelectorAll('.guess-input');
-        for (let row of guessRows) {
-          row.textContent = '';
+        if (data.status === 'correct') {
+          alert('Your bonus answers are correct!');
+          if (data.current_genre !== 'Hip Hop') {
+            loadNextSong();
+          } else {
+            displayEndResults(data);
+          }
+        } else {
+          alert(
+            `Incorrect bonus answers! Correct album: ${data.correct_album}. Correct release year: ${data.correct_release_year}`,
+          );
+          if (data.current_genre !== 'Hip Hop') {
+            loadNextSong();
+          } else {
+            displayEndResults(data);
+          }
         }
-
-        // Fetch the next song for the new genre
-        fetch('/start', { method: 'POST' })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById('song-clip').src = `/clip/${data.song_id}`;
-            document.getElementById('current-genre').innerText =
-              data.current_genre;
-            document.getElementById('bonus-questions').style.display = 'none';
-          });
       });
   });
 });

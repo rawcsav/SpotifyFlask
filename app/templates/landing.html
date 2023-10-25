@@ -59,6 +59,8 @@
     />
     {% from "loading.html" import loading_animation %}
   </head>
+  <div id="background"></div>
+
   <body>
     {{ loading_animation() }}
     <div class="outter-container">
@@ -76,7 +78,7 @@
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         id="modeSensitiveImage"
-        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697815559/PhotopeaLogo_5_pwdjzg.png"
+        src="/secure_image?public_id=v1697815559/PhotopeaLogo_5_pwdjzg.png"
         alt="Homepage"
       />
     </a>
@@ -86,7 +88,7 @@
       <a class="login-button" href="/login/profile" onclick="handleAuthClick()">
         <img
           alt="Spotify"
-          src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1694705409/download_hydbbh.svg"
+          src="/secure_image?public_id=v1694705409/download_hydbbh.svg"
           class="spotify-logo"
         />
         Connect Spotify Account

@@ -56,3 +56,7 @@ REDIRECT_URL = "http://webstats.rawcsav.com/"
 
 MAX_RETRIES = 3
 RETRY_WAIT_SECONDS = 2
+
+CLOUD_NAME = os.getenv("CLOUD_NAME")
+CLOUD_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+CLOUD_SECRET = os.getenv("CLOUDINARY_SECRET")

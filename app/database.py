@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 
@@ -141,12 +141,27 @@ class Songfull(db.Model):
     external_url = db.Column(db.String(250))
     spotify_preview_url = db.Column(db.String(250), nullable=False)
     popularity = db.Column(db.Integer, nullable=False)
-    genre = db.Column(db.String(50), nullable=False)
+    genre = db.Column(db.String(50), nullable=False, index=True)
     current = db.Column(db.SmallInteger, default=0)
-    date_played = db.Column(db.Date, db.ForeignKey('past_game.date'))
+    played = db.Column(db.SmallInteger, default=0)
 
     def __repr__(self):
         return f"<Song {self.name} by {self.artist}>"
+
+
+class Archive(db.Model):
+    date_played = db.Column(db.Date, primary_key=True, nullable=False, index=True)
+    general_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
+    rock_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
+    hiphop_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
+    past_games = db.relationship('PastGame', backref='archive', lazy=True)
+
+    general_song = db.relationship('Songfull', foreign_keys=[general_track])
+    rock_song = db.relationship('Songfull', foreign_keys=[rock_track])
+    hiphop_song = db.relationship('Songfull', foreign_keys=[hiphop_track])
+
+    def __repr__(self):
+        return f"<Archive on {self.date_played}>"
 
 
 class PastGame(db.Model):
@@ -158,7 +173,7 @@ class PastGame(db.Model):
     correct_guess_general = db.Column(db.Boolean, default=False)
     correct_guess_rock = db.Column(db.Boolean, default=False)
     correct_guess_hiphop = db.Column(db.Boolean, default=False)
-    songs = db.relationship('Songfull', backref='game', lazy=True)
+    archive_date = db.Column(db.Date, db.ForeignKey('archive.date_played'), nullable=False)
 
     def __repr__(self):
         return f"<PastGame on {self.date} for user/session {self.user_id_or_session}>"
@@ -168,4 +183,9 @@ class CurrentGame(db.Model):
     user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
     current_genre = db.Column(db.String(50), default='General')
     guesses_left = db.Column(db.Integer, default=6)
-    date = db.Column(db.Date, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=func.current_date())
+    archive_date = db.Column(db.Date, db.ForeignKey('archive.date_played'), nullable=False)
+    archive = db.relationship('Archive', backref='games')
+
+    def __repr__(self):
+        return f"<CurrentGame on {self.date} for user/session {self.user_id_or_session}>"

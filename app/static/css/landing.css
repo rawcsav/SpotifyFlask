@@ -1,7 +1,7 @@
 body {
   background-attachment: fixed;
   background-color: #f9efa5;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697815069/New_Project_1_1_gapkf8.svg');
+  background-image: url('/secure_image?public_id=v1697815069/New_Project_1_1_gapkf8.svg&c_fill&g_auto');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -14,7 +14,21 @@ body {
 
 body.dark-mode {
   background-color: #001220;
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1696979324/layered-waves-haikei_7_t5gfjq.svg');
+  background-image: url('/secure_image?public_id=v1696979324/layered-waves-haikei_7_t5gfjq.svg&c_fill&g_auto');
+}
+
+@media only screen and (max-width: 768px) {
+  #background {
+    background-position: center;
+    background-size: cover;
+    height: 100vh; /* 100% of the viewport height */
+    position: fixed;
+    width: 100vw; /* 100% of the viewport width */
+    background-image: url('/secure_image?public_id=v1698250748/New_Project_6_vzrhef&c_fill&g_auto&dpr_auto&w_auto');
+    z-index: 100;
+    top: 0;
+    left: 0;
+  }
 }
 
 .center_column {

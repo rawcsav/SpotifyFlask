@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
-
+import cloudinary
 from flask import (Blueprint, abort, make_response, redirect, render_template,
                    request, session, url_for, jsonify)
 
 from app import config
 from app.database import UserData, db
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, is_api_key_valid, encrypt_data, \
-    verify_session, fetch_user_data
+    verify_session, fetch_user_data, refresh_tokens
 
 bp = Blueprint('auth', __name__)
 
@@ -52,15 +52,18 @@ def require_spotify_auth(f):
 @bp.route('/<loginout>/<next>')
 def login(loginout, next):
     if loginout == 'logout':
+        if 'songfull' in request.referrer:
+            next = url_for('songfull.game')
+        else:
+            next = url_for('auth.index')  # replace 'explore' with your actual explore route
         session.clear()
-        return redirect(url_for('auth.index'))
+        return redirect(next)
 
     state = generate_state()
     scope = ' '.join([
         'user-read-private', 'user-top-read', 'user-read-recently-played',
         'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-private',
         'playlist-modify-public', 'user-library-modify', 'user-library-read', 'ugc-image-upload'
-
     ])
     payload = prepare_auth_payload(state, scope, show_dialog=(loginout == 'logout'))
 
@@ -101,22 +104,8 @@ def callback():
 
 @bp.route('/refresh')
 def refresh():
-    payload = {'grant_type': 'refresh_token', 'refresh_token': session.get('tokens').get('refresh_token')}
-
-    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
-    if error:
+    if not refresh_tokens():
         return redirect(url_for('auth.index'))
-
-    new_access_token = res_data.get('access_token')
-    new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
-    expires_in = res_data.get('expires_in')
-    new_expiry_time = datetime.now() + timedelta(seconds=expires_in)
-
-    session['tokens'].update({
-        'access_token': new_access_token,
-        'refresh_token': new_refresh_token,
-        'expiry_time': new_expiry_time.isoformat()
-    })
 
     return redirect(session.pop('original_request_url', url_for('user.profile')))
 
@@ -155,3 +144,68 @@ def check_api_key():
         return jsonify({"has_key": True})
     else:
         return jsonify({"has_key": False})
+
+
+@bp.route('/secure_image')
+def secure_image():
+    # Get the Cloudinary public_id from the request
+    public_id = request.args.get('public_id')
+    if not public_id:
+        return "Public ID not provided", 400
+
+    # Get transformations from query parameters
+    width = request.args.get('width', None)
+    height = request.args.get('height', None)
+    crop = request.args.get('crop', None)
+    aspect_ratio = request.args.get('aspect_ratio', None)
+    gravity = request.args.get('gravity', None)
+    radius = request.args.get('radius', None)
+    quality = request.args.get('quality', None)
+    effect = request.args.get('effect', None)
+    opacity = request.args.get('opacity', None)
+    border = request.args.get('border', None)
+    background = request.args.get('background', None)
+    angle = request.args.get('angle', None)
+    overlay = request.args.get('overlay', None)
+    tint = request.args.get('tint', None)
+    format = request.args.get('format', None)
+
+    transformations = {
+        'quality': 'auto',
+        'fetch_format': 'auto'}
+
+    if width:
+        transformations['width'] = int(width)
+    if height:
+        transformations['height'] = int(height)
+    if crop:
+        transformations['crop'] = crop
+    if aspect_ratio:
+        transformations['aspect_ratio'] = aspect_ratio
+    if gravity:
+        transformations['gravity'] = gravity
+    if radius:
+        transformations['radius'] = radius
+    if quality:
+        transformations['quality'] = int(quality)
+    if effect:
+        transformations['effect'] = effect
+    if opacity:
+        transformations['opacity'] = int(opacity)
+    if border:
+        transformations['border'] = border
+    if background:
+        transformations['background'] = background
+    if angle:
+        transformations['angle'] = angle
+    if overlay:
+        transformations['overlay'] = overlay
+    if tint:
+        transformations['tint'] = tint
+    if format:
+        transformations['format'] = format
+
+    signed_url = cloudinary.utils.cloudinary_url(public_id, **transformations, sign_url=True)[0]
+
+    # Redirect to the signed URL
+    return redirect(signed_url)

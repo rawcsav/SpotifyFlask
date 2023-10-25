@@ -16,6 +16,20 @@ html {
   justify-content: center;
 }
 
+@media only screen and (max-width: 768px) {
+  #background {
+    background-position: center;
+    background-size: cover;
+    height: 100vh; /* 100% of the viewport height */
+    position: fixed;
+    width: 100vw; /* 100% of the viewport width */
+    background-image: url('/secure_image?public_id=v1698250748/New_Project_6_vzrhef&c_fill&g_auto&dpr_auto&w_auto');
+    z-index: 100;
+    top: 0;
+    left: 0;
+  }
+}
+
 .homepage-link {
   cursor: pointer;
   left: 3px;
@@ -50,24 +64,16 @@ html {
   border-radius: 10px;
 }
 
-.login-button {
-  align-items: center;
-  position: absolute;
-  border-radius: 20px;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
-  color: #191919;
-  display: flex;
-  top: 10px;
-  right: 20px;
-  height: 40px;
-  justify-content: center;
+#login-button {
+  padding: 10px 12px;
+  color: #333;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px 12px;
-  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  border-bottom: 1px solid #eaeaea;
 }
 
 body.dark-mode .login-button {
@@ -75,18 +81,8 @@ body.dark-mode .login-button {
   color: #001220;
 }
 
-.login-button,
-.login-button img {
-  line-height: normal;
-  vertical-align: middle;
-}
-
 .spotify-logo {
-  height: 20px;
-  margin-bottom: 10px;
   margin-right: 10px;
-  margin-top: 10px;
-  width: 20px;
 }
 
 .spotify-logo img {
@@ -104,10 +100,10 @@ body.dark-mode .login-button {
   }
 }
 
-.login-button:hover {
-  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
+#login-button:hover {
   text-decoration: none;
-  transform: translateY(-2px);
+  background-color: #ffffff;
+  color: #1db954;
 }
 
 h1 {

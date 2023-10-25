@@ -9,6 +9,10 @@ from scipy.spatial import distance_matrix
 from app.database import artist_sql, features_sql, artgenstyle_sql, artgenurl_sql, artgen_sql, db
 
 
+def get_today_date():
+    return datetime.utcnow().date()
+
+
 def validate_artist_data(data):
     required_keys = ['id', 'name', 'external_urls', 'followers', 'genres', 'images', 'popularity']
     return all(key in data for key in required_keys)

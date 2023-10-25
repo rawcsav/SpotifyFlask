@@ -176,25 +176,34 @@
   <div class="menu-container">
     {% if songfull_menu %}
     <img
-      src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1696536571/bd33260dec7cd00233c444cda31ba12a-removebg-preview_cgobu0.png"
+      src="/secure_image?public_id=v1696536571/bd33260dec7cd00233c444cda31ba12a-removebg-preview_cgobu0.png"
       alt="Placeholder Image"
       class="profile-img"
     />
     <span class="truncate">Guest</span>
-    <!-- Placeholder for guest user -->
     {% else %} {% if data.images and data.images[0] %}
     <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
     {% endif %}
     <span class="truncate">{{ data.display_name }}</span>
+    {% endif %}
     <i
       class="fas fa-cog"
       id="settingsCog"
       onclick="toggleSettings(event)"
       style="display: none"
     ></i>
-    {% endif %}
   </div>
   <div class="drop-menu" id="menu">
+    {% if songfull_menu %}
+    <a id="login-button" class="drop-item" href="/login/songfull">
+      <img
+        alt="Spotify"
+        src="/secure_image?public_id=v1694705409/download_hydbbh.svg"
+        class="spotify-logo"
+      />
+      Connect Spotify
+    </a>
+    {% else %}
     <a id="homeLink" class="drop-item" href="{{ url_for('home.home') }}"
       >Home</a
     >
@@ -209,12 +218,15 @@
     <a id="gameLink" class="drop-item" href="{{ url_for('songfull.game') }}"
       >Songfull</a
     >
+    {% endif %}
     <div id="settingsDropdown">
       <div class="drop-menu" id="settings-menu">
         <button class="drop-item" id="modeToggle" onclick="toggleMode()">
           Dark Mode
         </button>
+        {% if not songfull_menu %}
         <a class="drop-item" href="/logout/index">Logout</a>
+        {% endif %}
       </div>
     </div>
     <script>
@@ -278,12 +290,12 @@
                   body.classList.remove('dark-mode');
                   toggleButton.innerText = 'Dark Mode';
                   modeSensitiveImage.src =
-                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
+                    '/secure_image?public_id=v1697028662/PhotopeaLogo_3_kqya4t.png'; // Your light mode image URL
                 } else {
                   body.classList.add('dark-mode');
                   toggleButton.innerText = 'Light Mode';
                   modeSensitiveImage.src =
-                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
+                    '/secure_image?public_id=v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Replace with your dark mode image URL
                 }
                 document.dispatchEvent(new Event('themeToggled'));
               })
@@ -310,12 +322,12 @@
                   body.classList.add('dark-mode');
                   toggleButton.innerText = 'Light Mode';
                   modeSensitiveImage.src =
-                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Your light mode image URL
+                    '/secure_image?public_id=v1697008847/PhotopeaLogo_2_gfjzyh.png'; // Your light mode image URL
                 } else {
                   body.classList.remove('dark-mode');
                   toggleButton.innerText = 'Dark Mode';
                   modeSensitiveImage.src =
-                    'https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png';
+                    '/secure_image?public_id=v1697028662/PhotopeaLogo_3_kqya4t.png';
                 }
                 document.dispatchEvent(new Event('themeToggled'));
               })

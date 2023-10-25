@@ -1,3 +1,11 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent scrolling */
+}
+
 body {
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   height: 100vh;
@@ -9,13 +17,29 @@ body {
 }
 
 #background {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697944042/test_2_-svg_3_lbgqli-svg_ejbke8.svg');
+  background-image: url('/secure_image?public_id=v1697944042/test_2_-svg_3_lbgqli-svg_ejbke8&c_fill&g_auto&dpr_auto&w_auto');
   background-position: center;
   background-size: cover;
-  height: 100vh;
+  height: 100vh; /* 100% of the viewport height */
   position: absolute;
-  width: 100vw;
+  width: 100vw; /* 100% of the viewport width */
   z-index: 1;
+  top: 0;
+  left: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  #background {
+    background-position: center;
+    background-size: cover;
+    height: 100vh; /* 100% of the viewport height */
+    position: absolute;
+    width: 100vw; /* 100% of the viewport width */
+    background-image: url('/secure_image?public_id=v1698250748/New_Project_6_vzrhef&c_fill&g_auto&dpr_auto&w_auto');
+    z-index: 100;
+    top: 0;
+    left: 0;
+  }
 }
 
 .cloud {

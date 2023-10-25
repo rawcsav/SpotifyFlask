@@ -60,12 +60,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.js"></script>
     {% from "loading.html" import loading_animation %} {% include 'menu.html' %}
   </head>
+  <div id="background"></div>
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         id="modeSensitiveImage"
-        src="https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png"
+        src="/secure_image?public_id=v1697028662/PhotopeaLogo_3_kqya4t.png"
         alt="Homepage"
       />
     </a>
