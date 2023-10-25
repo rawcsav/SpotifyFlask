@@ -148,7 +148,8 @@ def check_api_key():
 
 @bp.route('/secure_image')
 def secure_image():
-    # Get the Cloudinary public_id from the request
+    EXCLUDED_PUBLIC_IDS = ['image1', 'image2', 'image3']  # Add public_ids of images you want to exclude
+
     public_id = request.args.get('public_id')
     if not public_id:
         return "Public ID not provided", 400
@@ -171,8 +172,10 @@ def secure_image():
     format = request.args.get('format', None)
 
     transformations = {
-        'quality': 'auto',
-        'fetch_format': 'auto'}
+        'quality': 'auto'}
+
+    if public_id not in EXCLUDED_PUBLIC_IDS:
+        transformations['fetch_format'] = 'auto'
 
     if width:
         transformations['width'] = int(width)

@@ -47,6 +47,8 @@ body.dark-mode {
 .homepage-link {
   cursor: pointer;
   left: 3px;
+  z-index: 100;
+
   position: absolute;
   top: 1px;
   -webkit-touch-callout: none;
@@ -593,7 +595,6 @@ canvas#YrPieChart {
 .top-artists-title,
 .utils-title,
 .gen-titles {
-  color: #296c93;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;

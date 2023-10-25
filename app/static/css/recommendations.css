@@ -48,6 +48,8 @@ body.dark-mode {
 .homepage-link {
   cursor: pointer;
   left: 3px;
+  z-index: 100;
+
   position: absolute;
   top: 1px;
 }
