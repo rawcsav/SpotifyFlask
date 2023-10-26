@@ -64,13 +64,7 @@
 
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
-    <a href="https://rawcsav.com" class="homepage-link">
-      <img
-        id="modeSensitiveImage"
-        src="{{ url_for('static', filename='logo/PhotopeaLogo_3_kqya4t.png') }}"
-        alt="Homepage"
-      />
-    </a>
+    <a href="https://rawcsav.com" class="homepage-link"></a>
     <h1>Spotify Playlists</h1>
     <ul id="playlist-container"></ul>
     <div class="pagination">

@@ -55,13 +55,7 @@
   <div id="background"></div>
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
-    <a href="https://rawcsav.com" class="homepage-link">
-      <img
-        id="modeSensitiveImage"
-        src="{{ url_for('static', filename='logo/PhotopeaLogo_3_kqya4t.png') }}"
-        alt="Homepage"
-      />
-    </a>
+    <a href="https://rawcsav.com" class="homepage-link"></a>
     <h1>{{ playlist_data['name'] }}</h1>
     <div id="summary-stats" class="data-view">
       <div class="top-section">

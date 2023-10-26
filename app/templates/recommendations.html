@@ -61,17 +61,11 @@
 
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
+    <a href="https://rawcsav.com" class="homepage-link"></a>
     <div class="top-right-nav">
       <button id="showInstructions">Show Instructions</button>
     </div>
     <h1>Music Recommendations</h1>
-    <a href="https://rawcsav.com" class="homepage-link">
-      <img
-        id="modeSensitiveImage"
-        src="{{ url_for('static', filename='logo/PhotopeaLogo_3_kqya4t.png') }}"
-        alt="Homepage"
-      />
-    </a>
     <!-- After the title, redirect links, and image -->
     <div id="instructionsModal" class="modal">
       <div class="modal-content">

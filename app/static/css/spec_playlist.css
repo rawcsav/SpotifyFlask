@@ -48,18 +48,25 @@ body.dark-mode {
 .homepage-link {
   cursor: pointer;
   left: 3px;
-  z-index: 100;
-
   position: absolute;
+  z-index: 100;
   top: 1px;
   -webkit-touch-callout: none;
   user-select: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 60px;
+  width: 60px;
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697028662/PhotopeaLogo_3_kqya4t.png');
+  transition: transform 0.3s;
 }
 
-.homepage-link img {
-  height: 60px;
-  transition: transform 0.3s;
-  width: auto;
+body.dark-mode .homepage-link {
+  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png');
+}
+
+.homepage-link:hover {
+  transform: scale(1.05);
 }
 
 .pl-refresh {
