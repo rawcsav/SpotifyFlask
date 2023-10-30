@@ -165,8 +165,8 @@ class Archive(db.Model):
 
 
 class PastGame(db.Model):
-    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)  # replaces the user_id column
-    date = db.Column(db.Date, nullable=False, index=True)
+    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
+    date = db.Column(db.Date, primary_key=True, nullable=False, index=True)
     attempts_made_general = db.Column(db.Integer, default=0)
     attempts_made_rock = db.Column(db.Integer, default=0)
     attempts_made_hiphop = db.Column(db.Integer, default=0)
