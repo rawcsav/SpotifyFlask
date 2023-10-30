@@ -36,7 +36,7 @@ def game():
         db.session.commit()
 
     # Load or create PastGame
-    past_game = PastGame.query.get(user_id_or_session)
+    past_game = PastGame.query.filter_by(user_id_or_session=user_id_or_session, date=today).first()
     if not past_game:
         past_game = PastGame(user_id_or_session=user_id_or_session, date=today, archive_date=today)
         db.session.add(past_game)
@@ -88,8 +88,6 @@ def start_game():
 def get_clip(song_id):
     try:
         file_name = f"{song_id}.mp3"
-        print(f"CLIPS_DIR: {CLIPS_DIR}")
-        print(f"File path: {os.path.join(CLIPS_DIR, file_name)}")
 
         if not os.path.exists(os.path.join(CLIPS_DIR, file_name)):
             return jsonify({'error': 'Clip not found'}), 404
@@ -134,7 +132,8 @@ def submit_guess():
             db.session.commit()
             return jsonify({'status': 'correct'})
         else:
-            current_game.guesses_left -= 1
+            if current_game.guesses_left > 0:
+                current_game.guesses_left -= 1
 
             if current_game.current_genre == 'General':
                 past_game.attempts_made_general += 1
@@ -147,13 +146,11 @@ def submit_guess():
 
             if current_game.guesses_left == 0:
                 if current_game.current_genre != 'Hip Hop':
-                    # Logic to progress to the next genre
                     if current_game.current_genre == 'General':
                         current_game.current_genre = 'Rock'
                     elif current_game.current_genre == 'Rock':
                         current_game.current_genre = 'Hip Hop'
 
-                    # Reset the number of guesses
                     current_game.guesses_left = 6
 
                     db.session.commit()

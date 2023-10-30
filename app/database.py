@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 db = SQLAlchemy()
 
@@ -178,6 +178,12 @@ class PastGame(db.Model):
     def __repr__(self):
         return f"<PastGame on {self.date} for user/session {self.user_id_or_session}>"
 
+    @validates('attempts_made_general', 'attempts_made_rock', 'attempts_made_hiphop')
+    def validate_attempts(self, key, value):
+        if value < 0 or value > 6:
+            raise ValueError(f"{key} should be between 0 and 6 inclusive.")
+        return value
+
 
 class CurrentGame(db.Model):
     user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
@@ -189,3 +195,9 @@ class CurrentGame(db.Model):
 
     def __repr__(self):
         return f"<CurrentGame on {self.date} for user/session {self.user_id_or_session}>"
+
+    @validates('guesses_left')
+    def validate_guesses_left(self, key, value):
+        if value < 0:
+            raise ValueError(f"{key} should not be less than 0.")
+        return value
