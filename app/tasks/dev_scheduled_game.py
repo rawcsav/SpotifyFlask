@@ -29,7 +29,7 @@ def preprocess_songs():
         for i, genre in enumerate(genres, start=1):
             genre_songs = Songfull.query.filter(
                 Songfull.genre.contains(genre),
-                Songfull.played == 0,  # Modify to check played column instead of current
+                Songfull.played == 0,
                 ~Songfull.id.in_(selected_song_ids)
             ).order_by(func.random()).limit(SONGS_PER_DAY).all()
 

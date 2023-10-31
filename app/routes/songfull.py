@@ -68,9 +68,8 @@ def start_game():
         elif current_game.current_genre == 'Hip Hop':
             song_id = archive.hiphop_track
         else:
-            # If it's the last song for the day (Hiphop), then just return a message for now
             return jsonify({
-                'message': "You've finished all songs for today. Come back tomorrow for more!"
+                'message': "Game Over! You've finished all songs for today. Come back tomorrow for more!"
             })
 
         clip_length = guess_duration_map[current_game.guesses_left]
@@ -99,6 +98,7 @@ def get_clip(song_id):
 
 @bp.route('/guess', methods=['POST'])
 def submit_guess():
+    today = datetime.utcnow().date()
     try:
         user_guess = request.form['song_guess']
 
@@ -113,7 +113,7 @@ def submit_guess():
         }[current_game.current_genre]
         current_song = Songfull.query.get(song_id)
 
-        past_game = PastGame.query.filter_by(user_id_or_session=user_id_or_session).first()
+        past_game = PastGame.query.filter_by(user_id_or_session=user_id_or_session, date=today).first()
 
         if (user_guess.lower() == current_song.name.lower() or
                 user_guess.lower() == f"{current_song.name} - {current_song.artist}".lower() or
@@ -128,6 +128,13 @@ def submit_guess():
             elif current_game.current_genre == 'Hip Hop':
                 past_game.attempts_made_hiphop += 1
                 past_game.correct_guess_hiphop = True
+
+            if current_game.current_genre == 'Hip Hop':
+                db.session.commit()
+                return jsonify({
+                    'status': 'correct_game_over',
+                    'message': "Congratulations! You've correctly guessed all songs for today. Come back tomorrow for more!"
+                })
 
             db.session.commit()
             return jsonify({'status': 'correct'})
@@ -145,6 +152,10 @@ def submit_guess():
             db.session.commit()
 
             if current_game.guesses_left == 0:
+                if current_game.current_genre == 'Hip Hop':
+                    return jsonify({'status': 'game_over',
+                                    'message': "Game Over! You've finished all songs for today. Come back tomorrow for more!"})
+
                 if current_game.current_genre != 'Hip Hop':
                     if current_game.current_genre == 'General':
                         current_game.current_genre = 'Rock'

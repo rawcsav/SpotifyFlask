@@ -53,21 +53,12 @@
 
     <!-- Game Content -->
     <div class="game-column" style="display: none">
-      <div id="current-genre"></div>
-
-      <!-- Guess Rows -->
-      <div id="guesses">
-        <div class="guess-input"></div>
-        <div class="guess-input"></div>
-        <div class="guess-input"></div>
-        <div class="guess-input"></div>
-        <div class="guess-input"></div>
-        <div class="guess-input"></div>
+      <!-- Add this somewhere in your game-column div, probably above the audio controls -->
+      <div class="guesses-container">
+        <h3>Guesses</h3>
+        <ul id="guess-list"></ul>
       </div>
-
-      <!-- Search Input, Results, and Hidden Field for Track ID -->
-
-      <!-- Audio Controls -->
+      <div id="current-genre"></div>
       <button id="play-clip">Play Clip</button>
       <audio id="song-clip"></audio>
 
@@ -86,13 +77,17 @@
       <!-- Bonus Questions -->
       <div id="bonus-questions" style="display: none">
         <h3>Bonus Questions</h3>
+
         <label for="album-guess">Album Name:</label>
         <input type="text" id="album-guess" />
+        <span id="album-feedback" class="bonus-feedback"></span>
+
         <label for="release-year-guess">Release Year:</label>
         <input type="text" id="release-year-guess" />
+        <span id="year-feedback" class="bonus-feedback"></span>
+
         <button id="submit-bonus">Submit Bonus Answers</button>
         <button id="skip-bonus">Skip</button>
-        <div id="bonus-feedback"></div>
       </div>
     </div>
   </body>
