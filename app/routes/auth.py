@@ -35,15 +35,6 @@ def require_spotify_auth(f):
             session['original_request_url'] = request.url
             return redirect(url_for('auth.refresh'))
 
-        access_token = verify_session(session)
-        res_data = fetch_user_data(access_token)
-        spotify_user_id = res_data.get("id")
-
-        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
-
-        if not user_data_entry:
-            return redirect(url_for('user.profile'))
-
         return f(*args, **kwargs)
 
     return decorated_function
