@@ -1,3 +1,11 @@
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.3s ease;
+}
+
 body {
   background-attachment: fixed;
   background-color: #f9efa5;
@@ -160,6 +168,17 @@ body.dark-mode .login-button {
   vertical-align: middle;
 }
 
+.logo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.login-button:hover {
+  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
 .spotify-logo {
   height: 20px;
   margin-bottom: 10px;
@@ -171,67 +190,6 @@ body.dark-mode .login-button {
 .spotify-logo img {
   overflow: clip;
   overflow-clip-margin: content-box;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.login-button:hover {
-  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
-  text-decoration: none;
-  transform: translateY(-2px);
-}
-
-@keyframes sk-bounce {
-  0%,
-  100% {
-    transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1);
-  }
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-* {
-  transition: all 0.3s ease;
-}
-
-.logo-container {
-  position: relative;
-  display: inline-block;
-}
-@keyframes fadeInZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideIn {
-  0% {
-    transform: translate(20px, 20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(10px, 10px);
-    opacity: 0.3;
-  }
 }
 
 .logo-text {
@@ -246,14 +204,7 @@ html {
 }
 
 body.dark-mode .logo-text {
-  font-size: 6em;
-  font-weight: 900;
-  letter-spacing: -3px;
   background: -webkit-linear-gradient(left, #fbae3c, #e9705a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeInZoom 1.5s ease-in-out;
 }
 
 .overlay {
@@ -286,4 +237,47 @@ body.dark-mode .overlay {
 
 .block-element {
   text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sk-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translate(20px, 20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(10px, 10px);
+    opacity: 0.3;
+  }
 }

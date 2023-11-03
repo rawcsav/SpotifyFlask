@@ -32,7 +32,9 @@ h1 {
   text-align: center;
 }
 
-body.dark-mode h1 {
+body.dark-mode h1,
+body.dark-mode p,
+body.dark-mode .pagination a {
   color: #fbae3c;
 }
 
@@ -53,9 +55,6 @@ p {
   font-weight: 500;
   margin: 0;
   text-decoration: none;
-}
-body.dark-mode p {
-  color: #fbae3c;
 }
 
 .homepage-link {
@@ -105,39 +104,6 @@ body.dark-mode .homepage-link {
   position: absolute;
   right: 10px;
   top: 10px;
-}
-
-@keyframes dynamicShadow {
-  0% {
-    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px 40px rgba(0, 0, 0, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
-  }
-}
-
-@keyframes sparkle {
-  0% {
-    box-shadow:
-      0 0 10px 2px red,
-      0 0 20px 2px rgba(255, 255, 255, 0.5),
-      0 0 30px 5px rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    box-shadow:
-      0 0 20px 5px pink,
-      0 0 30px 10px rgba(255, 255, 255, 0.5),
-      0 0 40px 15px rgba(255, 255, 255, 0.5);
-  }
-  100% {
-    box-shadow:
-      0 0 10px 2px orange,
-      0 0 20px 2px rgba(255, 255, 255, 0.5),
-      0 0 30px 5px rgba(255, 255, 255, 0.5);
-  }
 }
 
 .image-container {
@@ -219,6 +185,35 @@ body.dark-mode .homepage-link {
   background-color: #555;
 }
 
-body.dark-mode .pagination a {
-  background-color: #fbae3c;
+@keyframes dynamicShadow {
+  0% {
+    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    box-shadow:
+      0 0 10px 2px red,
+      0 0 20px 2px rgba(255, 255, 255, 0.5),
+      0 0 30px 5px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px 5px pink,
+      0 0 30px 10px rgba(255, 255, 255, 0.5),
+      0 0 40px 15px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow:
+      0 0 10px 2px orange,
+      0 0 20px 2px rgba(255, 255, 255, 0.5),
+      0 0 30px 5px rgba(255, 255, 255, 0.5);
+  }
 }

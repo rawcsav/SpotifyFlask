@@ -1,3 +1,11 @@
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.3s ease;
+}
+
 body {
   align-items: center;
   background-attachment: fixed;
@@ -67,14 +75,6 @@ body.dark-mode .homepage-link {
 
 .homepage-link:hover {
   transform: scale(1.05);
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-* {
-  transition: all 0.3s ease;
 }
 
 .top-right-nav {
@@ -481,16 +481,16 @@ body.dark-mode #universal_input {
 }
 
 .ui-state-default,
-.ui-widget-content .ui-state-default {
+.ui-widget-content
+  .ui-state-default
+  .ui-slider-range
+  .ui-corner-all
+  .ui-widget-header {
   border-color: transparent;
 }
 
 .ui-slider.ui-slider .ui-slider-handle:nth-child(2) {
   background: #ca4b34;
-}
-
-.ui-slider-range .ui-corner-all .ui-widget-header {
-  border-color: transparent;
 }
 
 .ui-slider.ui-slider .ui-slider-handle:nth-child(3) {

@@ -67,6 +67,7 @@ class playlist_sql(db.Model):
     top_artists = db.Column(db.JSON)
     feature_stats = db.Column(db.JSON)
     temporal_stats = db.Column(db.JSON)
+    weekly_graph = db.Column(db.JSON)
 
 
 class artgen_sql(db.Model):

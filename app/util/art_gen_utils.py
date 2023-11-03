@@ -2,6 +2,9 @@ import random
 from datetime import datetime
 
 import openai
+import numpy as np
+import pandas as pd
+from scipy.spatial import distance_matrix
 
 from app.database import artgenstyle_sql, artgenurl_sql, db, artgen_sql
 
@@ -100,3 +103,24 @@ def generate_and_save_images(playlist_id, genre_name=None, prompt_text=None):
     db.session.commit()
 
     return image_urls, prompt
+
+
+def find_closest_artgen():
+    pool_genres_df = pd.read_csv('app/data/pool_genres.csv')
+    master_enao = pd.read_csv('app/data/master_enao.csv')
+
+    merged_genres = pd.merge(pool_genres_df, master_enao, on='genre', how='left')
+
+    master_coords = master_enao[['x', 'y']].values
+    merged_coords = merged_genres[['x', 'y']].values
+
+    dist_matrix = distance_matrix(master_coords, merged_coords)
+
+    min_indices = np.argmin(dist_matrix, axis=1)
+
+    closest_genres = merged_genres['genre'].iloc[min_indices].values
+    closest_distances = dist_matrix[np.arange(dist_matrix.shape[0]), min_indices]
+
+    master_enao['closest_genre'] = closest_genres
+
+    master_enao.to_csv('app/data/master_enao.csv')

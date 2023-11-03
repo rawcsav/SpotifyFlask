@@ -2,26 +2,7 @@ import csv
 import json
 from datetime import datetime, timedelta
 
-import numpy as np
-import pandas as pd
-from scipy.spatial import distance_matrix
-
 from app.database import artist_sql, features_sql, artgenstyle_sql, artgenurl_sql, artgen_sql, db
-
-
-def get_today_date():
-    return datetime.utcnow().date()
-
-
-def validate_artist_data(data):
-    required_keys = ['id', 'name', 'external_urls', 'followers', 'genres', 'images', 'popularity']
-    return all(key in data for key in required_keys)
-
-
-def validate_audio_data(data):
-    required_keys = ['id', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
-                     'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature']
-    return all(key in data for key in required_keys)
 
 
 def add_artist_to_db(artist_data):
@@ -206,28 +187,3 @@ def delete_expired_images_for_playlist(playlist_id):
 
     db.session.commit()
     db.session.close()
-
-
-def euclidean_distance(point1, point2):
-    return np.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-
-
-def find_closest_artgen():
-    pool_genres_df = pd.read_csv('app/data/pool_genres.csv')
-    master_enao = pd.read_csv('app/data/master_enao.csv')
-
-    merged_genres = pd.merge(pool_genres_df, master_enao, on='genre', how='left')
-
-    master_coords = master_enao[['x', 'y']].values
-    merged_coords = merged_genres[['x', 'y']].values
-
-    dist_matrix = distance_matrix(master_coords, merged_coords)
-
-    min_indices = np.argmin(dist_matrix, axis=1)
-
-    closest_genres = merged_genres['genre'].iloc[min_indices].values
-    closest_distances = dist_matrix[np.arange(dist_matrix.shape[0]), min_indices]
-
-    master_enao['closest_genre'] = closest_genres
-
-    master_enao.to_csv('app/data/master_enao.csv')

@@ -9,9 +9,7 @@ html {
 body {
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   height: 100vh;
-  margin: 0;
   max-height: 100vh;
-  overflow: hidden;
   position: relative;
   text-align: center;
 }
@@ -40,16 +38,6 @@ body {
     top: 0;
     left: 0;
   }
-}
-
-.cloud {
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 100%;
-  pointer-events: none;
-  position: absolute;
-  width: 100%;
-  z-index: 2;
 }
 
 .homepage-link {

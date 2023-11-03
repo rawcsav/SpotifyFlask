@@ -64,18 +64,19 @@ def show_playlist(playlist_id):
         is_collaborative = playlist_data['collaborative']
         is_public = playlist_data['public']
         temporal_stats = playlist_data.get('temporal_stats', {})
+        weekly_stats = playlist_data.get('weekly_stats', {})
         year_count = temporal_stats.get('year_count', {})
 
         sorted_genre_data = sorted(playlist_data['genre_counts'].items(), key=lambda x: x[1]['count'], reverse=True)
         top_10_genre_data = dict(sorted_genre_data[:10])
 
         artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
-        print(f"artgen_ten: {artgen_ten}, genre_scores: {genre_scores}")  # Print the artgen_ten and genre_scores
         return render_template('spec_playlist.html', playlist_id=playlist_id,
                                data=res_data,
                                playlist_url=playlist_url,
                                playlist_data=playlist_data,
                                top_10_genre_data=top_10_genre_data,
+                               weekly_data=weekly_stats,
                                year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                                is_collaborative=is_collaborative, is_public=is_public,
                                artgen_ten=artgen_ten,
@@ -86,7 +87,7 @@ def show_playlist(playlist_id):
         return json.dumps(error), 401
 
     pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats = \
+        pl_feature_stats, pl_temporal_stats, pl_weekly_stats = \
         get_playlist_details(sp, playlist_id)
 
     # Create a new playlist_sql object and save it to the SQL database
@@ -102,7 +103,8 @@ def show_playlist(playlist_id):
                                 genre_counts=pl_genre_counts,
                                 top_artists=pl_top_artists,
                                 feature_stats=pl_feature_stats,
-                                temporal_stats=pl_temporal_stats)
+                                temporal_stats=pl_temporal_stats,
+                                weekly_stats=pl_weekly_stats)
     try:
         db.session.merge(new_playlist)
         db.session.commit()
@@ -112,6 +114,7 @@ def show_playlist(playlist_id):
 
     playlist_data = new_playlist.__dict__
     temporal_stats = playlist_data.get('temporal_stats', {})
+    weekly_stats = playlist_data.get('weekly_stats', {})
     year_count = temporal_stats.get('year_count', {})
     owner_name = playlist_data['owner']
     total_tracks = playlist_data['total_tracks']
@@ -126,6 +129,7 @@ def show_playlist(playlist_id):
                            data=res_data,
                            playlist_url=playlist_url,
                            playlist_data=playlist_data,
+                           weekly_stats=weekly_stats,
                            top_10_genre_data=top_10_genre_data,
                            year_count=json.dumps(year_count), owner_name=owner_name, total_tracks=total_tracks,
                            is_collaborative=is_collaborative, is_public=is_public,

@@ -1,13 +1,3 @@
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -223,7 +213,8 @@ body.dark-mode .card {
   font-weight: bold;
 }
 
-body.dark-mode .btn:hover {
+body.dark-mode .btn:hover,
+body.dark-mode p {
   background-color: #fa9845;
 }
 
@@ -259,10 +250,17 @@ dl dt {
   font-size: 1em;
   margin-bottom: 10px;
 }
+
 p {
   color: #4297ff;
 }
 
-body.dark-mode p {
-  color: #fa9845;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

@@ -211,6 +211,85 @@ def get_temporal_stats(track_info_list, playlist_id):
     return temporal_stats
 
 
+def get_weekly_genre_changes(track_info_list):
+    if not track_info_list:
+        return {}
+
+    def parse_date_or_default(track):
+        added_at = track['added_at']
+        if added_at:
+            try:
+                return datetime.strptime(added_at, "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError:
+                print(f"Date {added_at} is not in the expected format. Skipping this track.")
+                return None
+        return None
+
+    weekly_genre_changes = defaultdict(lambda: defaultdict(int))
+
+    for track_info in track_info_list:
+        added_at = parse_date_or_default(track_info, None)
+        if added_at is None:
+            continue
+
+        week_number = added_at.isocalendar()[1]
+        for artist_dict in track_info['artists']:
+            for genre in artist_dict.get('genres', []):
+                weekly_genre_changes[week_number][genre] += 1
+
+    # For each week, find the genre with the highest count
+    for week, genres in weekly_genre_changes.items():
+        weekly_genre_changes[week] = max(genres.items(), key=lambda x: x[1])[0]
+
+    return dict(weekly_genre_changes)
+
+
+def get_weekly_audio_features_stats(track_info_list):
+    if not track_info_list:
+        return {}
+
+    def parse_date_or_default(track):
+        added_at = track['added_at']
+        if added_at:
+            try:
+                return datetime.strptime(added_at, "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError:
+                print(f"Date {added_at} is not in the expected format. Skipping this track.")
+                return None
+        return None
+
+    weekly_audio_features_stats = defaultdict(lambda: defaultdict(list))
+
+    for track_info in track_info_list:
+        added_at = parse_date_or_default(track_info, None)
+        if added_at is None:
+            continue
+
+        week_number = added_at.isocalendar()[1]
+        for feature, value in track_info['audio_features'].items():
+            if feature != 'id':
+                weekly_audio_features_stats[week_number][feature].append(value)
+
+    # Calculate the average of each audio feature for each week
+    for week, features in weekly_audio_features_stats.items():
+        for feature, values in features.items():
+            weekly_audio_features_stats[week][feature] = sum(values) / len(values)
+
+    return dict(weekly_audio_features_stats)
+
+
+def combine_stats(track_info_list):
+    weekly_genre_changes = get_weekly_genre_changes(track_info_list)
+    weekly_audio_features_stats = get_weekly_audio_features_stats(track_info_list)
+
+    combined_stats = {
+        "weekly_genres": weekly_genre_changes,
+        "weekly_features": weekly_audio_features_stats
+    }
+
+    return json.dumps(combined_stats)
+
+
 def compute_scores_for_playlist(genre_info, genre_sql):
     results = []
 
@@ -281,7 +360,8 @@ def get_playlist_details(sp, playlist_id):
     genre_counts, top_artists = get_genre_artists_count(track_info_list)
     audio_feature_stats = get_audio_features_stats(track_info_list)
     temporal_stats = get_temporal_stats(track_info_list, playlist_id)
-    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
+    weekly_stats = combine_stats(track_info_list)
+    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats, weekly_stats
 
 
 def update_playlist_data(playlist_id):
@@ -295,7 +375,7 @@ def update_playlist_data(playlist_id):
 
     # Fetch the new data
     pl_playlist_info, pl_track_data, pl_genre_counts, pl_top_artists, \
-        pl_feature_stats, pl_temporal_stats = get_playlist_details(sp, playlist_id)
+        pl_feature_stats, pl_temporal_stats, pl_weekly_stats = get_playlist_details(sp, playlist_id)
 
     # Update the playlist object
     playlist.name = pl_playlist_info['name']
@@ -310,6 +390,7 @@ def update_playlist_data(playlist_id):
     playlist.top_artists = pl_top_artists
     playlist.feature_stats = pl_feature_stats
     playlist.temporal_stats = pl_temporal_stats
+    playlist.weekly_stats = pl_weekly_stats
 
     try:
         db.session.merge(playlist)

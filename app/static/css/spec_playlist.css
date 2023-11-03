@@ -846,13 +846,10 @@ body.dark-mode li {
 }
 
 body.dark-mode #generate-art-btn,
-body.dark-mode #artgen-btn {
-  background-color: #f9778c;
-}
-
+body.dark-mode #artgen-btn,
 body.dark-mode #gen-refresh-icon,
 body.dark-mode .art-gen-icon-div {
-  color: #f9778c;
+  background-color: #f9778c;
 }
 
 #apiKeyForm {
@@ -1005,32 +1002,6 @@ body.dark-mode .art-gen-prompt {
 
 .toast.error {
   background-color: #f44336;
-}
-
-.accordion-header {
-  background-color: #f1f1f1;
-  border: none;
-  border-radius: 5px;
-  color: #444;
-  cursor: pointer;
-  font-size: 15px;
-  margin-bottom: 5px;
-  outline: none;
-  padding: 10px;
-  text-align: left;
-  transition: 0.4s;
-  width: 100%;
-}
-
-.accordion-header:hover {
-  background-color: #ddd;
-}
-
-.accordion-content {
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  display: none;
-  padding: 0 10px;
 }
 
 .genre-container {
