@@ -70,7 +70,6 @@ def show_playlist(playlist_id):
         top_10_genre_data = dict(sorted_genre_data[:10])
 
         artgen_ten, genre_scores = calculate_genre_weights(playlist_data['genre_counts'], genre_sql)
-        print(f"artgen_ten: {artgen_ten}, genre_scores: {genre_scores}")  # Print the artgen_ten and genre_scores
         return render_template('spec_playlist.html', playlist_id=playlist_id,
                                data=res_data,
                                playlist_url=playlist_url,
@@ -297,7 +296,6 @@ def reorder_playlist(playlist_id):
 def get_pl_recommendations(playlist_id):
     sp, error = init_session_client(session)
     if error:
-        print(f"error: {error}")  # Print the error
         return jsonify(error=error), 401
 
     playlist = playlist_sql.query.get(playlist_id)
@@ -309,14 +307,11 @@ def get_pl_recommendations(playlist_id):
 
     artist_counts = {artist[0]: artist[1] for artist in top_artists}
     artist_ids = {artist[0]: artist[4] for artist in top_artists}
-    print(f"artist_counts: {artist_counts}, artist_ids: {artist_ids}")  # Print the artist_counts and artist_ids
 
     top_artist_ids = get_artists_seeds(artist_counts, artist_ids)
     top_genres = get_genres_seeds(sp, genre_info)
-    print(f"top_artist_ids: {top_artist_ids}, top_genres: {top_genres}")  # Print the top_artist_ids and top_genres
 
     num_artist_seeds = 5 - len(top_genres)
-    print(f"num_artist_seeds: {num_artist_seeds}")  # Print the num_artist_seeds
 
     seeds = {
         'track': None,

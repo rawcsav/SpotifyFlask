@@ -19,15 +19,19 @@ def stats():
 
     if not user_data_entry:
         return jsonify(error="User data not found"), 404
+    time_periods = ['short_term', 'medium_term', 'long_term']
 
-    top_tracks = user_data_entry.top_tracks
-    top_artists = user_data_entry.top_artists
-    sorted_genres_by_period = user_data_entry.sorted_genres_by_period
-    genre_specific_data = user_data_entry.genre_specific_data
+    top_tracks = {period: user_data_entry.top_tracks.get(period, {}) for period in time_periods}
+    top_artists = {period: user_data_entry.top_artists.get(period, {}) for period in time_periods}
+    sorted_genres_by_period = {period: user_data_entry.sorted_genres_by_period.get(period, {}) for period in
+                               time_periods}
+    genre_specific_data = {period: user_data_entry.genre_specific_data.get(period, {}) for period in time_periods}
+
     audio_features = user_data_entry.audio_features
 
-    time_periods = ['short_term', 'medium_term', 'long_term', 'overall']
     period_data = {}
+    time_periods = ['short_term', 'medium_term', 'long_term', 'overall']
+
     for period in time_periods:
         period_tracks = top_tracks[period] if period != 'overall' else {
             'items': [track for sublist in top_tracks.values() for track in sublist['items']]}
@@ -35,7 +39,6 @@ def stats():
         period_data[period]['averages'], period_data[period]['min_track'], period_data[period]['max_track'], \
             period_data[period]['min_values'], period_data[period]['max_values'] = calculate_averages_for_period(
             period_tracks, audio_features)
-
     return render_template('stats.html',
                            data=res_data,
                            top_tracks=top_tracks,
