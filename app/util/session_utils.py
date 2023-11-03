@@ -127,19 +127,3 @@ def refresh_tokens():
     })
 
     return True
-
-
-def check_login_status():
-    tokens = session.get('tokens', None)
-    if not tokens:
-        return False
-
-    expiry_time = datetime.fromisoformat(tokens.get('expiry_time')) if tokens else None
-    if expiry_time and expiry_time < datetime.now():
-        # If tokens are expired, attempt to refresh them.
-        if not refresh_tokens():
-            # If refresh fails, user is not logged in.
-            return False
-
-    # If tokens exist and are not expired, or if they were successfully refreshed, user is logged in.
-    return True

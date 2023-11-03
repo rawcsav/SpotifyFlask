@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from functools import wraps
 from urllib.parse import urlencode
 import cloudinary
 from flask import (Blueprint, abort, make_response, redirect, render_template,
@@ -7,19 +8,14 @@ from flask import (Blueprint, abort, make_response, redirect, render_template,
 from app import config
 from app.database import UserData, db
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, is_api_key_valid, encrypt_data, \
-    verify_session, fetch_user_data, refresh_tokens
+    verify_session, fetch_user_data
 
 bp = Blueprint('auth', __name__)
 
 
-@bp.route('/auth')
+@bp.route('/')
 def index():
     return render_template('landing.html')
-
-
-from flask import session, redirect, url_for, request
-from functools import wraps
-from datetime import datetime
 
 
 def require_spotify_auth(f):
@@ -40,15 +36,11 @@ def require_spotify_auth(f):
     return decorated_function
 
 
-@bp.route('/<loginout>/<next>')
-def login(loginout, next):
+@bp.route('/<loginout>')
+def login(loginout):
     if loginout == 'logout':
-        if 'songfull' in request.referrer:
-            next = url_for('songfull.game')
-        else:
-            next = url_for('auth.index')  # replace 'explore' with your actual explore route
         session.clear()
-        return redirect(next)
+        return redirect(url_for('auth.index'))
 
     state = generate_state()
     scope = ' '.join([
@@ -60,7 +52,7 @@ def login(loginout, next):
 
     res = make_response(redirect(f'{config.AUTH_URL}/?{urlencode(payload)}'))
     res.set_cookie('spotify_auth_state', state)
-    res.set_cookie('next_url', next)
+
     return res
 
 
@@ -89,14 +81,27 @@ def callback():
         'expiry_time': expiry_time.isoformat()
     }
 
-    next_url = request.cookies.get('next_url', url_for('user.profile'))
-    return redirect(next_url)
+    return redirect(url_for('user.profile'))
 
 
 @bp.route('/refresh')
 def refresh():
-    if not refresh_tokens():
+    payload = {'grant_type': 'refresh_token', 'refresh_token': session.get('tokens').get('refresh_token')}
+
+    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
+    if error:
         return redirect(url_for('auth.index'))
+
+    new_access_token = res_data.get('access_token')
+    new_refresh_token = res_data.get('refresh_token', session['tokens']['refresh_token'])
+    expires_in = res_data.get('expires_in')
+    new_expiry_time = datetime.now() + timedelta(seconds=expires_in)
+
+    session['tokens'].update({
+        'access_token': new_access_token,
+        'refresh_token': new_refresh_token,
+        'expiry_time': new_expiry_time.isoformat()
+    })
 
     return redirect(session.pop('original_request_url', url_for('user.profile')))
 

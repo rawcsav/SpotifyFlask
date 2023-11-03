@@ -1,5 +1,3 @@
-import uuid
-
 import cloudinary
 import sshtunnel
 from flask import Flask, session, g
@@ -7,7 +5,6 @@ from flask_migrate import Migrate
 
 from app import config
 from app.database import db, UserData, artgen_sql, genre_sql
-from app.util.database_utils import load_data_into_artgen, load_data_into_artgenstyle
 from app.util.session_utils import get_tunnel
 from flask_cors import CORS
 
@@ -62,10 +59,9 @@ def create_app():
     migrate = Migrate(app, db)
 
     with app.app_context():
-        from .routes import home, auth, user, stats, search, recommendations, playlist, \
-            art_gen, songfull
+        from .routes import auth, user, stats, search, recommendations, playlist, \
+            art_gen
 
-        app.register_blueprint(home.bp)
         app.register_blueprint(auth.bp)
         app.register_blueprint(user.bp)
         app.register_blueprint(stats.bp)
@@ -73,7 +69,6 @@ def create_app():
         app.register_blueprint(recommendations.bp)
         app.register_blueprint(playlist.bp)
         app.register_blueprint(art_gen.bp)
-        app.register_blueprint(songfull.bp)
 
         @app.before_request
         def apply_user_preference():
@@ -85,13 +80,6 @@ def create_app():
                     g.is_dark_mode = False
             else:
                 g.is_dark_mode = False
-
-        @app.before_request
-        def ensure_session_id():
-            if 'id' not in session:
-                session['id'] = str(uuid.uuid4())
-            session.permanent = True
-            session.modified = True
 
         @app.teardown_request
         def session_teardown(exception=None):

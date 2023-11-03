@@ -94,23 +94,12 @@
     border-bottom: none;
   }
 
-  #homeLink:hover {
-    text-decoration: none;
-    background-color: #f9efa5;
-    color: #5fad56;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-
-  #gameLink:hover {
-    text-decoration: none;
-    background-color: #f9efa5;
-    color: #e34b31;
-  }
   .drop-item[href*='profile']:hover {
     text-decoration: none;
     color: #ffe5ec;
     background-color: #a26769;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
   }
   /* Applying specific color styles as per your request */
   .drop-item[href*='stats']:hover {
@@ -122,12 +111,6 @@
   .drop-item[href*='recommendations']:hover {
     background-color: #02343f;
     color: #f0edcc;
-    text-decoration: none;
-  }
-
-  .drop-item[href*='game'] {
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
     text-decoration: none;
   }
 
@@ -174,18 +157,16 @@
 <!-- Dropdown Structure -->
 <div id="spotifyUserDropdown" onclick="toggleDropdown(event)">
   <div class="menu-container">
-    {% if songfull_menu %}
+    {% if data.images and data.images[0] %}
+    <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
+    {% else %}
     <img
       src="/secure_image?public_id=v1696536571/bd33260dec7cd00233c444cda31ba12a-removebg-preview_cgobu0.png"
       alt="Placeholder Image"
       class="profile-img"
     />
-    <span class="truncate">Guest</span>
-    {% else %} {% if data.images and data.images[0] %}
-    <img src="{{ data.images[0].url }}" alt="User Image" class="profile-img" />
     {% endif %}
     <span class="truncate">{{ data.display_name }}</span>
-    {% endif %}
     <i
       class="fas fa-cog"
       id="settingsCog"
@@ -194,19 +175,6 @@
     ></i>
   </div>
   <div class="drop-menu" id="menu">
-    {% if songfull_menu %}
-    <a id="login-button" class="drop-item" href="/login/songfull">
-      <img
-        alt="Spotify"
-        src="/secure_image?public_id=v1694705409/download_hydbbh.svg"
-        class="spotify-logo"
-      />
-      Connect Spotify
-    </a>
-    {% else %}
-    <a id="homeLink" class="drop-item" href="{{ url_for('home.home') }}"
-      >Home</a
-    >
     <a class="drop-item" href="{{ url_for('user.profile') }}">Profile</a>
     <a class="drop-item" href="{{ url_for('stats.stats') }}">Music Stats</a>
     <a class="drop-item" href="{{ url_for('recommendations.recommendations') }}"
@@ -215,117 +183,110 @@
     <a class="drop-item" href="{{ url_for('playlist.playlist') }}"
       >Playlist Explorer</a
     >
-    <a id="gameLink" class="drop-item" href="{{ url_for('songfull.game') }}"
-      >Songfull</a
-    >
-    {% endif %}
     <div id="settingsDropdown">
       <div class="drop-menu" id="settings-menu">
         <button class="drop-item" id="modeToggle" onclick="toggleMode()">
           Dark Mode
         </button>
-        {% if not songfull_menu %}
-        <a class="drop-item" href="/logout/index">Logout</a>
-        {% endif %}
+        <a class="drop-item" href="/logout">Logout</a>
       </div>
     </div>
     <script>
-                function toggleDropdown(event) {
-                  event.stopPropagation(); // Prevents the dropdown from closing
-                  const menu = document.getElementById('menu');
-                  const settingsCog = document.getElementById('settingsCog');
-                  if (menu.style.display === 'none' || menu.style.display === '') {
-                    menu.style.display = 'block';
-                    settingsCog.style.display = 'inline-block'; // Show the settings cog
-                  } else {
-                    menu.style.display = 'none';
-                    settingsCog.style.display = 'none'; // Hide the settings cog
-                  }
-                }
+      function toggleDropdown(event) {
+        event.stopPropagation(); // Prevents the dropdown from closing
+        const menu = document.getElementById('menu');
+        const settingsCog = document.getElementById('settingsCog');
+        if (menu.style.display === 'none' || menu.style.display === '') {
+          menu.style.display = 'block';
+          settingsCog.style.display = 'inline-block'; // Show the settings cog
+        } else {
+          menu.style.display = 'none';
+          settingsCog.style.display = 'none'; // Hide the settings cog
+        }
+      }
 
-                function toggleSettings(event) {
-                  event.stopPropagation(); // Prevents the dropdown from closing
-                  const settingsCog = document.getElementById('settingsCog');
-                  const settingsMenu = document.getElementById('settings-menu');
-                  if (
-                    settingsMenu.style.display === 'none' ||
-                    settingsMenu.style.display === ''
-                  ) {
-                    settingsMenu.style.display = 'block';
-                  } else {
-                    settingsMenu.style.display = 'none';
-                  }
-                }
+      function toggleSettings(event) {
+        event.stopPropagation(); // Prevents the dropdown from closing
+        const settingsCog = document.getElementById('settingsCog');
+        const settingsMenu = document.getElementById('settings-menu');
+        if (
+          settingsMenu.style.display === 'none' ||
+          settingsMenu.style.display === ''
+        ) {
+          settingsMenu.style.display = 'block';
+        } else {
+          settingsMenu.style.display = 'none';
+        }
+      }
 
-                // Close the dropdown if clicked outside
-                window.addEventListener('click', function (event) {
-                  const dropdown = document.getElementById('spotifyUserDropdown');
-                  if (!dropdown.contains(event.target)) {
-                    document.getElementById('menu').style.display = 'none';
-                  }
-                });
-                function toggleMode() {
-                  const body = document.body;
-                  const isDarkMode = body.classList.contains('dark-mode');
-                  const modeToSave = isDarkMode ? 'light' : 'dark';
+      // Close the dropdown if clicked outside
+      window.addEventListener('click', function (event) {
+        const dropdown = document.getElementById('spotifyUserDropdown');
+        if (!dropdown.contains(event.target)) {
+          document.getElementById('menu').style.display = 'none';
+        }
+      });
+      function toggleMode() {
+        const body = document.body;
+        const isDarkMode = body.classList.contains('dark-mode');
+        const modeToSave = isDarkMode ? 'light' : 'dark';
 
-                  fetch('/update_mode', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      mode: modeToSave,
-                    }),
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      console.log(data.message);
+        fetch('/update_mode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: modeToSave,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.message);
 
-                      const toggleButton = document.getElementById('modeToggle');
-                      if (isDarkMode) {
-                        body.classList.remove('dark-mode');
-                        toggleButton.innerText = 'Dark Mode';
-                      } else {
-                        body.classList.add('dark-mode');
-                        toggleButton.innerText = 'Light Mode';
-                      }
-                      document.dispatchEvent(new Event('themeToggled'));
-                    })
-                    .catch((error) => {
-                      console.error('Error:', error);
-                    });
-                }
+            const toggleButton = document.getElementById('modeToggle');
+            if (isDarkMode) {
+              body.classList.remove('dark-mode');
+              toggleButton.innerText = 'Dark Mode';
+            } else {
+              body.classList.add('dark-mode');
+              toggleButton.innerText = 'Light Mode';
+            }
+            document.dispatchEvent(new Event('themeToggled'));
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
 
-                function checkMode() {
-                  fetch('/get_mode', {
-                    method: 'GET',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      const body = document.body;
-                      const toggleButton = document.getElementById('modeToggle');
+      function checkMode() {
+        fetch('/get_mode', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const body = document.body;
+            const toggleButton = document.getElementById('modeToggle');
 
-                      if (data.mode === 'dark') {
-                        body.classList.add('dark-mode');
-                        toggleButton.innerText = 'Light Mode';
-                      } else {
-                        body.classList.remove('dark-mode');
-                        toggleButton.innerText = 'Dark Mode';
-
-                      }
-                      document.dispatchEvent(new Event('themeToggled'));
-                    })
-                    .catch((error) => {
-                      console.error('Error:', error);
-                    });
-                }
-      {% if logged_in %}
-          checkMode();
-      {% endif %}
+            if (data.mode === 'dark') {
+              body.classList.add('dark-mode');
+              toggleButton.innerText = 'Light Mode';
+            } else {
+              body.classList.remove('dark-mode');
+              toggleButton.innerText = 'Dark Mode';
+            }
+            document.dispatchEvent(new Event('themeToggled'));
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
+      window.onload = function () {
+        checkMode();
+      };
     </script>
   </div>
 </div>
