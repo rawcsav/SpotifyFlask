@@ -53,7 +53,7 @@ def login(loginout):
     # If the path is login, handle the login logic.
     state = generate_state()
     scope = ' '.join([
-        'user-read-private', 'user-top-read', 'user-read-recently-played',
+        'user-read-private', 'user-top-read', 'user-read-recently-played', 'user-follow-modify',
         'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-private',
         'playlist-modify-public', 'user-library-modify', 'user-library-read', 'ugc-image-upload'
     ])
