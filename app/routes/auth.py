@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 import cloudinary
 from flask import (Blueprint, abort, make_response, redirect, render_template,
                    request, session, url_for, jsonify)
+from flask import make_response
 
 from app import config
 from app.database import UserData, db
@@ -38,18 +39,32 @@ def require_spotify_auth(f):
 
 @bp.route('/<loginout>')
 def login(loginout):
+    # If the path is logout, clear the session and return to the index page.
     if loginout == 'logout':
         session.clear()
-        return redirect(url_for('auth.index'))
+        # Optionally, if you want to force re-authentication on Spotify's side next time,
+        # you could set `show_dialog=True` for the next login attempt.
+        session['show_dialog'] = True
+        # You also might want to clear the spotify_auth_state cookie if it's not needed anymore.
+        response = make_response(redirect(url_for('auth.index')))
+        response.set_cookie('spotify_auth_state', '', expires=0, path='/')
+        return response
 
+    # If the path is login, handle the login logic.
     state = generate_state()
     scope = ' '.join([
         'user-read-private', 'user-top-read', 'user-read-recently-played',
         'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-private',
         'playlist-modify-public', 'user-library-modify', 'user-library-read', 'ugc-image-upload'
     ])
-    payload = prepare_auth_payload(state, scope, show_dialog=(loginout == 'logout'))
 
+    # Check if we're supposed to show the dialog (this would be set upon logout).
+    show_dialog = session.pop('show_dialog', False)
+
+    # Prepare the payload for authentication.
+    payload = prepare_auth_payload(state, scope, show_dialog=show_dialog)
+
+    # Redirect the user to Spotify's authorization URL.
     res = make_response(redirect(f'{config.AUTH_URL}/?{urlencode(payload)}'))
     res.set_cookie('spotify_auth_state', state)
 
