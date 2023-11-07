@@ -21,7 +21,6 @@ def generate_images(playlist_id):
         openai.api_key = api_key
 
         genres_list = request.json.get('genres_list', None)
-        print(genres_list)
         prompt_text = request.json.get('prompt', None)
 
         images, prompt = generate_and_save_images(playlist_id, genres_list, prompt_text)

@@ -130,7 +130,7 @@ def save_api_key():
     user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
     api_key = request.json.get('api_key')
-
+    print(api_key)
     if not is_api_key_valid(api_key):
         return jsonify({"message": "Invalid OpenAI API Key"}), 400
 
@@ -150,6 +150,7 @@ def check_api_key():
     access_token = verify_session(session)
     res_data = fetch_user_data(access_token)
     spotify_user_id = res_data.get("id")
+    print(spotify_user_id)
     user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
     if user and user.api_key_encrypted:
         return jsonify({"has_key": True})

@@ -38,7 +38,7 @@ def select_random_elements(genres_list=None):
 
 
 def generate_dalle_prompt(genre_name, art_style, random_attribute):
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system",
@@ -50,21 +50,22 @@ def generate_dalle_prompt(genre_name, art_style, random_attribute):
         max_tokens=150,
     )
 
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 
 def generate_images_dalle(prompt):
     image_urls = []
 
     for i in range(3):
-        generation_response = openai.Image.create(
+        generation_response = openai.images.generate(
+            model="dall-e-3",
             prompt=prompt,
+            size="1024x1024",
+            quality="standard",
             n=1,
-            size="512x512",
-            response_format="url",
         )
 
-        generated_image_url = generation_response["data"][0]["url"]
+        generated_image_url = generation_response.data[0].url
 
         image_urls.append(generated_image_url)
 
