@@ -886,12 +886,21 @@ body.dark-mode .art-gen-icon-div {
 }
 
 #parent-toggle-icon {
-  color: black;
+  color: grey;
   cursor: pointer;
 }
 
 #parent-toggle-icon.active {
   color: red;
+}
+
+#hd-toggle-icon {
+  color: grey;
+  cursor: pointer;
+}
+
+#hd-toggle-icon.active {
+  color: gold;
 }
 
 #art-gen-results {

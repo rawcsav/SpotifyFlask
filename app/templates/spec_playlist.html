@@ -187,24 +187,27 @@
           </button>
         </form>
         <div class="gen-btns">
+          <input type="checkbox" id="parent-toggle" style="display: none" />
           <i
             class="fas fa-bullseye"
             id="parent-toggle-icon"
             title="Use Parent Genre"
-            style="display: none"
-            onclick="toggleCheckbox()"
+            onclick="toggleCheckbox('parent-toggle', 'parent-toggle-icon')"
           ></i>
-          <input type="checkbox" id="parent-toggle" style="display: none" />
-          <button
-            id="generate-art-btn"
-            style="display: none"
-            onclick="generateArtForPlaylist()"
-          >
+
+          <input type="checkbox" id="hd-toggle" style="display: none" />
+          <i
+            class="fa-solid fa-wand-magic-sparkles"
+            id="hd-toggle-icon"
+            title="Toggle HD Quality"
+            onclick="toggleCheckbox('hd-toggle', 'hd-toggle-icon')"
+          ></i>
+          <button id="generate-art-btn" onclick="generateArtForPlaylist()">
             Generate Art
           </button>
+
           <i
             id="gen-refresh-icon"
-            style="display: none"
             class="fas fa-sync"
             onclick="refreshArt()"
           ></i>

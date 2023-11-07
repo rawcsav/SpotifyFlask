@@ -479,6 +479,7 @@ function showArtGenContainer() {
         document.getElementById('generate-art-btn').style.display = 'block';
         document.getElementById('gen-refresh-icon').style.display = 'block';
         document.getElementById('parent-toggle-icon').style.display = 'block';
+        document.getElementById('hd-toggle-icon').style.display = 'block';
       } else {
         document.getElementById('connect-button').style.display = 'block';
         document.getElementById('update-button').style.display = 'none';
@@ -515,6 +516,7 @@ function handleApiKeySubmit(e) {
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
       document.getElementById('parent-toggle-icon').style.display = 'block';
+      document.getElementById('hd-toggle-icon').style.display = 'block';
 
       showToast('API Key saved successfully!');
     },
@@ -537,6 +539,7 @@ function displayInputField(event) {
       document.getElementById('generate-art-btn').style.display = 'block';
       document.getElementById('gen-refresh-icon').style.display = 'block';
       document.getElementById('parent-toggle-icon').style.display = 'block';
+      document.getElementById('hd-toggle-icon').style.display = 'block';
     } else {
       document.getElementById('connect-button').style.display = 'none';
       document.getElementById('update-button').style.display = 'none';
@@ -544,6 +547,7 @@ function displayInputField(event) {
       document.getElementById('generate-art-btn').style.display = 'none';
       document.getElementById('gen-refresh-icon').style.display = 'none';
       document.getElementById('parent-toggle-icon').style.display = 'none';
+      document.getElementById('hd-toggle-icon').style.display = 'none';
     }
   }).fail(function (error) {
     console.error('Error checking API key:', error);
@@ -556,15 +560,18 @@ function showKeyFormAndHideUpdateButton() {
   document.getElementById('generate-art-btn').style.display = 'none';
   document.getElementById('gen-refresh-icon').style.display = 'none';
   document.getElementById('parent-toggle-icon').style.display = 'none';
+  document.getElementById('hd-toggle-icon').style.display = 'none';
 
   document.getElementById('apiKeyForm').style.display = 'flex';
 }
 
-function toggleCheckbox() {
-  var icon = document.getElementById('parent-toggle-icon');
-  var checkbox = document.getElementById('parent-toggle');
-  checkbox.checked = !checkbox.checked;
+function toggleCheckbox(checkboxId, iconId) {
+  var checkbox = document.getElementById(checkboxId);
+  var icon = document.getElementById(iconId);
 
+  checkbox.checked = !checkbox.checked; // Toggle the state of the checkbox
+
+  // Toggle the active class on the icon based on the checkbox state
   if (checkbox.checked) {
     icon.classList.add('active');
   } else {
@@ -573,23 +580,27 @@ function toggleCheckbox() {
 }
 
 function generateArtForPlaylist(isPrompt = false) {
+  const isHD = document.getElementById('hd-toggle').checked;
+
   window.isArtGenerationRequest = true;
-  window.showLoading(45000);
+  // Set loading time based on whether HD is checked
+  window.showLoading(isHD ? 100000 : 55000);
 
   let genresList = [];
-
   const isCheckboxChecked = document.getElementById('parent-toggle').checked;
 
   if (isCheckboxChecked) {
     genresList = Object.values(artgenTen);
   }
 
+  const quality = isHD ? 'hd' : 'standard';
+
   let dataPayload = {};
 
   if (isPrompt) {
-    dataPayload = { prompt: genresList[0] || null };
+    dataPayload = { prompt: genresList[0] || null, quality: quality };
   } else {
-    dataPayload = { genres_list: genresList };
+    dataPayload = { genres_list: genresList, quality: quality };
   }
 
   $.ajax({

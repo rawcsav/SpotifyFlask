@@ -2,7 +2,6 @@ import os
 import secrets
 import string
 from datetime import timezone, timedelta, datetime
-from openai import OpenAI
 import openai
 import requests
 import sshtunnel
@@ -80,7 +79,7 @@ def is_api_key_valid(api_key):
 
     try:
         completion = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": "Hello!"}

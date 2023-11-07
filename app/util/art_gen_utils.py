@@ -19,10 +19,12 @@ def select_random_elements(genres_list=None):
     genre_name = random.choice(all_genres)
     record = artgen_sql.query.filter_by(genre_name=genre_name).first()
 
-    all_styles = [style.art_style for style in artgenstyle_sql.query.all()]
+    # Fetch all art styles along with their corresponding gen_style values
+    all_styles = [(style.art_style, style.gen_style) for style in artgenstyle_sql.query.all()]
     if not all_styles:
         raise ValueError("No styles available in the database.")
-    art_style = random.choice(all_styles)
+
+    art_style, gen_style = random.choice(all_styles)
 
     columns = [
         record.place_1, record.place_2, record.place_3, record.place_4, record.place_5,
@@ -34,7 +36,7 @@ def select_random_elements(genres_list=None):
 
     random_attribute = random.choice([col for col in columns if col])
 
-    return genre_name, art_style, random_attribute
+    return genre_name, art_style, random_attribute, gen_style
 
 
 def generate_dalle_prompt(genre_name, art_style, random_attribute):
@@ -42,18 +44,18 @@ def generate_dalle_prompt(genre_name, art_style, random_attribute):
         model="gpt-4",
         messages=[
             {"role": "system",
-             "content": "You are a helpful creative assistant. You will be provided with randomized attributes relating to music genres and artistic styles. Help the user craft the most optimal possible DALL-E prompt. Fill in any [SUBJECT] appropriately. Under no circumstances will you return anything besides the prompt."},
+             "content": "You are a helpful creative assistant. You will be provided with randomized attributes relating to music genres and artistic styles. Help the user craft the most optimal and most detailed possible DALL-E prompt. Fill in any [SUBJECT] appropriately. Under no circumstances will you return anything besides the prompt."},
             {"role": "user",
              "content": f"Craft this into a vivid and detailed DALL-E prompt that accurately captures the essence of {art_style} while highlighting the {genre_name} music genre. Ensure {random_attribute} is the focal point. Fill in any [SUBJECT] appropriately. Do nothing but send back the prompt."}
         ],
-        temperature=0.6,
-        max_tokens=150,
+        temperature=0.7,
+        max_tokens=300,
     )
 
     return response.choices[0].message.content
 
 
-def generate_images_dalle(prompt):
+def generate_images_dalle(prompt, style, quality='standard'):
     image_urls = []
 
     for i in range(3):
@@ -61,7 +63,8 @@ def generate_images_dalle(prompt):
             model="dall-e-3",
             prompt=prompt,
             size="1024x1024",
-            quality="standard",
+            quality=quality,
+            style=style,
             n=1,
         )
 
@@ -74,15 +77,16 @@ def generate_images_dalle(prompt):
 
 def generate_and_save_images(playlist_id, genre_name=None, prompt_text=None):
     if prompt_text is None:
-        genre_name, art_style, random_attribute = select_random_elements(genre_name)
+        genre_name, art_style, random_attribute, gen_style = select_random_elements(genre_name)
         prompt = generate_dalle_prompt(genre_name, art_style, random_attribute)
     else:
         prompt = prompt_text
         genre_name = "Refresh"
         art_style = "Refresh"
         random_attribute = "Refresh"
-
-    image_urls = generate_images_dalle(prompt)
+        gen_style = "vivid"
+    print(genre_name, art_style, random_attribute, prompt, gen_style)
+    image_urls = generate_images_dalle(prompt, gen_style)
     current_time = datetime.utcnow()
 
     for url in image_urls:

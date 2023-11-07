@@ -102,6 +102,7 @@ class artgen_sql(db.Model):
 class artgenstyle_sql(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     art_style = db.Column(db.String(255), nullable=False)
+    gen_style = db.Column(db.String(255), nullable=True)
 
 
 class artgenurl_sql(db.Model):
