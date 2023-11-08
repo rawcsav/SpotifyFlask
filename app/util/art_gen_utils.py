@@ -44,19 +44,22 @@ def generate_dalle_prompt(genre_name, art_style, random_attribute):
         model="gpt-4",
         messages=[
             {"role": "system",
-             "content": "You are a helpful creative assistant. You will be provided with randomized attributes relating to music genres and artistic styles. Help the user craft the most optimal and most detailed possible DALL-E prompt. Fill in any [SUBJECT] appropriately. Under no circumstances will you return anything besides the prompt."},
+             "content": "You are a helpful creative assistant. You will be provided with randomized attributes relating to music genres and artistic styles. Help the user craft the most optimal and most detailed possible DALL-E prompt. Under no circumstances will you return anything besides the prompt."},
             {"role": "user",
-             "content": f"Craft this into a vivid and detailed DALL-E prompt that accurately captures the essence of {art_style} while highlighting the {genre_name} music genre. Ensure {random_attribute} is the focal point. Fill in any [SUBJECT] appropriately. Do nothing but send back the prompt."}
+             "content": f"Craft this into a narrowly specific DALL-E prompt that uses comprehensive, concrete descriptions and examples in order to embody the charachteristics of: {art_style}, while also visually emphasizing the {genre_name} music genre. Ensure {random_attribute} is genre-relevant and the focal point. Do nothing but send back the prompt."}
         ],
-        temperature=0.7,
-        max_tokens=300,
+        temperature=0.8,
+        max_tokens=400,
     )
-
-    return response.choices[0].message.content
+    original_prompt = response.choices[0].message.content
+    print(original_prompt)
+    additional_string = f"When creating this prompt, make certain that the image accurately captures and embodies the essence of the art style or visual medium described in: '{art_style}.' Then, ensure the image is symbolic of the {genre_name} music genre and that the {random_attribute} is genre-relevant and the focal point. If not relevant to the image, avoid overly conceptual, generic imagery. Try to avoid using text anywhere in the image unless integral to the end result."
+    final_prompt = original_prompt + additional_string
+    return final_prompt
 
 
 def generate_images_dalle(prompt, style, quality='standard'):
-    image_urls = []
+    image_data = []
 
     for i in range(3):
         generation_response = openai.images.generate(
@@ -67,35 +70,56 @@ def generate_images_dalle(prompt, style, quality='standard'):
             style=style,
             n=1,
         )
-
+        print(quality)
+        print(style)
+        print(prompt)
         generated_image_url = generation_response.data[0].url
 
-        image_urls.append(generated_image_url)
+        generated_revised_prompt = generation_response.data[0].revised_prompt
 
-    return image_urls
+        image_data.append({
+            "url": generated_image_url,
+            "revised_prompt": generated_revised_prompt
+        })
+
+    return image_data
 
 
-def generate_and_save_images(playlist_id, genre_name=None, prompt_text=None):
-    if prompt_text is None:
-        genre_name, art_style, random_attribute, gen_style = select_random_elements(genre_name)
-        prompt = generate_dalle_prompt(genre_name, art_style, random_attribute)
-    else:
-        prompt = prompt_text
-        genre_name = "Refresh"
-        art_style = "Refresh"
-        random_attribute = "Refresh"
-        gen_style = "vivid"
-    print(genre_name, art_style, random_attribute, prompt, gen_style)
-    image_urls = generate_images_dalle(prompt, gen_style)
+def generate_and_save_images(playlist_id, refresh=False, genre_list=None, quality='standard'):
     current_time = datetime.utcnow()
 
-    for url in image_urls:
+    if refresh:
+        last_entry = artgenurl_sql.query.filter_by(playlist_id=playlist_id).order_by(
+            artgenurl_sql.timestamp.desc()).first()
+        if not last_entry:
+            raise ValueError("No previous entry found for the given playlist_id to refresh.")
+
+        genre_name = last_entry.genre_name
+        art_style = last_entry.art_style
+        random_attribute = last_entry.random_attribute
+        gen_style = artgenstyle_sql.query.filter_by(art_style=art_style).first().gen_style if art_style else "vivid"
+    else:
+        genre_name, art_style, random_attribute, gen_style = select_random_elements(genre_list)
+
+    prompt = generate_dalle_prompt(genre_name, art_style, random_attribute)
+    image_data = generate_images_dalle(prompt, gen_style, quality=quality)
+
+    image_urls = []
+    revised_prompts = []
+
+    for data in image_data:
+        url = data['url']
+        revised_prompt = data['revised_prompt']
+        image_urls.append(url)
+        revised_prompts.append(revised_prompt)
+
+        # Store the generated or refreshed data
         new_artgenurl_record = artgenurl_sql(
             url=url,
             genre_name=genre_name,
             art_style=art_style,
             random_attribute=random_attribute,
-            prompt=prompt,
+            prompt=revised_prompt,  # Store the revised prompt instead of the original
             playlist_id=playlist_id,
             timestamp=current_time
         )
@@ -104,4 +128,4 @@ def generate_and_save_images(playlist_id, genre_name=None, prompt_text=None):
 
     db.session.commit()
 
-    return image_urls, prompt
+    return image_urls, revised_prompts

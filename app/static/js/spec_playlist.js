@@ -579,7 +579,7 @@ function toggleCheckbox(checkboxId, iconId) {
   }
 }
 
-function generateArtForPlaylist(isPrompt = false) {
+function generateArtForPlaylist() {
   const isHD = document.getElementById('hd-toggle').checked;
 
   window.isArtGenerationRequest = true;
@@ -594,14 +594,11 @@ function generateArtForPlaylist(isPrompt = false) {
   }
 
   const quality = isHD ? 'hd' : 'standard';
-
-  let dataPayload = {};
-
-  if (isPrompt) {
-    dataPayload = { prompt: genresList[0] || null, quality: quality };
-  } else {
-    dataPayload = { genres_list: genresList, quality: quality };
-  }
+  let dataPayload = {
+    genres_list: genresList,
+    quality: quality,
+    refresh: false,
+  };
 
   $.ajax({
     url: `/generate_images/${playlistId}`,
@@ -609,25 +606,48 @@ function generateArtForPlaylist(isPrompt = false) {
     contentType: 'application/json',
     data: JSON.stringify(dataPayload),
     success: function (response) {
-      const images = response.images;
-      const prompt = response.prompt;
-
       window.hideLoading();
-
-      displayImages(response);
-
+      displayImages(response.images_and_prompts);
       window.isArtGenerationRequest = false;
-
       showToast('Image generated successfully.');
     },
     error: function (error) {
       console.error('Error generating images:', error);
-
       window.hideLoading();
-
       window.isArtGenerationRequest = false;
-
       showToast('An error occurred while generating the image.', 'error');
+    },
+  });
+}
+
+function refreshArt() {
+  const isHD = document.getElementById('hd-toggle').checked;
+  const quality = isHD ? 'hd' : 'standard';
+
+  window.isArtGenerationRequest = true;
+  window.showLoading(isHD ? 100000 : 55000);
+
+  let dataPayload = {
+    quality: quality,
+    refresh: true, // Set the refresh flag to true
+  };
+
+  $.ajax({
+    url: `/generate_images/${playlistId}`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(dataPayload),
+    success: function (response) {
+      window.hideLoading();
+      displayImages(response.images_and_prompts);
+      window.isArtGenerationRequest = false;
+      showToast('Image refreshed successfully.');
+    },
+    error: function (error) {
+      console.error('Error refreshing images:', error);
+      window.hideLoading();
+      window.isArtGenerationRequest = false;
+      showToast('An error occurred while refreshing the image.', 'error');
     },
   });
 }
@@ -659,39 +679,19 @@ function addArtToPlaylist(imageUrl) {
   });
 }
 
-function refreshArt() {
-  if (lastPromptUsed) {
-    generateArtForPlaylist(lastPromptUsed, true);
-  } else {
-    console.warn('No last prompt found. Cannot refresh images.');
-  }
-}
-
-let lastPromptUsed = null;
-
 function displayImages(response) {
-  const artInfoContainer = document.getElementById('art-info-container');
   const imageContainer = document.getElementById('art-gen-results');
-  const images = response.images;
-  const promptText = response.prompt;
+  const imagesAndPrompts = response;
 
-  lastPromptUsed = promptText;
-
+  // Clear the previous images and prompts
   while (imageContainer.firstChild) {
     imageContainer.removeChild(imageContainer.firstChild);
   }
 
-  const existingPrompt = document.querySelector('.art-gen-prompt');
-  if (existingPrompt) {
-    artInfoContainer.removeChild(existingPrompt);
-  }
+  imagesAndPrompts.forEach((item) => {
+    const imageUrl = item.image;
+    const promptText = item.prompt;
 
-  const promptDiv = document.createElement('div');
-  promptDiv.className = 'art-gen-prompt';
-  promptDiv.textContent = promptText;
-  artInfoContainer.insertBefore(promptDiv, imageContainer);
-
-  images.forEach((imageUrl) => {
     const imageDiv = document.createElement('div');
     imageDiv.className = 'art-gen-img-div';
 
@@ -700,13 +700,35 @@ function displayImages(response) {
     img.alt = 'Generated Cover Art';
     img.className = 'art-gen-img';
 
+    // Create a hidden div for the prompt text
+    const promptDiv = document.createElement('div');
+    promptDiv.className = 'art-gen-prompt hidden';
+    promptDiv.textContent = promptText;
+
     const iconDiv = document.createElement('div');
     iconDiv.className = 'art-gen-icon-div';
+
+    // Add an information icon
+    const infoIcon = document.createElement('i');
+    infoIcon.className = 'fas fa-info-circle';
+    infoIcon.title = 'Info';
+
+    // Event listener for hover (mouseover and mouseout) to show/hide prompt
+    infoIcon.addEventListener('mouseover', function () {
+      promptDiv.classList.remove('hidden');
+    });
+    infoIcon.addEventListener('mouseout', function () {
+      promptDiv.classList.add('hidden');
+    });
+
+    // Event listener for click to toggle prompt visibility
+    infoIcon.addEventListener('click', function () {
+      promptDiv.classList.toggle('hidden');
+    });
 
     const downloadIcon = document.createElement('i');
     downloadIcon.className = 'fas fa-download';
     downloadIcon.title = 'Download image';
-
     downloadIcon.onclick = function () {
       window.open(imageUrl, '_blank');
     };
@@ -720,15 +742,18 @@ function displayImages(response) {
 
     iconDiv.appendChild(downloadIcon);
     iconDiv.appendChild(addPlaylistIcon);
-
-    imageDiv.appendChild(img);
+    iconDiv.appendChild(infoIcon); // Append info icon to the icons
+    // Append iconDiv containing the download, add to playlist, and info icons
     imageDiv.appendChild(iconDiv);
+    imageDiv.appendChild(promptDiv); // Append the hidden prompt div
+    imageDiv.appendChild(img);
 
     imageContainer.appendChild(imageDiv);
-
-    if (images.length > 0) {
-      document.getElementById('gen-refresh-icon').style.opacity = '1';
-      document.getElementById('gen-refresh-icon').style.cursor = 'pointer';
-    }
   });
+
+  // Update UI elements if images are available
+  if (imagesAndPrompts.length > 0) {
+    document.getElementById('gen-refresh-icon').style.opacity = '1';
+    document.getElementById('gen-refresh-icon').style.cursor = 'pointer';
+  }
 }

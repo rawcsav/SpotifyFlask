@@ -906,7 +906,7 @@ body.dark-mode .art-gen-icon-div {
 #art-gen-results {
   display: flex;
   flex-direction: row;
-  gap: 25px;
+  gap: 75px;
 }
 
 .art-gen-img {
@@ -929,14 +929,32 @@ body.dark-mode .art-gen-icon-div {
   flex-flow: row nowrap;
   justify-content: space-around;
   text-align: center;
+  gap: 50px;
 }
 
 .art-gen-prompt {
-  color: #3f4d56;
-  font-size: 15px;
-  margin-top: -30px;
-  padding: 15px;
-  text-align: center;
+  color: white;
+  font-size: 10px;
+  width: 300px;
+  display: flex;
+  position: absolute;
+  margin-bottom: 40px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.art-gen-prompt.hidden {
+  position: absolute;
+  display: none;
+  bottom: 0;
+}
+
+.art-gen-img-div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
 }
 
 .genre-title-container {
