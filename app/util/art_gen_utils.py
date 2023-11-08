@@ -46,14 +46,14 @@ def generate_dalle_prompt(genre_name, art_style, random_attribute):
             {"role": "system",
              "content": "You are a helpful creative assistant. You will be provided with randomized attributes relating to music genres and artistic styles. Help the user craft the most optimal and most detailed possible DALL-E prompt. Under no circumstances will you return anything besides the prompt."},
             {"role": "user",
-             "content": f"Craft this into a narrowly specific DALL-E prompt that uses comprehensive, concrete descriptions and examples in order to embody the charachteristics of: {art_style}, while also visually emphasizing the {genre_name} music genre. Ensure {random_attribute} is genre-relevant and the focal point. Do nothing but send back the prompt."}
+             "content": f"Craft this into a topically specific DALL-E prompt that uses comprehensive descriptions that embody the characteristics of: {art_style}. You should ensure you visually incorporate the {genre_name} music genre, and ensure {random_attribute} is the visual focal point. Do nothing but send back the prompt."}
         ],
-        temperature=0.8,
-        max_tokens=400,
+        temperature=1,
+        max_tokens=500,
     )
     original_prompt = response.choices[0].message.content
     print(original_prompt)
-    additional_string = f"When creating this prompt, make certain that the image accurately captures and embodies the essence of the art style or visual medium described in: '{art_style}.' Then, ensure the image is symbolic of the {genre_name} music genre and that the {random_attribute} is genre-relevant and the focal point. If not relevant to the image, avoid overly conceptual, generic imagery. Try to avoid using text anywhere in the image unless integral to the end result."
+    additional_string = f"Avoid using text as a major element. Emphasize the use of '{art_style}.' Maintain the thematic element of {genre_name}."
     final_prompt = original_prompt + additional_string
     return final_prompt
 
@@ -70,9 +70,6 @@ def generate_images_dalle(prompt, style, quality='standard'):
             style=style,
             n=1,
         )
-        print(quality)
-        print(style)
-        print(prompt)
         generated_image_url = generation_response.data[0].url
 
         generated_revised_prompt = generation_response.data[0].revised_prompt
