@@ -584,7 +584,7 @@ function generateArtForPlaylist() {
 
   window.isArtGenerationRequest = true;
   // Set loading time based on whether HD is checked
-  window.showLoading(isHD ? 100000 : 55000);
+  window.showLoading(isHD ? 100000 : 60000);
 
   let genresList = [];
   const isCheckboxChecked = document.getElementById('parent-toggle').checked;
@@ -606,8 +606,8 @@ function generateArtForPlaylist() {
     contentType: 'application/json',
     data: JSON.stringify(dataPayload),
     success: function (response) {
-      window.hideLoading();
       displayImages(response.images_and_prompts);
+      window.hideLoading();
       window.isArtGenerationRequest = false;
       showToast('Image generated successfully.');
     },
