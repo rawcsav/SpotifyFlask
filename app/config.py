@@ -53,7 +53,7 @@ AUDIO_FEATURES = [
     "popularity",
 ]
 
-REDIRECT_URL = "http://webstats.rawcsav.com/"
+REDIRECT_URL = "http://rawcon.rawcsav.com/"
 
 MAX_RETRIES = 3
 RETRY_WAIT_SECONDS = 2
