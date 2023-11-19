@@ -2,25 +2,15 @@ body,
 html {
   margin: 0;
   padding: 0;
-  height: 100%; /* Full height */
+  height: 100%;
   overflow: hidden;
+  background-image: url('/static/imgs/landing2.png'); /* Replace with your image path */
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed; /* This will make sure the background is fixed during scroll */
 }
 
 body {
-  background: linear-gradient(
-    to left top,
-    #f6d190 0%,
-    #f5c792 12.5%,
-    #f3bd94 25%,
-    #f2b395 37.5%,
-    #f0a997 50%,
-    #efa099 62.5%,
-    #ed969b 75%,
-    #ec8c9c 87.5%,
-    #ea829e 100%
-  );
-
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -152,7 +142,7 @@ p {
 .container p {
   color: #1f4054;
   font-family: Window-Medium, sans-serif;
-  font-size: 0.5rem;
+  font-size: 0.7rem;
   font-style: oblique;
   font-weight: 300;
   line-height: 1.5;
@@ -168,9 +158,9 @@ p {
   box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
   color: #191919;
   display: flex;
-  font-size: 1em;
+  font-size: 1.3em;
   font-weight: 700;
-  height: 30px;
+  height: 40px;
   justify-content: center;
   padding: 10px 15px 10px 10px;
   text-decoration: none;
@@ -235,15 +225,7 @@ html {
   position: relative;
   display: inline-block;
 }
-.overlay-image {
-  position: absolute;
-  bottom: -360%; /* Aligns the image to the bottom of the title container */
-  left: 50%; /* Start at the horizontal center of the title container */
-  transform: translateX(-50%); /* Centers the image with respect to its width */
-  z-index: 0; /* This places the image below the title text */
-  width: 1500px; /* or whatever fixed width you require */
-  height: auto; /* Maintains the aspect ratio of the image */
-}
+
 @keyframes fadeInZoom {
   from {
     opacity: 0;
