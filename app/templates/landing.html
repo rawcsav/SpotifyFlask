@@ -47,6 +47,10 @@
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
     <title>RawC-On</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/fonts.css') }}"
+    />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link
       rel="stylesheet"
@@ -55,21 +59,21 @@
     {% from "loading.html" import loading_animation %}
   </head>
   <div id="background"></div>
-
   <body>
     {{ loading_animation() }}
+
     <div class="outter-container">
       <div class="block-element">
         <div class="logo-container">
-          <span class="logo-text">RawC-On</span>
-          <span class="logo-text overlay">RawC-On</span>
+          <h1 class="landing-title">RawcOn</h1>
+          <img
+            src="../static/imgs/landing.png"
+            alt="Central Image"
+            class="overlay-image"
+          />
         </div>
       </div>
     </div>
-    <h2>
-      Explore your Spotify listening habits, discover new tracks, and get
-      personal recommendations.
-    </h2>
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         id="modeSensitiveImage"
@@ -88,12 +92,9 @@
         />
         Connect Spotify Account
       </a>
-      <br />
-      <br />
       <div class="container">
         <p>
-          To use the development version of the application, contact me with
-          your name and the email attached to your Spotify account.
+          *Still in development, so unfortunately authorized users only.
           <br /><br />
         </p>
       </div>

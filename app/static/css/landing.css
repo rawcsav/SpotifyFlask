@@ -1,10 +1,25 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* Full height */
+  overflow: hidden;
+}
+
 body {
-  background-attachment: fixed;
-  background-color: #f9efa5;
-  background-image: url('/secure_image?public_id=v1697815069/New_Project_1_1_gapkf8.svg&c_fill&g_auto');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: linear-gradient(
+    to left top,
+    #f6d190 0%,
+    #f5c792 12.5%,
+    #f3bd94 25%,
+    #f2b395 37.5%,
+    #f0a997 50%,
+    #efa099 62.5%,
+    #ed969b 75%,
+    #ec8c9c 87.5%,
+    #ea829e 100%
+  );
+
   font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
   height: 100vh;
   margin: 0;
@@ -12,13 +27,22 @@ body {
   width: 100%;
 }
 
-body.dark-mode {
-  background-color: #001220;
-  background-image: url('/secure_image?public_id=v1696979324/layered-waves-haikei_7_t5gfjq.svg&c_fill&g_auto');
-}
-
 @media only screen and (max-width: 768px) {
+  body,
+  html {
+    overflow: hidden;
+    max-height: 100%;
+    max-width: 100%;
+  }
+  .centered-container,
+  .center-image {
+    display: none;
+  }
+
   #background {
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
     background-position: center;
     background-size: cover;
     height: 100vh; /* 100% of the viewport height */
@@ -31,11 +55,20 @@ body.dark-mode {
   }
 }
 
+/* Media query for tablets and small desktops */
+
 .center_column {
+  position: absolute;
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  top: 45%; /* Center the container from the top */
+  left: 50%; /* Center the container from the left */
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Offset the container by half its width and height */
 }
 
 .spacer {
@@ -75,16 +108,21 @@ body.dark-mode {
   text-align: center;
 }
 
-h1 {
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
-  font-size: 3rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  line-height: 1.2;
-  margin-bottom: 0.5rem;
-  margin-top: 10px;
-  padding: 10px 0;
+.landing-title {
+  font-family: EST-Regular, sans-serif;
+  font-size: 120px;
   text-align: center;
+  color: #004e7c; /* Navy blue for high contrast text */
+  margin: 0;
+  margin-bottom: 20px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: -2;
+  position: relative;
+  -webkit-text-stroke: 2px #0f3246;
 }
 
 h2 {
@@ -102,12 +140,6 @@ p {
   color: #c55469;
 }
 
-body.dark-mode h1,
-body.dark-mode h2,
-body.dark-mode p {
-  color: #fbae3c;
-}
-
 p {
   font-size: 1rem;
   font-weight: 500;
@@ -118,19 +150,15 @@ p {
 }
 
 .container p {
-  color: darkslategrey;
-  font-family: Futura, sans-serif;
-  font-size: 1rem;
+  color: #1f4054;
+  font-family: Window-Medium, sans-serif;
+  font-size: 0.5rem;
   font-style: oblique;
   font-weight: 300;
   line-height: 1.5;
-  max-width: 400px;
+  max-width: 500px;
   overflow-wrap: normal;
   text-align: left;
-}
-
-body.dark-mode .container p {
-  color: #fa9845;
 }
 
 .login-button {
@@ -140,18 +168,13 @@ body.dark-mode .container p {
   box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
   color: #191919;
   display: flex;
-  font-size: 1.3em;
+  font-size: 1em;
   font-weight: 700;
-  height: 40px;
+  height: 30px;
   justify-content: center;
   padding: 10px 15px 10px 10px;
   text-decoration: none;
   transition: box-shadow 0.3s;
-}
-
-body.dark-mode .login-button {
-  background-color: #f1f9f2;
-  color: #001220;
 }
 
 .login-button,
@@ -212,6 +235,15 @@ html {
   position: relative;
   display: inline-block;
 }
+.overlay-image {
+  position: absolute;
+  bottom: -360%; /* Aligns the image to the bottom of the title container */
+  left: 50%; /* Start at the horizontal center of the title container */
+  transform: translateX(-50%); /* Centers the image with respect to its width */
+  z-index: 0; /* This places the image below the title text */
+  width: 1500px; /* or whatever fixed width you require */
+  height: auto; /* Maintains the aspect ratio of the image */
+}
 @keyframes fadeInZoom {
   from {
     opacity: 0;
@@ -245,29 +277,7 @@ html {
   animation: fadeInZoom 1.5s ease-in-out;
 }
 
-body.dark-mode .logo-text {
-  font-size: 6em;
-  font-weight: 900;
-  letter-spacing: -3px;
-  background: -webkit-linear-gradient(left, #fbae3c, #e9705a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeInZoom 1.5s ease-in-out;
-}
-
 .overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: rgba(0, 0, 0, 0.3);
-  transform: translate(15px, 15px);
-  z-index: 2;
-  animation: slideIn 0.5s forwards;
-  transition: all 0.3s ease-out;
-}
-
-body.dark-mode .overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -282,6 +292,7 @@ body.dark-mode .overlay {
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: -2;
 }
 
 .block-element {
