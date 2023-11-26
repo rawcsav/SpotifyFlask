@@ -4,48 +4,21 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background-image: url('/static/imgs/landing2.png'); /* Replace with your image path */
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed; /* This will make sure the background is fixed during scroll */
 }
 
 body {
   height: 100vh;
-  margin: 0;
-  padding: 0;
+  background-color: #fafafa; /* pure white */
   width: 100%;
 }
 
-@media only screen and (max-width: 768px) {
-  body,
-  html {
-    overflow: hidden;
-    max-height: 100%;
-    max-width: 100%;
-  }
-  .centered-container,
-  .center-image {
-    display: none;
-  }
-
-  #background {
-    max-height: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    background-position: center;
-    background-size: cover;
-    height: 100vh; /* 100% of the viewport height */
-    position: fixed;
-    width: 100vw; /* 100% of the viewport width */
-    background-image: url('/secure_image?public_id=v1698250748/New_Project_6_vzrhef&c_fill&g_auto&dpr_auto&w_auto');
-    z-index: 100;
-    top: 0;
-    left: 0;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
-/* Media query for tablets and small desktops */
+* {
+  transition: all 0.3s ease;
+}
 
 .center_column {
   position: absolute;
@@ -53,20 +26,12 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  top: 45%; /* Center the container from the top */
+  top: 60%; /* Center the container from the top */
   left: 50%; /* Center the container from the left */
   transform: translate(
     -50%,
     -50%
   ); /* Offset the container by half its width and height */
-}
-
-.spacer {
-  aspect-ratio: 960/300;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 100%;
 }
 
 .homepage-link {
@@ -75,7 +40,6 @@ body {
   position: absolute;
   top: 1px;
   z-index: 100;
-  -webkit-touch-callout: none;
   user-select: none;
 }
 
@@ -98,23 +62,131 @@ body {
   text-align: center;
 }
 
-.landing-title {
-  font-family: EST-Regular, sans-serif;
-  font-size: 120px;
-  text-align: center;
-  color: #004e7c; /* Navy blue for high contrast text */
-  margin: 0;
-  margin-bottom: 20px;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  z-index: -2;
+.title-container {
+  display: flex;
+  justify-content: center;
   position: relative;
-  -webkit-text-stroke: 2px #0f3246;
+  margin-right: auto;
+  margin-left: auto;
+  height: 100vh;
 }
 
+.landing-title {
+  font-family: Window-Bold, sans-serif;
+  font-size: 200px;
+  position: absolute;
+  top: 0;
+  left: -10%;
+  white-space: nowrap; /* Ensures the text doesn't wrap */
+  margin: 0;
+  user-select: none;
+  margin-top: -20px;
+}
+
+/* Offset the second title a bit down and to the right */
+.landing-title:nth-child(2) {
+  top: 10%; /* Adjust as needed */
+  left: 0; /* Adjust as needed */
+}
+
+/* Offset the third title even more */
+.landing-title:nth-child(3) {
+  top: 20%; /* Adjust as needed */
+  left: 10%; /* Adjust as needed */
+}
+
+.landing-title span {
+  position: relative; /* Allows individual positioning of each span */
+  display: inline-block; /* Treat each letter like a block element */
+  letter-spacing: -30px;
+}
+
+#outlined-text span:nth-child(1),
+#outlined-text2 span:nth-child(1) {
+  -webkit-text-stroke: 1px #4b8dc2;
+  color: #fafafa; /* Maintain the text color as transparent */
+  z-index: 7;
+} /* R */
+#outlined-text span:nth-child(2),
+#outlined-text2 span:nth-child(2) {
+  -webkit-text-stroke: 1px #ca403f;
+  color: #fafafa; /* Maintain the text color as transparent */
+  z-index: 6;
+} /* a */
+#outlined-text span:nth-child(3),
+#outlined-text2 span:nth-child(3) {
+  -webkit-text-stroke: 1px #5dab54;
+  color: #fafafa; /* Maintain the text color as transparent */
+
+  z-index: 5;
+} /* w */
+#outlined-text span:nth-child(4),
+#outlined-text2 span:nth-child(4) {
+  -webkit-text-stroke: 1px #f7893b;
+  color: #fafafa; /* Maintain the text color as transparent */
+
+  z-index: 4;
+} /* c */
+#outlined-text span:nth-child(5),
+#outlined-text2 span:nth-child(5) {
+  -webkit-text-stroke: 1px #9b5de5;
+  color: #fafafa; /* Maintain the text color as transparent */
+
+  z-index: 3;
+} /* - */
+#outlined-text span:nth-child(6),
+#outlined-text2 span:nth-child(6) {
+  -webkit-text-stroke: 1px #f7a1d5;
+  color: #fafafa; /* Maintain the text color as transparent */
+
+  z-index: 2;
+} /* O */
+#outlined-text span:nth-child(7),
+#outlined-text2 span:nth-child(7) {
+  -webkit-text-stroke: 1px #f1db2b;
+  color: #fafafa; /* Maintain the text color as transparent */
+  z-index: 1;
+}
+
+#outlined-text span:nth-child(8),
+#outlined-text2 span:nth-child(8) {
+  -webkit-text-stroke: 1px #ca403f;
+  color: #fafafa; /* Maintain the text color as transparent */
+  z-index: 0;
+}
+.landing-title span:nth-child(1) {
+  color: #4b8dc2;
+  z-index: 7;
+} /* R */
+.landing-title span:nth-child(2) {
+  color: #ca403f;
+  z-index: 6;
+} /* a */
+.landing-title span:nth-child(3) {
+  color: #5dab54;
+  z-index: 5;
+} /* w */
+.landing-title span:nth-child(4) {
+  color: #f7893b;
+  z-index: 4;
+} /* c */
+.landing-title span:nth-child(5) {
+  color: #9b5de5;
+  z-index: 3;
+} /* - */
+.landing-title span:nth-child(6) {
+  color: #f7a1d5;
+  z-index: 2;
+} /* O */
+.landing-title span:nth-child(7) {
+  color: #f1db2b;
+  z-index: 1;
+}
+
+.landing-title span:nth-child(8) {
+  color: #ca403f;
+  z-index: 0;
+}
 h2 {
   font-size: 1.1rem;
   font-weight: 800;
@@ -165,6 +237,8 @@ p {
   padding: 10px 15px 10px 10px;
   text-decoration: none;
   transition: box-shadow 0.3s;
+  z-index: 2;
+  white-space: nowrap;
 }
 
 .login-button,
@@ -202,81 +276,736 @@ p {
   transform: translateY(-2px);
 }
 
-@keyframes sk-bounce {
-  0%,
-  100% {
-    transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1);
-  }
+.image-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  border: 1px solid red;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-* {
-  transition: all 0.3s ease;
-}
-
-.logo-container {
-  position: relative;
-  display: inline-block;
-}
-
-@keyframes fadeInZoom {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideIn {
-  0% {
-    transform: translate(20px, 20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(10px, 10px);
-    opacity: 0.3;
-  }
-}
-
-.logo-text {
-  font-size: 6em;
-  font-weight: 900;
-  letter-spacing: -3px;
-  background: -webkit-linear-gradient(left, #3498db, #004e89);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeInZoom 1.5s ease-in-out;
-}
-
-.overlay {
+.scattered-svg {
   position: absolute;
-  top: 0;
-  left: 0;
-  color: rgba(0, 0, 0, 0.3);
-  transform: translate(15px, 15px);
-  z-index: 2;
-  animation: slideIn 0.5s forwards;
-  transition: all 0.3s ease-out;
 }
 
-.outter-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: -2;
+.vinyl {
+  top: 5%;
+  right: 5%;
+  height: auto;
+
+  width: 10%;
 }
 
-.block-element {
-  text-align: center;
+.wave {
+  top: 70%;
+  right: 45%;
+  height: auto;
+  width: 16%;
+}
+
+.piano {
+  top: 48%;
+  right: 10%;
+  height: auto;
+  width: 30%;
+}
+
+.headphones {
+  bottom: 20%;
+  left: 5%;
+  height: auto;
+  width: 10%;
+}
+
+.guitar {
+  top: 55%;
+  left: 20%;
+  height: auto;
+  width: 16%;
+}
+
+.microphone {
+  bottom: 40%;
+  right: 5%;
+  height: auto;
+
+  width: 12%;
+}
+
+.drums {
+  top: 20%;
+  left: 2%;
+  height: auto;
+  width: 20%;
+}
+
+@media (max-width: 369px) {
+  .landing-title {
+    font-size: 75px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -6%;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 6%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 12%; /* Adjust as needed */
+    left: 6%; /* Adjust as needed */
+  }
+
+  .landing-title span {
+    letter-spacing: -20px;
+  }
+
+  .center_column {
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 23px;
+    height: 45px;
+    padding: 7px 12px 7px 12px;
+  }
+
+  .spotify-logo {
+    height: 23px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 23px;
+  }
+
+  .piano {
+    top: 56%;
+    right: -2%;
+    width: 65%;
+  }
+
+  .guitar {
+    top: 80%;
+    left: 22%;
+    height: auto;
+    width: 24%;
+  }
+
+  .drums {
+    top: 37%;
+    left: 2%;
+    height: auto;
+    width: 48%;
+  }
+
+  .headphones {
+    top: 85%;
+    left: 65%;
+    height: auto;
+    width: 17%;
+  }
+
+  .vinyl {
+    top: 66%;
+    left: 12%;
+    height: auto;
+    width: 19%;
+  }
+
+  .wave {
+    top: 45%;
+    right: 6%;
+    width: 30%;
+  }
+
+  .microphone {
+    bottom: 36%;
+    right: 44%;
+    height: auto;
+    width: 22%;
+  }
+
+  .homepage-link img {
+    height: 45px;
+  }
+  .container p {
+    font-size: 0.6rem;
+  }
+}
+@media (min-width: 370px) and (max-width: 499px) {
+  .landing-title {
+    font-size: 100px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -7%;
+  }
+
+  .landing-title span {
+    letter-spacing: -26px;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 7%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 14%; /* Adjust as needed */
+    left: 7%; /* Adjust as needed */
+  }
+
+  .landing-title span {
+    letter-spacing: -22px;
+  }
+
+  .center_column {
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 25px;
+    height: 50px;
+    padding: 8px 13px 8px 13px;
+  }
+
+  .spotify-logo {
+    height: 25px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 25px;
+  }
+
+  .piano {
+    top: 55%;
+    right: -2%;
+    width: 55%;
+  }
+
+  .guitar {
+    top: 80%;
+    left: 22%;
+    height: auto;
+    width: 24%;
+  }
+
+  .drums {
+    top: 46%;
+    left: 4%;
+    height: auto;
+    width: 35%;
+  }
+
+  .headphones {
+    top: 85%;
+    left: 65%;
+    height: auto;
+    width: 14%;
+  }
+
+  .vinyl {
+    top: 69%;
+    left: 12%;
+    height: auto;
+    width: 16%;
+  }
+
+  .wave {
+    top: 45%;
+    right: 6%;
+    width: 26%;
+  }
+
+  .microphone {
+    bottom: 30%;
+    right: 42%;
+    height: auto;
+    width: 18%;
+  }
+
+  .homepage-link img {
+    height: 50px;
+  }
+  .container p {
+    font-size: 0.6rem;
+  }
+}
+@media (min-width: 500px) and (max-width: 699px) {
+  .landing-title {
+    font-size: 125px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -7%;
+  }
+
+  .landing-title span {
+    letter-spacing: -26px;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 7%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 14%; /* Adjust as needed */
+    left: 7%; /* Adjust as needed */
+  }
+
+  .landing-title span {
+    letter-spacing: -24px;
+  }
+
+  .center_column {
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 28px;
+    height: 50px;
+    padding: 10px 15px 10px 15px;
+  }
+
+  .spotify-logo {
+    height: 28px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 28px;
+  }
+
+  .piano {
+    top: 55%;
+    right: -5%;
+    width: 55%;
+  }
+
+  .guitar {
+    top: 66%;
+    left: 27%;
+    height: auto;
+    width: 24%;
+  }
+
+  .drums {
+    top: 45%;
+    left: 4%;
+    height: auto;
+    width: 35%;
+  }
+
+  .headphones {
+    top: 30%;
+    left: 4%;
+    height: auto;
+    width: 14%;
+  }
+
+  .vinyl {
+    top: 85%;
+    left: 4%;
+    height: auto;
+    width: 14%;
+  }
+
+  .wave {
+    top: 46%;
+    right: 32%;
+    width: 26%;
+  }
+
+  .microphone {
+    bottom: 45%;
+    right: 6%;
+    height: auto;
+    width: 18%;
+  }
+
+  .homepage-link img {
+    height: 55px;
+  }
+}
+@media (min-width: 700px) and (max-width: 799px) {
+  .landing-title {
+    font-size: 150px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -8%;
+  }
+
+  .landing-title span {
+    letter-spacing: -26px;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 8%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 16%; /* Adjust as needed */
+    left: 8%; /* Adjust as needed */
+  }
+
+  .landing-title span {
+    letter-spacing: -28px;
+  }
+
+  .center_column {
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 30px;
+    height: 50px;
+    padding: 11px 16px 11px 16px;
+  }
+
+  .spotify-logo {
+    height: 25px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 25px;
+  }
+
+  .piano {
+    top: 56%;
+    right: 2%;
+    width: 45%;
+  }
+
+  .guitar {
+    top: 70%;
+    left: 32%;
+    height: auto;
+    width: 20%;
+  }
+
+  .drums {
+    top: 45%;
+    left: 4%;
+    height: auto;
+    width: 35%;
+  }
+
+  .vinyl {
+    top: 5%;
+    right: 4%;
+    width: 10%;
+  }
+
+  .headphones {
+    top: 30%;
+    left: 4%;
+    height: auto;
+    width: 14%;
+  }
+
+  .wave {
+    top: 50%;
+    right: 35%;
+    width: 18%;
+  }
+
+  .microphone {
+    bottom: 40%;
+    right: 8%;
+    height: auto;
+    width: 16%;
+  }
+
+  .homepage-link img {
+    height: 60px;
+  }
+}
+@media (min-width: 800px) and (max-width: 999px) {
+  .landing-title {
+    font-size: 150px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -8%;
+  }
+
+  .landing-title span {
+    letter-spacing: -26px;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 8%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 16%; /* Adjust as needed */
+    left: 8%; /* Adjust as needed */
+  }
+
+  .landing-title span {
+    letter-spacing: -28px;
+  }
+
+  .center_column {
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 30px;
+    height: 50px;
+    padding: 11px 16px 11px 16px;
+  }
+
+  .spotify-logo {
+    height: 25px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 25px;
+  }
+
+  .piano {
+    top: 56%;
+    right: 2%;
+    width: 45%;
+  }
+
+  .guitar {
+    top: 67%;
+    left: 24%;
+    height: auto;
+    width: 22%;
+  }
+
+  .drums {
+    top: 30%;
+    left: 2%;
+    height: auto;
+    width: 25%;
+  }
+
+  .vinyl {
+    top: 5%;
+    right: 4%;
+    width: 10%;
+  }
+
+  .headphones {
+    bottom: 25%;
+    left: 6%;
+    width: 14%;
+  }
+
+  .wave {
+    top: 46%;
+    right: 35%;
+    width: 22%;
+  }
+
+  .microphone {
+    bottom: 40%;
+    right: 8%;
+    height: auto;
+    width: 16%;
+  }
+
+  .homepage-link img {
+    height: 55px;
+  }
+}
+@media (min-width: 1000px) and (max-width: 1249px) {
+  .landing-title {
+    font-size: 200px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -9%;
+  }
+
+  .landing-title span {
+    letter-spacing: -30px;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 9%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 18%; /* Adjust as needed */
+    left: 9%; /* Adjust as needed */
+  }
+
+  .center_column {
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 30px;
+    height: 55px;
+    padding: 13px 18px 13px 18px;
+  }
+
+  .spotify-logo {
+    height: 30px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 30px;
+  }
+
+  .piano {
+    top: 60%;
+    right: 0;
+    width: 30%;
+  }
+  .guitar {
+    top: 64%;
+    left: 28%;
+    height: auto;
+    width: 16%;
+  }
+
+  .drums {
+    top: 38%;
+    left: 3%;
+    height: auto;
+    width: 25%;
+  }
+
+  .vinyl {
+    top: 5%;
+    right: 5%;
+    width: 8%;
+  }
+
+  .microphone {
+    bottom: 28%;
+    right: 15%;
+    width: 15%;
+  }
+
+  .headphones {
+    bottom: 14%;
+    left: 6%;
+    width: 10%;
+  }
+
+  .wave {
+    top: 67%;
+    right: 35%;
+    width: 20%;
+  }
+}
+
+@media (min-width: 1250px) {
+  .landing-title {
+    font-size: 200px; /* Adjust font size for extra large devices */
+    top: 0;
+    left: -10%;
+  }
+
+  .landing-title:nth-child(2) {
+    top: 10%; /* Adjust as needed */
+    left: 0; /* Adjust as needed */
+  }
+
+  /* Offset the third title even more */
+  .landing-title:nth-child(3) {
+    top: 20%; /* Adjust as needed */
+    left: 10%; /* Adjust as needed */
+  }
+
+  .center_column {
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .login-button {
+    font-family: Window-Medium, sans-serif;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 8%);
+    font-size: 30px;
+    height: 60px;
+    padding: 15px 20px 15px 20px;
+  }
+
+  .spotify-logo {
+    height: 30px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 30px;
+  }
+
+  .vinyl {
+    top: 5%;
+    right: 5%;
+    width: 10%;
+  }
+
+  .wave {
+    top: 70%;
+    right: 45%;
+    width: 16%;
+  }
+
+  .piano {
+    top: 48%;
+    right: 10%;
+    width: 30%;
+  }
+
+  .headphones {
+    bottom: 20%;
+    left: 5%;
+    width: 10%;
+  }
+
+  .guitar {
+    top: 55%;
+    left: 20%;
+    width: 16%;
+  }
+
+  .microphone {
+    bottom: 40%;
+    right: 5%;
+    width: 12%;
+  }
+
+  .drums {
+    top: 20%;
+    left: 2%;
+    width: 20%;
+  }
 }

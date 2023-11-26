@@ -52,11 +52,12 @@
       href="{{ url_for('static', filename='css/fonts.css') }}"
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    {% from "loading.html" import loading_animation %}
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/landing.css') }}"
     />
-    {% from "loading.html" import loading_animation %}
   </head>
   <div id="background"></div>
   <body>
@@ -65,20 +66,28 @@
     <a href="https://rawcsav.com" class="homepage-link">
       <img
         id="modeSensitiveImage"
-        src="/secure_image?public_id=v1697815559/PhotopeaLogo_5_pwdjzg.png"
+        src="/secure_image?public_id=v1701024834/colorfullogo_ypzgak.svg"
         alt="Homepage"
       />
     </a>
+    <div class="title-container">
+      <h1 class="landing-title" id="outlined-text">
+        <span>R</span><span>a</span><span>w</span><span>c</span><span>-</span
+        ><span>O</span><span>n</span><span>!</span>
+      </h1>
+      <h1 class="landing-title">
+        <span>R</span><span>a</span><span>w</span><span>c</span><span>-</span
+        ><span>O</span><span>n</span><span>!</span>
+      </h1>
+      <h1 class="landing-title" id="outlined-text2">
+        <span>R</span><span>a</span><span>w</span><span>c</span><span>-</span
+        ><span>O</span><span>n</span><span>!</span>
+      </h1>
+    </div>
     <div class="center_column">
-      <br />
-      <br />
       <a class="login-button" href="/login" onclick="handleAuthClick()">
-        <img
-          alt="Spotify"
-          src="/secure_image?public_id=v1694705409/download_hydbbh.svg"
-          class="spotify-logo"
-        />
-        Connect Spotify Account
+        <img alt="Spotify" src="static/imgs/spotify.svg" class="spotify-logo" />
+        Connect Spotify
       </a>
       <div class="container">
         <p>
@@ -86,6 +95,39 @@
           <br /><br />
         </p>
       </div>
+    </div>
+    <div class="image-container">
+      <img
+        src="static/imgs/piano.svg"
+        alt="Piano"
+        class="scattered-svg piano"
+      />
+      <img
+        src="static/imgs/headphones.svg"
+        alt="Headphones"
+        class="scattered-svg headphones"
+      />
+      <img
+        src="static/imgs/guitar.svg"
+        alt="Guitar"
+        class="scattered-svg guitar"
+      />
+      <img
+        src="static/imgs/drums.svg"
+        alt="Drums"
+        class="scattered-svg drums"
+      />
+      <img
+        src="static/imgs/headphone.svg"
+        alt="Microphone"
+        class="scattered-svg microphone"
+      />
+      <img src="static/imgs/wave.svg" alt="Wave" class="scattered-svg wave" />
+      <img
+        src="static/imgs/vinyl.svg"
+        alt="Vinyl"
+        class="scattered-svg vinyl"
+      />
     </div>
     {% include 'footer.html' %}
   </body>
