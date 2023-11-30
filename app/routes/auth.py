@@ -4,11 +4,11 @@ from functools import wraps
 from urllib.parse import urlencode
 import cloudinary
 from flask import (Blueprint, abort, make_response, redirect, render_template,
-                   request, session, url_for, jsonify)
+                   request, session, url_for, jsonify, current_app)
 from flask import make_response
 
-from app import config
-from app.database import UserData, db
+from app import db
+from app.database import UserData
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, is_api_key_valid, encrypt_data, \
     verify_session, fetch_user_data, decrypt_data
 
@@ -66,7 +66,7 @@ def login(loginout):
     payload = prepare_auth_payload(state, scope, show_dialog=show_dialog)
 
     # Redirect the user to Spotify's authorization URL.
-    res = make_response(redirect(f'{config.AUTH_URL}/?{urlencode(payload)}'))
+    res = make_response(redirect(f'{current_app.config["AUTH_URL"]}/?{urlencode(payload)}'))
     res.set_cookie('spotify_auth_state', state)
 
     return res
@@ -81,9 +81,9 @@ def callback():
         abort(400, description="State mismatch")
 
     code = request.args.get('code')
-    payload = {'grant_type': 'authorization_code', 'code': code, 'redirect_uri': config.REDIRECT_URI}
+    payload = {'grant_type': 'authorization_code', 'code': code, 'redirect_uri': current_app.config['REDIRECT_URI']}
 
-    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
+    res_data, error = request_tokens(payload, current_app.config['CLIENT_ID'], current_app.config['CLIENT_SECRET'])
     if error:
         abort(400, description="Error obtaining tokens from Spotify")
 
@@ -104,7 +104,7 @@ def callback():
 def refresh():
     payload = {'grant_type': 'refresh_token', 'refresh_token': session.get('tokens').get('refresh_token')}
 
-    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
+    res_data, error = request_tokens(payload, current_app.config['CLIENT_ID'], current_app.config['CLIENT_SECRET'])
     if error:
         return redirect(url_for('auth.index'))
 

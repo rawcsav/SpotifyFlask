@@ -4,14 +4,14 @@ from datetime import datetime, timedelta
 
 from spotipy import Spotify
 from spotipy.client import SpotifyException
-
-from app import config
-from app.database import db, UserData
+from flask import current_app
+from app import db
+from app.database import UserData
 from app.routes.auth import refresh
 from app.util.database_utils import add_artist_to_db, get_or_fetch_artist_info, \
     get_or_fetch_audio_features
 
-FEATURES = config.AUDIO_FEATURES
+FEATURES = current_app.config['AUDIO_FEATURES']
 
 from flask import redirect, session
 
@@ -31,10 +31,10 @@ def init_session_client(session):
         if refresh_response.status_code == 200:
             access_token = refresh_response.json.get("access_token")
         else:
-            return redirect(config.REDIRECT_URL)
+            return redirect(current_app.config['REDIRECT_URL'])
 
     if not access_token:
-        return redirect(config.REDIRECT_URL)
+        return redirect(current_app.config['REDIRECT_URL'])
 
     return Spotify(auth=access_token), None
 

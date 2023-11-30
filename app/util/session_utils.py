@@ -6,8 +6,7 @@ import openai
 import requests
 import sshtunnel
 from cryptography.fernet import Fernet
-from flask import abort, session
-from app import config
+from flask import abort, session, current_app
 
 
 def verify_session(session):
@@ -18,7 +17,7 @@ def verify_session(session):
 
 def fetch_user_data(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    res = requests.get(config.ME_URL, headers=headers)
+    res = requests.get(current_app.config['ME_URL'], headers=headers)
     if res.status_code != 200:
         abort(res.status_code)
 
@@ -33,9 +32,9 @@ def generate_state():
 
 def prepare_auth_payload(state, scope, show_dialog=False):
     payload = {
-        "client_id": config.CLIENT_ID,
+        "client_id": current_app.config['CLIENT_ID'],
         "response_type": "code",
-        "redirect_uri": config.REDIRECT_URI,
+        "redirect_uri": current_app.config['REDIRECT_URI'],
         "state": state,
         "scope": scope,
     }
@@ -45,7 +44,7 @@ def prepare_auth_payload(state, scope, show_dialog=False):
 
 
 def request_tokens(payload, client_id, client_secret):
-    res = requests.post(config.TOKEN_URL, auth=(client_id, client_secret), data=payload)
+    res = requests.post(current_app.config['TOKEN_URL'], auth=(client_id, client_secret), data=payload)
     res_data = res.json()
     if res_data.get("error") or res.status_code != 200:
         return None, res.status_code
@@ -91,18 +90,6 @@ def is_api_key_valid(key):
         return False
 
 
-def get_tunnel():
-    tunnel = sshtunnel.SSHTunnelForwarder(
-        (config.SSH_HOST),
-        ssh_username=config.SSH_USER,
-        ssh_password=config.SSH_PASS,
-        remote_bind_address=(
-            config.SQL_HOSTNAME, 3306)
-    )
-    tunnel.start()
-    return tunnel
-
-
 def refresh_tokens():
     if 'tokens' not in session:
         return False
@@ -112,7 +99,7 @@ def refresh_tokens():
         'refresh_token': session['tokens'].get('refresh_token')
     }
 
-    res_data, error = request_tokens(payload, config.CLIENT_ID, config.CLIENT_SECRET)
+    res_data, error = request_tokens(payload, current_app.config['CLIENT_ID'], current_app.config['CLIENT_SECRET'])
     if error:
         return False
 
@@ -128,3 +115,23 @@ def refresh_tokens():
     })
 
     return True
+
+
+def get_tunnel(SSH_HOST, SSH_USER, SSH_PASS, SQL_HOSTNAME, max_attempts=3):
+    attempt_count = 0
+    sshtunnel.SSH_TIMEOUT = 5.0
+    sshtunnel.TUNNEL_TIMEOUT = 5.0
+    while attempt_count < max_attempts:
+        try:
+            tunnel = sshtunnel.SSHTunnelForwarder(
+                (SSH_HOST),
+                ssh_username=SSH_USER,
+                ssh_password=SSH_PASS,
+                remote_bind_address=(SQL_HOSTNAME, 3306)
+            )
+            tunnel.start()
+            return tunnel
+        except sshtunnel.BaseSSHTunnelForwarderError:
+            attempt_count += 1
+            if attempt_count == max_attempts:
+                raise

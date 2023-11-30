@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import distance_matrix
 
-from app.database import artist_sql, features_sql, artgenstyle_sql, artgenurl_sql, artgen_sql, db
+from app.database import artist_sql, features_sql, artgenstyle_sql, artgenurl_sql, artgen_sql
+from app import db
 
 
 def get_today_date():

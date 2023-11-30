@@ -4,7 +4,8 @@ from datetime import datetime
 from flask import Blueprint, render_template, session, request, jsonify
 from pytz import timezone
 
-from app.database import db, UserData
+from app import db
+from app.database import UserData
 from app.routes.auth import require_spotify_auth
 from app.util.session_utils import verify_session, fetch_user_data, convert_utc_to_est
 from app.util.spotify_utils import fetch_and_process_data, init_session_client, update_user_data, \

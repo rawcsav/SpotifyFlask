@@ -2,8 +2,7 @@ from datetime import datetime
 from sqlalchemy import func, BLOB
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, validates
-
-db = SQLAlchemy()
+from app import db
 
 
 class UserData(db.Model):

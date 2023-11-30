@@ -3,7 +3,8 @@ from datetime import datetime
 
 import openai
 
-from app.database import artgenstyle_sql, artgenurl_sql, db, artgen_sql
+from app.database import artgenstyle_sql, artgenurl_sql, artgen_sql
+from app import db
 
 
 def select_random_elements(genres_list=None):

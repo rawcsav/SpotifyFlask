@@ -8,7 +8,8 @@ from PIL import Image
 from flask import Blueprint, render_template, jsonify, \
     session, redirect, url_for, request
 
-from app.database import playlist_sql, db, UserData, genre_sql
+from app import db
+from app.database import playlist_sql, UserData, genre_sql
 from app.routes.auth import require_spotify_auth
 from app.util.database_utils import delete_expired_images_for_playlist
 from app.util.playlist_utils import get_playlist_details, update_playlist_data, get_artists_seeds, get_genres_seeds, \

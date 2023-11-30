@@ -3,8 +3,8 @@ from collections import defaultdict
 from datetime import datetime
 
 from flask import session
-
-from app.database import playlist_sql, db
+from app import db
+from app.database import playlist_sql
 from app.util.database_utils import get_or_fetch_artist_info, get_or_fetch_audio_features
 from app.util.spotify_utils import init_session_client
 
