@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from functools import wraps
 from urllib.parse import urlencode
@@ -9,7 +10,7 @@ from flask import make_response
 from app import config
 from app.database import UserData, db
 from app.util.session_utils import generate_state, prepare_auth_payload, request_tokens, is_api_key_valid, encrypt_data, \
-    verify_session, fetch_user_data
+    verify_session, fetch_user_data, decrypt_data
 
 bp = Blueprint('auth', __name__)
 
@@ -130,7 +131,10 @@ def save_api_key():
     user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
     api_key = request.json.get('api_key')
-    print(api_key)
+    api_key_pattern = re.compile(r'sk-[A-Za-z0-9]{48}')
+    if not api_key_pattern.match(api_key):
+        return jsonify({'status': 'error', 'message': 'Invalid API key format.'}), 400
+
     if not is_api_key_valid(api_key):
         return jsonify({"message": "Invalid OpenAI API Key"}), 400
 
@@ -148,13 +152,29 @@ def save_api_key():
 @bp.route('/check-api-key', methods=['GET'])
 def check_api_key():
     access_token = verify_session(session)
+    if not access_token:
+        # Handle the case where session verification fails
+        return jsonify({"error": "Access token verification failed"}), 401
+
     res_data = fetch_user_data(access_token)
+    if not res_data:
+        # Handle the case where fetching user data fails
+        return jsonify({"error": "Failed to fetch user data"}), 500
+
     spotify_user_id = res_data.get("id")
-    print(spotify_user_id)
+    if not spotify_user_id:
+        # Handle the case where Spotify user ID is not obtained
+        return jsonify({"error": "Spotify user ID not found"}), 500
+
     user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
     if user and user.api_key_encrypted:
-        return jsonify({"has_key": True})
+        api_key = decrypt_data(user.api_key_encrypted)
+        if is_api_key_valid(api_key):
+            return jsonify({"has_key": True})
+        else:
+            return jsonify({"has_key": False})
     else:
+        # Handle the case where no user or API key is found
         return jsonify({"has_key": False})
 
 

@@ -1,9 +1,5 @@
 from flask import Blueprint, request, session, json, jsonify
-from app import config
 from app.util.spotify_utils import init_session_client, spotify_search
-
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 
 bp = Blueprint('search', __name__)
 

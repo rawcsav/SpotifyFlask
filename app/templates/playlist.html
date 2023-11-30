@@ -11,14 +11,6 @@
       crossorigin="anonymous"
     />
     <link
-      href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.cdnfonts.com/css/helvetica-neue-9"
-      rel="stylesheet"
-    />
-    <link
       rel="apple-touch-icon"
       sizes="180x180"
       href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
@@ -55,6 +47,10 @@
     </script>
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/profile.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="{{ url_for('static', filename='css/playlist.css') }}"
     />
     <title>Spotify Playlists</title>
@@ -65,7 +61,13 @@
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
     <a href="https://rawcsav.com" class="homepage-link"></a>
-    <h1>Spotify Playlists</h1>
+    <h1 class="colorful-text">
+      <span>S</span><span>e</span><span>l</span><span>e</span><span>c</span
+      ><span>t</span>
+      <span>a</span>
+      <span>P</span><span>l</span><span>a</span><span>y</span><span>l</span
+      ><span>i</span><span>s</span><span>t</span>
+    </h1>
     <ul id="playlist-container"></ul>
     <div class="pagination">
       {% if page > 1 %}

@@ -136,16 +136,6 @@ $(document).ready(function () {
     }
   });
 
-  $(document).on('click', function (event) {
-    if ($('#universal_search_results').children().length > 0) {
-      if (!$(event.target).closest('#universal_search_results').length) {
-        $('#universal_search_results').fadeOut(1000, function () {
-          $(this).empty().show();
-        });
-      }
-    }
-  });
-
   $('#universal_seeds_container').on('click', '.clickable-result', function () {
     let seedType = $(this).hasClass('track') ? 'track' : 'artist';
     $(this).remove();
@@ -303,12 +293,22 @@ $(document).ready(function () {
                       <div class="play-button" id="play_${trackInfo['trackid']}">&#9654;</div>
                     </div>
                           <div class="dropdown-content">
-                            <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">Add to Liked</a>
-                            <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">Add to Playlist</a>
-                            <a href="#" class="add-to-seeds track" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add Track to Seeds</a>
-                            <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo['artistid']}" data-artist="${trackInfo['artist']}">Add Artist to Seeds</a>
+                            <a href="#" class="add-to-saved" data-trackid="${trackInfo['trackid']}">
+                                <i class="far fa-heart heart-icon"></i>
+                            </a>
+                            <a href="#" class="add-to-playlist" data-trackid="${trackInfo['trackid']}">
+                                <i class="plus-icon fas fa-plus plus-icon-grey"></i>
+                            </a>
+                            <div class="add-to-seeds-dropdown">
+                              <a href="#" class="add-to-seeds-toggle" data-trackid="${trackInfo['trackid']}" data-artistid="${trackInfo['artistid']}">
+                                <i class="fas fa-seedling seed-icon"></i>
+                              </a>
+                              <div class="seeds-options">
+                                <a href="#" class="add-to-seeds track" data-trackid="${trackInfo['trackid']}" data-name="${trackInfo['trackName']}" data-artist="${trackInfo['artist']}">Add Track to Seeds</a>
+                                <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo['artistid']}" data-artist="${trackInfo['artist']}">Add Artist to Seeds</a>
+                              </div>
+                            </div>
                           </div>
-                      </div>
                       <audio controls>
                           <source src="${trackInfo['preview']}" type="audio/mpeg">
                           Your browser does not support the audio element.
@@ -357,24 +357,51 @@ function showToast(button, message) {
 
   toast.text(message).fadeIn(400).delay(2000).fadeOut(1000);
 }
+
 $(document).on('click', '.add-to-saved', function (event) {
   event.preventDefault();
 
+  let heartIcon = $(this).find('.heart-icon');
+  let trackId = $(this).attr('data-trackid');
   let button = $(this);
 
-  let trackId = $(this).attr('data-trackid');
-  $.ajax({
-    url: '/save_track',
-    method: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify({ track_id: trackId }),
-    success: function (data) {
-      showToast(button, 'Saved Sucessfully!');
-    },
-    fail: function (jqXHR, textStatus, errorThrown) {
-      console.error('Error:', textStatus, errorThrown);
-    },
-  });
+  if (heartIcon.hasClass('fas fa-heart')) {
+    $.ajax({
+      url: '/unsave_track',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ track_id: trackId }),
+      success: function (data) {
+        showToast(button, 'Track unsaved successfully!');
+
+        heartIcon.removeClass('fas fa-heart liked').addClass('far fa-heart');
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        showToast(
+          button,
+          'An error occurred while unsaving the track.',
+          'error',
+        );
+        console.error('Error:', textStatus, errorThrown);
+      },
+    });
+  } else {
+    $.ajax({
+      url: '/save_track',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ track_id: trackId }),
+      success: function (data) {
+        showToast(button, 'Track saved successfully!');
+
+        heartIcon.removeClass('far fa-heart').addClass('fas fa-heart liked');
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        showToast(button, 'An error occurred while saving the track.');
+        console.error('Error:', textStatus, errorThrown);
+      },
+    });
+  }
 });
 
 $(document).on('click', '.add-to-playlist', function (event) {
@@ -392,6 +419,7 @@ $(document).on('click', '.add-to-playlist', function (event) {
 $(document).on('click', '.playlist-option', function (event) {
   event.preventDefault();
 
+  let plusIcon = $(this).find('.plus-icon');
   let playlistId = $(this).attr('data-playlistid');
   let modal = $('#playlistModal');
   let trackId = modal.data('trackid');
@@ -406,6 +434,7 @@ $(document).on('click', '.playlist-option', function (event) {
     success: function (data) {
       showToast(button, 'Added to Playlist!');
       modal.css('display', 'none');
+      plusIcon.removeClass('plus-icon-grey').addClass('plus-icon-green');
     },
     fail: function (jqXHR, textStatus, errorThrown) {
       console.error('Error:', textStatus, errorThrown);
@@ -421,4 +450,152 @@ $(window).click(function (event) {
   if ($(event.target).is($('#playlistModal'))) {
     $('#playlistModal').css('display', 'none');
   }
+});
+
+$(document).on('click', '.add-to-seeds-toggle', function (event) {
+  event.preventDefault();
+  $(this).next('.seeds-options').toggle();
+});
+
+$(window).click(function (event) {
+  if (!$(event.target).closest('.add-to-seeds-dropdown').length) {
+    $('.seeds-options').hide();
+  }
+});
+
+function updateSvgContainerHeight() {
+  const bodyHeight = document.body.scrollHeight; // Get the full scroll height of the body
+  const svgContainer = document.querySelector('.svg-container');
+  svgContainer.style.height = `${bodyHeight}px`; // Update the container height
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var toggleButton = document.getElementById('toggleButton');
+  var formContainer = document.querySelector('.form-container');
+  var searchContainer = document.querySelector('.search-container');
+  var seedsContainer = document.querySelector('.seed-container'); // Add this line
+
+  var isFormVisible = false; // The form is not visible by default
+  const svgUrls = [
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/amp',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/cd',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/clarinet',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/domra',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/drums_jsuiqf',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/f9cca628-b87a-4880-b2b3-a38e94b48d6f',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/grammy-svgrepo-com',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/gramophone',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/guitar_vqh6f4',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/headphone_xshl0v',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/headphones_mmy6gf',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_1',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_2',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_3',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_30',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_33',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_35',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_36',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_4',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_5',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_6',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano_hzttv3',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/radio-svgrepo-com',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/shape',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/speaker',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/trombone',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/vinyl_z1naey',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/wave_anpgln',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/xylophone',
+  ];
+
+  const svgPositions = [
+    { class: 'svg1', x: '10%', y: '4%' },
+    { class: 'svg2', x: '80%', y: '10%' },
+    { class: 'svg3', x: '65%', y: '1%' },
+    { class: 'svg4', x: '1%', y: '27%' },
+    { class: 'svg5', x: '91%', y: '30%' },
+    { class: 'svg6', x: '3%', y: '53%' },
+    { class: 'svg7', x: '85%', y: '60%' },
+    { class: 'svg8', x: '30%', y: '70%' },
+    { class: 'svg9', x: '50%', y: '75%' },
+    { class: 'svg10', x: '39%', y: '6%' },
+    { class: 'svg11', x: '73%', y: '81%' },
+    { class: 'svg12', x: '15%', y: '80%' },
+  ];
+
+  const selectedPositions = svgPositions
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 12);
+
+  document.body.style.position = 'relative';
+  document.body.style.overflowX = 'hidden'; // Prevent horizontal scrolling
+  document.body.style.margin = '0'; // Remove default margin
+
+  // Create a container for the SVG images
+  const svgContainer = document.createElement('div');
+  svgContainer.classList.add('svg-container'); // Add the class for the query selector
+  svgContainer.style.position = 'absolute'; // Change to absolute to scroll with content
+  svgContainer.style.width = '100%';
+  // Initial height will be set by updateSvgContainerHeight function
+  svgContainer.style.top = '0';
+  svgContainer.style.left = '0';
+  svgContainer.style.zIndex = '-1'; // Ensure it's behind all other content
+  svgContainer.style.overflow = 'hidden'; // Prevent scrollbars if SVGs overflow
+  document.body.prepend(svgContainer); // Insert it as the first child of body
+
+  svgContainer
+    .querySelectorAll('.svg-placeholder')
+    .forEach((el) => el.remove());
+
+  // Create and append SVG images to the svgContainer
+  selectedPositions.forEach((position, index) => {
+    const svgImage = document.createElement('img');
+    svgImage.src = svgUrls[index % svgUrls.length]; // Cycle through SVG URLs
+    svgImage.classList.add('svg-placeholder', position.class);
+    svgImage.style.position = 'absolute';
+    svgImage.style.left = position.x;
+    svgImage.style.top = position.y;
+    svgContainer.appendChild(svgImage);
+  });
+  updateSvgContainerHeight();
+  window.addEventListener('resize', updateSvgContainerHeight);
+
+  toggleButton.addEventListener('click', function () {
+    // Check if the viewport width is less than or equal to 620px
+    if (window.innerWidth <= 1024) {
+      if (isFormVisible) {
+        formContainer.style.display = 'none';
+        searchContainer.style.display = 'flex'; // Adjust according to your layout
+        seedsContainer.style.display = 'flex'; // Show seeds container - adjust if needed
+      } else {
+        formContainer.style.display = 'flex'; // Adjust according to your layout
+        searchContainer.style.display = 'none';
+        seedsContainer.style.display = 'none'; // Hide seeds container
+      }
+      isFormVisible = !isFormVisible;
+    }
+  });
+
+  // Optional: Add a resize event listener to handle cases when the window is resized across the 620px threshold
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 1024) {
+      // If the viewport is wider than 620px, ensure both containers are visible
+      formContainer.style.display = 'flex';
+      searchContainer.style.display = 'flex';
+      seedsContainer.style.display = 'flex'; // Show seeds container - adjust if needed
+    } else {
+      // If the viewport is 620px or less, apply the visibility based on the isFormVisible flag
+      if (isFormVisible) {
+        formContainer.style.display = 'flex';
+        searchContainer.style.display = 'none';
+        seedsContainer.style.display = 'none'; // Hide seeds container
+      } else {
+        formContainer.style.display = 'none';
+        searchContainer.style.display = 'flex';
+        seedsContainer.style.display = 'flex'; // Show seeds container - adjust if needed
+      }
+    }
+  });
 });

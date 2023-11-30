@@ -5,7 +5,7 @@
       bottom: 0;
       height: 30px;
       overflow-x: hidden;
-      font-family: Futura, sans-serif;
+      font-family: Helvagoth-Medium, sans-serif;
       display: flex;
       background-color: rgba(255, 255, 255, 0.3);
       left: 0;
@@ -61,24 +61,37 @@
       display: flex;
       gap: 10px;
     }
+    @media (max-width: 400px) {
+      .footer p,
+      .footer a {
+        font-size: 0.5rem;
+      }
 
-    @media (max-width: 500px) {
+      .footer {
+        padding: 0 5px;
+        height: 20px;
+      }
+    }
+    @media (min-width: 401px) and (max-width: 500px) {
       .footer p,
       .footer a {
         font-size: 0.6rem;
       }
+
+      .footer {
+        padding: 0 5px;
+        height: 20px;
+      }
     }
   </style>
 </head>
-<body>
-  <div id="footer" class="footer">
-    <p>Copyright © 2023 RAWCSAV. All rights reserved.</p>
-    <div class="footer-links">
-      <p>
-        <a href="https://rawcsav.com/">Home</a>
-        <a href="https://rawcsav.com/contact.html">Contact</a>
-        <a href="https://github.com/rawcsav">GitHub</a>
-      </p>
-    </div>
+<div id="footer" class="footer">
+  <p>Copyright © 2023 RAWCSAV. All rights reserved.</p>
+  <div class="footer-links">
+    <p>
+      <a href="https://rawcsav.com/">Home</a>
+      <a href="https://rawcsav.com/contact.html">Contact</a>
+      <a href="https://github.com/rawcsav">GitHub</a>
+    </p>
   </div>
-</body>
+</div>

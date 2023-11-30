@@ -56,39 +56,39 @@ def convert_utc_to_est(utc_time):
     return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=-4)))
 
 
-def load_key_from_env():
-    return os.environ["CRYPT_KEY"].encode()
+def load_encryption_key():
+    return os.environ['CRYPT_KEY'].encode()
 
 
-def encrypt_data(data):
-    CRYPT_KEY = load_key_from_env()
-    cipher_suite = Fernet(CRYPT_KEY)
-    encrypted_data = cipher_suite.encrypt(data.encode())
-    return encrypted_data
+def encrypt_data(api_key):
+    cipher_suite = Fernet(load_encryption_key())
+    encrypted_api_key = cipher_suite.encrypt(api_key.encode())
+    return encrypted_api_key
 
 
-def decrypt_data(encrypted_data):
-    CRYPT_KEY = load_key_from_env()
-    cipher_suite = Fernet(CRYPT_KEY)
-    decrypted_data = cipher_suite.decrypt(encrypted_data)
-    return decrypted_data.decode()
+def decrypt_data(encrypted_api_key):
+    cipher_suite = Fernet(load_encryption_key())
+    decrypted_api_key = cipher_suite.decrypt(
+        encrypted_api_key)
+    return decrypted_api_key.decode()
 
 
-def is_api_key_valid(api_key):
-    openai.api_key = api_key
-
+def is_api_key_valid(key):
+    openai.api_key = key
     try:
-        completion = openai.chat.completions.create(
+        test = openai.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": "Hello!"}
-            ]
+            ],
+            max_tokens=10,
+            temperature=0,
         )
-    except:
+        if test.choices[0].message.content:
+            return True
+    except openai.OpenAIError:
         return False
-    else:
-        return True
 
 
 def get_tunnel():

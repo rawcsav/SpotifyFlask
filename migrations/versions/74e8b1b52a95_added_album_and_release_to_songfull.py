@@ -18,7 +18,6 @@ branch_labels = None
 depends_on = None
 
 from datetime import datetime
-from app.database import Songfull  # Adjust the import path to your actual app structure
 
 
 def convert_to_year(date_str):
@@ -36,8 +35,6 @@ def convert_to_year(date_str):
 
 
 def upgrade():
-    op.execute(Songfull.__table__.delete())
-
     # Import data from CSV into Songfull
     with open('/Users/gavinmason/PycharmProjects/BotifyStats/app/data/top_tracks.csv', 'r') as csv_file:
         rows_to_insert = []
@@ -57,7 +54,6 @@ def upgrade():
                 'genre': row['genre'],
                 'current': row['current'].lower() == 'false'
             })
-        op.bulk_insert(Songfull.__table__, rows_to_insert)
 
 
 def downgrade():

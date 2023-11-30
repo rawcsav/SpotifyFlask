@@ -15,13 +15,11 @@ down_revision = '825d4dca7182'
 branch_labels = None
 depends_on = None
 
-from app.database import Songfull  # Adjust the import path to your actual app structure
 import csv
 
 
 def upgrade():
     # Delete all existing rows from the Songfull table
-    op.execute(Songfull.__table__.delete())
 
     # Import data from CSV into Songfull
     with open('/app/data/songfull.csv', 'r') as csv_file:
@@ -42,9 +40,3 @@ def upgrade():
             })
 
         # Use op.bulk_insert() to insert data
-        op.bulk_insert(Songfull.__table__, rows_to_insert)
-
-
-def downgrade():
-    # If you want to revert, you can just delete all entries from the Songfull table.
-    op.execute(Songfull.__table__.delete())

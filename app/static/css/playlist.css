@@ -1,35 +1,72 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
 body {
-  background-color: #faf0be;
-  font-family: Futura, sans-serif;
-  overflow-x: hidden;
+  animation: fadeIn 1s ease-out;
+  background-color: #fafafa;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 body.dark-mode {
   background-color: #0c1c30;
 }
 
-@media only screen and (max-width: 768px) {
-  #background {
-    background-position: center;
-    background-size: cover;
-    height: 100vh; /* 100% of the viewport height */
-    position: fixed;
-    width: 100vw; /* 100% of the viewport width */
-    background-image: url('/secure_image?public_id=v1698250748/New_Project_6_vzrhef&c_fill&g_auto&dpr_auto&w_auto');
-    z-index: 100;
-    top: 0;
-    left: 0;
-  }
-}
-
 h1 {
-  color: #368dbf;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: Window-Bold, sans-serif;
   font-size: 45px;
   font-weight: bold;
   margin-top: 20px;
   text-align: center;
+}
+
+.colorful-text span:nth-child(7n + 1) {
+  color: #ca403f; /* First color */
+}
+
+.colorful-text span:nth-child(7n + 2) {
+  color: #f7893b; /* Second color */
+}
+
+.colorful-text span:nth-child(7n + 3) {
+  color: #f1db2b; /* Third color */
+}
+
+.colorful-text span:nth-child(7n + 4) {
+  color: #5dab54; /* Fourth color */
+}
+
+.colorful-text span:nth-child(7n + 5) {
+  color: #4b8dc2; /* Fifth color */
+}
+
+.colorful-text span:nth-child(7n + 6) {
+  color: #9b5de5; /* Sixth color */
+}
+
+.colorful-text span:nth-child(7n) {
+  color: #f7a1d5; /* Seventh color */
 }
 
 body.dark-mode h1 {
@@ -37,7 +74,6 @@ body.dark-mode h1 {
 }
 
 h2 {
-  color: #368dbf;
   font-family: Futura, sans-serif;
   font-size: 25px;
   font-weight: bold;
@@ -49,7 +85,6 @@ body.dark-mode h2 {
 }
 
 p {
-  color: #368dbf;
   font-weight: 500;
   margin: 0;
   text-decoration: none;
@@ -210,15 +245,30 @@ body.dark-mode .homepage-link {
   color: #fff;
   padding: 8px 16px;
   margin: 0 4px;
-  background-color: #368dbf;
+  background-color: #f1db2b;
   text-decoration: none;
   border-radius: 4px;
 }
 
+#spotifyUserDropdown {
+  border: 1px solid #f1db2b;
+}
+.svg-placeholder {
+  width: 150px; /* or your preferred width */
+  height: auto; /* maintains the aspect ratio */
+  position: absolute;
+  z-index: -1;
+}
 .pagination a:hover {
   background-color: #555;
 }
 
 body.dark-mode .pagination a {
   background-color: #fbae3c;
+}
+
+@media (max-width: 768px) {
+  .svg-placeholder {
+    width: 100px; /* or your preferred width */
+  }
 }

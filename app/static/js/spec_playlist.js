@@ -483,6 +483,11 @@ function showArtGenContainer() {
       } else {
         document.getElementById('connect-button').style.display = 'block';
         document.getElementById('update-button').style.display = 'none';
+        document.getElementById('update-button').style.display = 'none';
+        document.getElementById('generate-art-btn').style.display = 'none';
+        document.getElementById('gen-refresh-icon').style.display = 'none';
+        document.getElementById('parent-toggle-icon').style.display = 'none';
+        document.getElementById('hd-toggle-icon').style.display = 'none';
       }
     }).fail(function (error) {
       console.error('Error checking API key:', error);
@@ -757,3 +762,134 @@ function displayImages(response) {
     document.getElementById('gen-refresh-icon').style.cursor = 'pointer';
   }
 }
+
+// Function to apply alternating colors to each letter of a given element's text
+function applyAlternatingColors(element, colors) {
+  // Get the text from the element
+  const text = element.textContent;
+  // Clear the current text
+  element.textContent = '';
+  // Iterate over each character of the text
+  for (let i = 0; i < text.length; i++) {
+    // Create a new span element for each character
+    const span = document.createElement('span');
+    // Set the text of the span to the current character
+    span.textContent = text[i];
+    // Set the color of the span to the corresponding color from the array
+    span.style.color = colors[i % colors.length];
+    // Append the span to the element
+    element.appendChild(span);
+  }
+}
+
+function updateSvgContainerHeight() {
+  const bodyHeight = document.body.scrollHeight; // Get the full scroll height of the body
+  const svgContainer = document.querySelector('.svg-container');
+  svgContainer.style.height = `${bodyHeight}px`; // Update the container height
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const playlistNameElement = document.getElementById('playlist-name');
+  const colors = [
+    '#ca403f',
+    '#f7893b',
+    '#f1db2b',
+    '#5dab54',
+    '#4b8dc2',
+    '#9b5de5',
+    '#f7a1d5',
+  ];
+  applyAlternatingColors(playlistNameElement, colors);
+  const svgUrls = [
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/amp',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/cd',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/clarinet',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/domra',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/drums_jsuiqf',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/f9cca628-b87a-4880-b2b3-a38e94b48d6f',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/grammy-svgrepo-com',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/gramophone',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/guitar_vqh6f4',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/headphone_xshl0v',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/headphones_mmy6gf',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_1',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_2',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_3',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_4',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_5',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_6',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano_hzttv3',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/radio-svgrepo-com',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/shape',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/speaker',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/trombone',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/vinyl_z1naey',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/wave_anpgln',
+    'http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/xylophone',
+  ];
+
+  const svgPositions = [
+    { class: 'svg1', x: '10%', y: '10%' },
+    { class: 'svg2', x: '60%', y: '12%' },
+    { class: 'svg3', x: '65%', y: '1%' },
+    { class: 'svg4', x: '1%', y: '27%' },
+    { class: 'svg5', x: '91%', y: '30%' },
+    { class: 'svg6', x: '3%', y: '46%' },
+    { class: 'svg7', x: '85%', y: '40%' },
+    { class: 'svg8', x: '30%', y: '20%' },
+    { class: 'svg9', x: '50%', y: '35%' },
+    { class: 'svg10', x: '39%', y: '6%' },
+    { class: 'svg11', x: '73%', y: '21%' },
+    { class: 'svg12', x: '15%', y: '53%' },
+    { class: 'svg13', x: '15%', y: '63%' },
+    { class: 'svg14', x: '92%', y: '68%' },
+    { class: 'svg15', x: '21%', y: '71%' },
+    { class: 'svg16', x: '74%', y: '73%' },
+    { class: 'svg17', x: '27%', y: '77%' },
+  ];
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  const selectedPositions = shuffleArray(svgPositions);
+  document.body.style.position = 'relative';
+  document.body.style.overflowX = 'hidden'; // Prevent horizontal scrolling
+  document.body.style.margin = '0'; // Remove default margin
+
+  // Create a container for the SVG images
+  const svgContainer = document.createElement('div');
+  svgContainer.classList.add('svg-container'); // Add the class for the query selector
+  svgContainer.style.position = 'absolute'; // Change to absolute to scroll with content
+  svgContainer.style.width = '100%';
+  // Initial height will be set by updateSvgContainerHeight function
+  svgContainer.style.top = '0';
+  svgContainer.style.left = '0';
+  svgContainer.style.zIndex = '-1'; // Ensure it's behind all other content
+  document.body.prepend(svgContainer); // Insert it as the first child of body
+
+  svgContainer
+    .querySelectorAll('.svg-placeholder')
+    .forEach((el) => el.remove());
+
+  // Create and append SVG images to the svgContainer
+  selectedPositions.forEach((position, index) => {
+    const svgImage = document.createElement('img');
+    svgImage.src = svgUrls[index % svgUrls.length]; // Cycle through SVG URLs
+    svgImage.classList.add('svg-placeholder', position.class);
+    svgImage.style.position = 'absolute';
+    svgImage.style.left = position.x;
+    svgImage.style.top = position.y;
+    svgContainer.style.overflowX = 'hidden'; // Prevent scrollbars if SVGs overflow
+
+    svgContainer.appendChild(svgImage);
+  });
+  updateSvgContainerHeight();
+  window.addEventListener('resize', updateSvgContainerHeight);
+});

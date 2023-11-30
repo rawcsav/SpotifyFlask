@@ -11,10 +11,6 @@
       crossorigin="anonymous"
     />
     <link
-      href="https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro"
-      rel="stylesheet"
-    />
-    <link
       rel="apple-touch-icon"
       sizes="180x180"
       href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}"
@@ -51,16 +47,18 @@
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
     <title>Profile Info</title>
-    <!-- Link to the external CSS and JS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/profile.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/fonts.css') }}"
     />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.js"></script>
     {% from "loading.html" import loading_animation %} {% include 'menu.html' %}
   </head>
-  <div id="background"></div>
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
     <a href="https://rawcsav.com" class="homepage-link"></a>
@@ -70,91 +68,95 @@
           <section class="card">
             <div class="user-info-row">
               <h3>Hello <em>{{ data.display_name }}</em>!</h3>
-              <br />
-              <div class="text-center mt-4 d-flex justify-content-center">
-                <a href="{{ url_for('stats.stats') }}" class="btn btn-info mr-2"
-                  >Personal Music Stats</a
+              <div
+                class="text-center mt-4 d-flex justify-content-center page-nav"
+              >
+                <a
+                  href="{{ url_for('stats.stats') }}"
+                  class="btn btn-info stats-btn"
+                  >Statistics</a
                 >
                 <a
                   href="{{ url_for('recommendations.recommendations') }}"
-                  class="btn btn-info mr-2"
-                  >Music Recommendations</a
+                  class="btn btn-info rec-btn"
+                  >Recommendations</a
                 >
                 <a
                   href="{{ url_for('playlist.playlist') }}"
-                  class="btn btn-info mr-2"
-                  >Playlist Explorer</a
+                  class="btn btn-info playlist-btn"
+                  >Playlists</a
                 >
               </div>
-              <div class="text-center mt-4 d-flex justify-content-center">
-                <a href="/logout" class="btn btn-danger mr-2">Logout</a>
-                <button id="refresh-button" class="btn btn-success mr-2">
+              <div
+                class="text-center mt-4 d-flex justify-content-center page-util"
+              >
+                <a href="/logout" class="btn btn-danger">Logout</a>
+                <button id="refresh-button" class="btn btn-success">
                   Refresh Data
                 </button>
               </div>
               <div class="text-center mt-2">
                 <small class="text-muted" style="font-size: 0.7rem"
-                  >Last Refresh (EST): {{ last_active.strftime('%B %d, %Y at
-                  %I:%M %p') }}</small
+                  >Last Refresh: {{ last_active.strftime('%b %d at %I:%M %p')
+                  }}</small
                 >
               </div>
               <br />
             </div>
+            <p class="project-text">
+              Visit Rawc-On on
+              <a
+                href="https://github.com/rawcsav/SpotifyFlask"
+                target="_blank"
+                rel="noopener noreferrer"
+                >GitHub.</a
+              >
+              <br />
+              Related projects:
+              <a
+                href="https://rawcsav.com/projects/botify10.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Botify</a
+              >
+              and
+              <a
+                href="https://rawcsav.com/projects/Botify%20Grime.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Botify Grime</a
+              >.
+            </p>
           </section>
         </div>
-
         <div class="col-md-6 flex-fill">
           <section class="card mb-4">
             <h3>Recent Tracks</h3>
             <ul class="recent-tracks">
               {% for track in user_data.recent_tracks %}
               <li>
-                <img
-                  src="{{ track.track.album.images[0].url }}"
-                  alt="Cover Art"
-                  width="50"
-                  height="50"
-                />
-                <strong>{{ track.track.name }}</strong> from
-                <em>{{ track.track.album.name }}</em> by {{
-                track.track.artists[0].name }}
+                <div class="recent-wrapper">
+                  <img
+                    src="{{ track.track.album.images[0].url }}"
+                    alt="Cover Art"
+                    width="50"
+                    height="50"
+                  />
+                  <div class="recent-info">
+                    <strong>{{ track.track.name }}</strong> from
+                    <em>{{ track.track.album.name }}</em> by {{
+                    track.track.artists[0].name }}
+                  </div>
+                </div>
               </li>
               {% endfor %}
             </ul>
           </section>
         </div>
       </div>
-      <div class="row mt-5 profile-footer">
-        <div class="col-12 text-center">
-          <p>
-            For the complete code of this project, visit the
-            <a
-              href="https://github.com/rawcsav/SpotifyFlask"
-              target="_blank"
-              rel="noopener noreferrer"
-              >GitHub Repository</a
-            >.
-          </p>
-          <p>
-            Explore my Spotify data analysis projects:
-            <a
-              href="https://rawcsav.com/projects/botify10.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Botify</a
-            >
-            and
-            <a
-              href="https://rawcsav.com/projects/Botify%20Grime.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Botify Grime</a
-            >.
-          </p>
-        </div>
-      </div>
+      <div class="row mt-5 profile-footer"></div>
     </div>
     {% include 'footer.html' %}
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
   </body>
-  <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </html>

@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, BLOB
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, validates
 
@@ -17,7 +17,7 @@ class UserData(db.Model):
     recent_tracks = db.Column(db.JSON, nullable=True)
     playlist_info = db.Column(db.JSON, nullable=True)
     last_active = db.Column(db.DateTime, default=datetime.utcnow)
-    api_key_encrypted = db.Column(db.VARCHAR(255), nullable=True)
+    api_key_encrypted = db.Column(BLOB, nullable=True)
     isDarkMode = db.Column(db.Boolean, nullable=True)
 
 
@@ -100,7 +100,7 @@ class artgen_sql(db.Model):
 
 
 class artgenstyle_sql(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     art_style = db.Column(db.String(255), nullable=False)
     gen_style = db.Column(db.String(255), nullable=True)
 
@@ -129,76 +129,3 @@ class genre_sql(db.Model):
     y = db.Column(db.Float, nullable=True)
     closest_stat_genres = db.Column(db.TEXT, nullable=True)
     artgen = relationship("artgen_sql", back_populates="genre")
-
-
-class Songfull(db.Model):
-    name = db.Column(db.String(150), nullable=False)
-    artist = db.Column(db.String(150), nullable=False)
-    id = db.Column(db.String(150), primary_key=True)
-    artist_id = db.Column(db.String(150), nullable=False)
-    album = db.Column(db.String(150))  # added
-    release = db.Column(db.String(4))  # added
-    image_url = db.Column(db.String(250))
-    external_url = db.Column(db.String(250))
-    spotify_preview_url = db.Column(db.String(250), nullable=False)
-    popularity = db.Column(db.Integer, nullable=False)
-    genre = db.Column(db.String(50), nullable=False, index=True)
-    current = db.Column(db.SmallInteger, default=0)
-    played = db.Column(db.SmallInteger, default=0)
-
-    def __repr__(self):
-        return f"<Song {self.name} by {self.artist}>"
-
-
-class Archive(db.Model):
-    date_played = db.Column(db.Date, primary_key=True, nullable=False, index=True)
-    general_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
-    rock_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
-    hiphop_track = db.Column(db.String(150), db.ForeignKey('songfull.id'))  # Added
-    past_games = db.relationship('PastGame', backref='archive', lazy=True)
-
-    general_song = db.relationship('Songfull', foreign_keys=[general_track])
-    rock_song = db.relationship('Songfull', foreign_keys=[rock_track])
-    hiphop_song = db.relationship('Songfull', foreign_keys=[hiphop_track])
-
-    def __repr__(self):
-        return f"<Archive on {self.date_played}>"
-
-
-class PastGame(db.Model):
-    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
-    date = db.Column(db.Date, primary_key=True, nullable=False, index=True)
-    attempts_made_general = db.Column(db.Integer, default=0)
-    attempts_made_rock = db.Column(db.Integer, default=0)
-    attempts_made_hiphop = db.Column(db.Integer, default=0)
-    correct_guess_general = db.Column(db.Boolean, default=False)
-    correct_guess_rock = db.Column(db.Boolean, default=False)
-    correct_guess_hiphop = db.Column(db.Boolean, default=False)
-    archive_date = db.Column(db.Date, db.ForeignKey('archive.date_played'), nullable=False)
-
-    def __repr__(self):
-        return f"<PastGame on {self.date} for user/session {self.user_id_or_session}>"
-
-    @validates('attempts_made_general', 'attempts_made_rock', 'attempts_made_hiphop')
-    def validate_attempts(self, key, value):
-        if value < 0 or value > 6:
-            raise ValueError(f"{key} should be between 0 and 6 inclusive.")
-        return value
-
-
-class CurrentGame(db.Model):
-    user_id_or_session = db.Column(db.String(100), primary_key=True, nullable=False)
-    current_genre = db.Column(db.String(50), default='General')
-    guesses_left = db.Column(db.Integer, default=6)
-    date = db.Column(db.Date, nullable=False, default=func.current_date())
-    archive_date = db.Column(db.Date, db.ForeignKey('archive.date_played'), nullable=False)
-    archive = db.relationship('Archive', backref='games')
-
-    def __repr__(self):
-        return f"<CurrentGame on {self.date} for user/session {self.user_id_or_session}>"
-
-    @validates('guesses_left')
-    def validate_guesses_left(self, key, value):
-        if value < 0:
-            raise ValueError(f"{key} should not be less than 0.")
-        return value

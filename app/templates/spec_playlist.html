@@ -39,7 +39,15 @@
     </script>
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/profile.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="{{ url_for('static', filename='css/spec_playlist.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/fonts.css') }}"
     />
     <link
       rel="stylesheet"
@@ -52,11 +60,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     {% from "loading.html" import loading_animation %}{% include 'menu.html' %}
   </head>
-  <div id="background"></div>
   <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {{ loading_animation() }}
     <a href="https://rawcsav.com" class="homepage-link"></a>
-    <h1>{{ playlist_data['name'] }}</h1>
+    <h1 id="playlist-name">{{ playlist_data['name'] }}</h1>
     <div id="summary-stats" class="data-view">
       <div class="top-section">
         <div class="plfunc-group">
@@ -167,7 +174,7 @@
       <div class="artist-gen-container" style="display: none">
         <div id="connect-button" onclick="displayInputField(event)">
           <a class="login-button" href="#">
-            Connect w/
+            Connect
             <br />
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg"
@@ -212,7 +219,23 @@
             onclick="refreshArt()"
           ></i>
         </div>
-        <div id="art-gen-results"></div>
+        <div id="art-gen-results">
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Placeholder Image 1"
+            class="art-gen-img"
+          />
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Placeholder Image 2"
+            class="art-gen-img"
+          />
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Placeholder Image 3"
+            class="art-gen-img"
+          />
+        </div>
         <p
           id="update-button"
           style="color: grey; font-size: small; cursor: pointer"
@@ -321,6 +344,7 @@
         </div>
       </div>
     </div>
+    <div class="custom-line"></div>
     <div id="feature-stats" class="data-view">
       <h2>Feature Stats</h2>
       <ul>
@@ -340,7 +364,7 @@
       <div class="toast-content" id="toastMessage"></div>
       <span class="close-toast">×</span>
     </div>
+    <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>
   </body>
   {% include 'footer.html' %}
-  <script src="{{ url_for('static', filename='js/spec_playlist.js') }}"></script>
 </html>
