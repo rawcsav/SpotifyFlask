@@ -53,6 +53,9 @@ body.dark-mode {
   height: auto; /* maintains the aspect ratio */
   position: absolute;
   z-index: -1;
+  stroke-width: 0;
+  outline: none;
+  border: none;
 }
 
 body.dark-mode .homepage-link {
