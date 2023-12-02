@@ -830,7 +830,6 @@ body.dark-mode #toast {
 }
 
 .heart-icon {
-  color: #0c1c30;
   cursor: pointer;
   font-size: 24px;
 }
@@ -1052,10 +1051,6 @@ body.dark-mode #toast {
 
 .add-to-seeds-dropdown:hover .seeds-options {
   display: block;
-}
-.plus-icon-grey,
-.seed-icon-grey {
-  color: #0c1c30;
 }
 
 .plus-icon-green,
