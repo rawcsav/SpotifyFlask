@@ -58,10 +58,6 @@ body.dark-mode {
   border: none;
 }
 
-body.dark-mode .homepage-link {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png');
-}
-
 .homepage-link:hover {
   transform: scale(1.05);
 }

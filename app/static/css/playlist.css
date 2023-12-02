@@ -26,7 +26,8 @@ body {
   height: 100vh;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body.dark-mode {
@@ -107,10 +108,6 @@ body.dark-mode p {
   width: 60px;
   background-image: url('/secure_image?public_id=v1701024834/colorfullogo_ypzgak.svg');
   transition: transform 0.3s;
-}
-
-body.dark-mode .homepage-link {
-  background-image: url('https://res.cloudinary.com/dn9bcrimg/image/upload/v1697008847/PhotopeaLogo_2_gfjzyh.png');
 }
 
 .homepage-link:hover {
