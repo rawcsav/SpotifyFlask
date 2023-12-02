@@ -485,6 +485,12 @@ nav button {
   border: 1px solid #ca403f;
 }
 
+body.dark-mode #top-artists,
+body.dark-mode #top-tracks,
+body.dark-mode #top-genres,
+body.dark-mode #top-features {
+  background-color: #0c1c30;
+}
 #top-tracks .row li,
 #top-tracks p {
   font-size: 0.8em;

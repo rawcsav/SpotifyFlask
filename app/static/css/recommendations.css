@@ -22,6 +22,9 @@ body.dark-mode {
   background-color: #0c1c30;
 }
 
+body.dark-mode .all-containers {
+  background-color: #312c4f;
+}
 .svg-placeholder {
   width: 90px; /* or your preferred width */
   height: auto; /* maintains the aspect ratio */
@@ -925,6 +928,10 @@ body.dark-mode #toast {
     font-size: 10px;
   }
 
+  #universal_search_results {
+    border-right: none;
+  }
+
   .form-seed {
     max-height: unset;
   }
@@ -988,6 +995,10 @@ body.dark-mode #toast {
   .search-container {
     max-height: 50vh;
   }
+
+  #universal_search_results {
+    border-right: none;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -1004,6 +1015,9 @@ body.dark-mode #toast {
     display: block; /* Show on small screens */
   }
 
+  #universal_search_results {
+    border-right: none;
+  }
   .main-container {
     width: 60%;
     max-width: 60%;
