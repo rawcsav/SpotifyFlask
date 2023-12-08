@@ -1,10 +1,10 @@
 {
-    "name": "RAWCSAV",
-    "short_name": "RAWC",
-    "description": "My personal website and portfolio.",
+    "name": "RawcOn",
+    "short_name": "RawcOn",
+    "description": "Music exploration and recommendations using the Spotify API",
     "start_url": "/",
-    "background_color": "#95947d",
-    "theme_color": "#294032",
+    "background_color": "#ffffff",
+    "theme_color": "#5dab54",
     "icons": [
     {
     "src": "/favicon-16x16.png",
