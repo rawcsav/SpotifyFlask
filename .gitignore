@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+/app/static/fonts/*
 # C extensions
 *.so
 data/
@@ -182,3 +183,4 @@ node_modules/
 /app/db.webstats
 /Users/gavinmason/PycharmProjects/BotifyStats/app/db.webstats
 /app/data/
+/app/static/fonts/
