@@ -163,16 +163,8 @@ dmypy.json
 cython_debug/
 #Other
 .DS_Store
-app/main_user_directory/*
-app/main_user_directory/!/.eslintrc.json
-.prettierrc
-.stylelintrc
-package.json
-package-lock.json
 pyproject.toml
-stylelint.config.js
 include/
-.eslintrc.json
 app/db.webstats
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -181,6 +173,5 @@ app/db.webstats
 .idea/
 node_modules/
 /app/db.webstats
-/Users/gavinmason/PycharmProjects/BotifyStats/app/db.webstats
 /app/data/
 /app/static/fonts/

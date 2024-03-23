@@ -1,212 +1,3 @@
-<style>
-  * {
-    transition: all 0.3s ease;
-  }
-
-  body {
-    font-family: Helvagoth-Bold, sans-serif;
-  }
-
-  #settingsCog {
-    margin-left: 8px;
-    cursor: pointer;
-  }
-
-  #spotifyUserDropdown {
-    position: fixed;
-    top: 10px;
-    right: 20px;
-    z-index: 800;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    background: rgba(255, 255, 255);
-    padding: 6px 10px;
-    border-radius: 20px;
-    transition: background 0.3s;
-  }
-
-  #settingsDropdown {
-    position: absolute;
-    top: 0%; /* right below the cog */
-    margin-left: 105px;
-    cursor: pointer;
-    padding: 8px 0px;
-  }
-
-  #settings-menu {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 100%; /* Position to the right of the parent element */
-    z-index: 900;
-    border: 1px solid #e0e0e0;
-    background: linear-gradient(to bottom, #ffffff, #f2f2f2);
-    border-radius: 5px;
-  }
-
-  .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 70px; /* or whatever maximum width you prefer */
-    color: #333;
-  }
-
-  .profile-img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 8px; /* Reduced margin for better spacing */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .drop-menu {
-    font-family: Helvagoth-Medium, sans-serif;
-    font-size: 10px;
-    border: 1px solid #e0e0e0;
-    margin-top: 8px;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: none;
-    background: linear-gradient(to bottom, #ffffff, #f2f2f2);
-    border-radius: 5px; /* Add slight border-radius to match design consistency */
-  }
-
-  .menu-container {
-    display: flex;
-    align-items: center;
-  }
-
-  .drop-item {
-    padding: 10px 12px; /* Adjusted padding for better spacing */
-    color: #333;
-    text-decoration: none;
-    display: block;
-    transition:
-      background 0.2s,
-      color 0.2s;
-    border-bottom: 1px solid #eaeaea;
-  }
-
-  .drop-item:last-child {
-    border-bottom: none;
-  }
-
-  .drop-item[href*='profile']:hover {
-    text-decoration: none;
-    color: #fafafa;
-    background-color: #5dab54;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-  /* Applying specific color styles as per your request */
-  .drop-item[href*='stats']:hover {
-    text-decoration: none;
-    background-color: #f7a1d5;
-    color: #fafafa;
-  }
-
-  .drop-item[href*='recommendations']:hover {
-    background-color: #f1db2b;
-    color: #fafafa;
-    text-decoration: none;
-  }
-
-  .drop-item[href*='playlist']:hover {
-    text-decoration: none;
-    color: #fafafa;
-    background-color: #9b5de5;
-  }
-
-  .drop-item[href*='logout'] {
-    background-color: #ca403f;
-    text-decoration: none;
-    color: white;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-
-  #modeToggle {
-    width: 100%;
-    text-align: left;
-    background-color: #001220; /* Light background for contrast */
-    color: #fbae3c;
-    font-size: 10px;
-    font-weight: bold;
-    border-color: transparent;
-    cursor: pointer;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-
-  /* Dark Mode button appearance */
-  .dark-mode #modeToggle {
-    background-color: #f1db2b; /* Dark background for contrast */
-    color: #ca403f;
-    /* Dark text */
-  }
-
-  @media (max-width: 768px) {
-    #spotifyUserDropdown {
-      top: 5px;
-      right: 10px;
-      font-size: 12px;
-      padding: 6px 10px;
-    }
-
-    .profile-img {
-      width: 25px;
-      height: 25px;
-      margin-right: 5px;
-    }
-
-    .truncate {
-      max-width: 60px;
-    }
-
-    .drop-item {
-      padding: 8px 10px;
-    }
-
-    .homepage-link {
-      height: 45px;
-      width: 45px;
-    }
-
-    @media (max-width: 480px) {
-      #spotifyUserDropdown {
-        top: 5px;
-        right: 5px;
-        font-size: 11px;
-        padding: 5px 8px;
-      }
-
-      .profile-img {
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-      }
-
-      .truncate {
-        max-width: 50px;
-      }
-
-      .drop-item {
-        padding: 7px 9px;
-      }
-      .homepage-link {
-        height: 30px;
-        width: 30px;
-      }
-    }
-  }
-</style>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-/>
 <div id="spotifyUserDropdown" onclick="toggleDropdown(event)">
   <div class="menu-container">
     {% if data.images and data.images[0] %}
@@ -246,47 +37,47 @@
     <script>
       function toggleDropdown(event) {
         event.stopPropagation(); // Prevents the dropdown from closing
-        const menu = document.getElementById('menu');
-        const settingsCog = document.getElementById('settingsCog');
-        if (menu.style.display === 'none' || menu.style.display === '') {
-          menu.style.display = 'block';
-          settingsCog.style.display = 'inline-block'; // Show the settings cog
+        const menu = document.getElementById("menu");
+        const settingsCog = document.getElementById("settingsCog");
+        if (menu.style.display === "none" || menu.style.display === "") {
+          menu.style.display = "block";
+          settingsCog.style.display = "inline-block"; // Show the settings cog
         } else {
-          menu.style.display = 'none';
-          settingsCog.style.display = 'none'; // Hide the settings cog
+          menu.style.display = "none";
+          settingsCog.style.display = "none"; // Hide the settings cog
         }
       }
 
       function toggleSettings(event) {
         event.stopPropagation(); // Prevents the dropdown from closing
-        const settingsCog = document.getElementById('settingsCog');
-        const settingsMenu = document.getElementById('settings-menu');
+        const settingsCog = document.getElementById("settingsCog");
+        const settingsMenu = document.getElementById("settings-menu");
         if (
-          settingsMenu.style.display === 'none' ||
-          settingsMenu.style.display === ''
+          settingsMenu.style.display === "none" ||
+          settingsMenu.style.display === ""
         ) {
-          settingsMenu.style.display = 'block';
+          settingsMenu.style.display = "block";
         } else {
-          settingsMenu.style.display = 'none';
+          settingsMenu.style.display = "none";
         }
       }
 
       // Close the dropdown if clicked outside
-      window.addEventListener('click', function (event) {
-        const dropdown = document.getElementById('spotifyUserDropdown');
+      window.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("spotifyUserDropdown");
         if (!dropdown.contains(event.target)) {
-          document.getElementById('menu').style.display = 'none';
+          document.getElementById("menu").style.display = "none";
         }
       });
       function toggleMode() {
         const body = document.body;
-        const isDarkMode = body.classList.contains('dark-mode');
-        const modeToSave = isDarkMode ? 'light' : 'dark';
+        const isDarkMode = body.classList.contains("dark-mode");
+        const modeToSave = isDarkMode ? "light" : "dark";
 
-        fetch('/update_mode', {
-          method: 'POST',
+        fetch("/update_mode", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             mode: modeToSave,
@@ -296,44 +87,44 @@
           .then((data) => {
             console.log(data.message);
 
-            const toggleButton = document.getElementById('modeToggle');
+            const toggleButton = document.getElementById("modeToggle");
             if (isDarkMode) {
-              body.classList.remove('dark-mode');
-              toggleButton.innerText = 'Dark Mode';
+              body.classList.remove("dark-mode");
+              toggleButton.innerText = "Dark Mode";
             } else {
-              body.classList.add('dark-mode');
-              toggleButton.innerText = 'Light Mode';
+              body.classList.add("dark-mode");
+              toggleButton.innerText = "Light Mode";
             }
-            document.dispatchEvent(new Event('themeToggled'));
+            document.dispatchEvent(new Event("themeToggled"));
           })
           .catch((error) => {
-            console.error('Error:', error);
+            console.error("Error:", error);
           });
       }
 
       function checkMode() {
-        fetch('/get_mode', {
-          method: 'GET',
+        fetch("/get_mode", {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         })
           .then((response) => response.json())
           .then((data) => {
             const body = document.body;
-            const toggleButton = document.getElementById('modeToggle');
+            const toggleButton = document.getElementById("modeToggle");
 
-            if (data.mode === 'dark') {
-              body.classList.add('dark-mode');
-              toggleButton.innerText = 'Light Mode';
+            if (data.mode === "dark") {
+              body.classList.add("dark-mode");
+              toggleButton.innerText = "Light Mode";
             } else {
-              body.classList.remove('dark-mode');
-              toggleButton.innerText = 'Dark Mode';
+              body.classList.remove("dark-mode");
+              toggleButton.innerText = "Dark Mode";
             }
-            document.dispatchEvent(new Event('themeToggled'));
+            document.dispatchEvent(new Event("themeToggled"));
           })
           .catch((error) => {
-            console.error('Error:', error);
+            console.error("Error:", error);
           });
       }
       window.onload = function () {

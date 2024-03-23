@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta
+      name="description"
+      content="Rawc-On is a webapp powered by Spotify, offering in-depth music analysis and insights into your listening habits."
+    />
+    <meta name="author" content="Gavin Mason" />
+    <meta
+      name="keywords"
+      content="Spotify, Music Analysis, Rawc-On, Music Insights, Listening Habits, Playlist Analysis, Song Features, Audio Analysis, Music Data, Spotify API"
+    />
+    <meta
+      content="Rawc-On: Deep Dive into Your Spotify Listening Habits"
+      property="og:title"
+    />
+    <meta
+      content="Discover insights into your music taste, analyze playlists, and explore song features with Rawc-On, powered by Spotify."
+      property="og:description"
+    />
+    <meta
+      content="https://res.cloudinary.com/dn9bcrimg/image/upload/v1707013206/rawcon_logo.png"
+      property="og:image"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      content="Rawc-On: Deep Dive into Your Spotify Listening Habits"
+      property="twitter:title"
+    />
+    <meta
+      content="Discover insights into your music taste, analyze playlists, and explore song features with Rawc-On, powered by Spotify."
+      property="twitter:description"
+    />
+    <meta
+      content="https://res.cloudinary.com/dn9bcrimg/image/upload/v1707013206/rawcon_logo.png"
+      property="twitter:image"
+    />
+    <meta property="og:type" content="website" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='dist/img/favicon/apple-touch-icon.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='dist/img/favicon/favicon-32x32.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ url_for('static', filename='dist/img/favicon/favicon-16x16.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='site.webmanifest') }}"
+    />
+    <link
+      rel="mask-icon"
+      href="{{ url_for('static', filename='dist/img/favicon/safari-pinned-tab.svg') }}"
+      color="#5bbad5"
+    />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#1DB954" />
+    <meta name="background-color" content="#faf5e6" />
+    {% block head %} {% endblock %} {% assets "common_style_bundle" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" />
+    <title></title>
+    {% endassets %} {% block styles %}{% endblock %}
+  </head>
+  <body>
+    {% block menu %}{% include 'menu.html' %} {% endblock %} {% block body %} {%
+    endblock %} {% include 'footer.html' %}
+    <script
+      src="https://kit.fontawesome.com/5c8c7a1eba.js"
+      crossorigin="anonymous"
+    ></script>
+    {% assets "common_js_bundle" %}
+    <script src="{{ ASSET_URL }}"></script>
+    {% endassets %} {% block scripts %} {% endblock %} {% if not config['DEBUG']
+    %}
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-1RCQ936RPQ"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-1RCQ936RPQ");
+    </script>
+    {% endif %}
+  </body>
+</html>
