@@ -44,7 +44,7 @@ body.dark-mode {
   background-repeat: no-repeat;
   height: 60px;
   width: 60px;
-  background-image: url('/secure_image?public_id=v1701024834/colorfullogo_ypzgak.svg');
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1701024834/colorfullogo_ypzgak.svg");
   transition: transform 0.3s;
 }
 
@@ -97,7 +97,7 @@ body.dark-mode .pl-refresh {
   border-radius: 5px;
   color: white;
   cursor: pointer;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
   font-size: 10px;
   font-weight: bold;
   padding: 4px 8px;
@@ -141,7 +141,7 @@ body.dark-mode .button-group button {
   box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   color: white;
   cursor: pointer;
-  font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif;
   font-size: 14px;
   font-weight: bold;
   gap: 35px;

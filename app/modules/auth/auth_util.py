@@ -1,22 +1,26 @@
 import os
 import secrets
 import string
-from datetime import datetime, timedelta
-
+from datetime import timezone, timedelta, datetime
 import openai
 import requests
 from cryptography.fernet import Fernet
-from flask import abort, current_app, session, redirect
-from openai import OpenAI
-from spotipy import Spotify
-
-from app import db
+from flask import abort, session, current_app
 
 
 def verify_session(session):
     if "tokens" not in session:
         abort(400)
     return session["tokens"].get("access_token")
+
+
+def fetch_user_data(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    res = requests.get(current_app.config["ME_URL"], headers=headers)
+    if res.status_code != 200:
+        abort(res.status_code)
+
+    return res.json()
 
 
 def generate_state():
@@ -44,52 +48,42 @@ def request_tokens(payload, client_id, client_secret):
     return res_data, None
 
 
+def convert_utc_to_est(utc_time):
+    return utc_time.replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=-4)))
+
+
 def load_encryption_key():
     return os.environ["CRYPT_KEY"].encode()
 
 
-def encrypt_api_key(api_key):
+def encrypt_data(api_key):
     cipher_suite = Fernet(load_encryption_key())
     encrypted_api_key = cipher_suite.encrypt(api_key.encode())
     return encrypted_api_key
 
 
-def decrypt_api_key(encrypted_api_key):
+def decrypt_data(encrypted_api_key):
     cipher_suite = Fernet(load_encryption_key())
     decrypted_api_key = cipher_suite.decrypt(encrypted_api_key)
     return decrypted_api_key.decode()
 
 
-def check_available_models(api_key):
-    headers = {"Authorization": f"Bearer {api_key}"}
-    url = "https://api.openai.com/v1/models"
-
-    response = requests.get(url, headers=headers)
-    response_data = response.json()
-    models = response_data.get("data", [])
-    model_names = [model["id"] for model in models]
-    return model_names
-
-
-def test_gpt4(client):
+def is_api_key_valid(key):
+    openai.api_key = key
     try:
-        test = client.chat.completions.create(
+        test = openai.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": "Hello!"},
             ],
-            max_tokens=1,
+            max_tokens=10,
             temperature=0,
         )
         if test.choices[0].message.content:
-            return "True"
-    except openai.AuthenticationError as e:
-        return "False"
-    except openai.NotFoundError as e:
-        return "False"
-    except Exception:
-        return "Skip"
+            return True
+    except openai.OpenAIError:
+        return False
 
 
 def refresh_tokens():
@@ -116,41 +110,3 @@ def refresh_tokens():
     )
 
     return True
-
-
-def create_openai_client(user_id):
-    from app.models.user_models import User
-
-    user = db.session.query(User).filter_by(id=user_id).first()
-    user_api_key = user.selected_api_key
-    if not user_api_key:
-        return "API Key not found."
-    else:
-        api_key = decrypt_api_key(user_api_key.encrypted_api_key)
-        client = OpenAI(api_key=api_key)
-        return client
-
-
-def init_session_client(session):
-    access_token = session.get("tokens", {}).get("access_token")
-    expiry_time_str = session.get("tokens", {}).get("expiry_time")
-
-    if expiry_time_str:
-        expiry_time = datetime.fromisoformat(expiry_time_str)
-        if datetime.now() >= expiry_time:
-            access_token = None
-
-    if not access_token:
-        from modules.auth.auth import refresh
-
-        refresh_response = refresh()
-
-        if refresh_response.status_code == 200:
-            access_token = refresh_response.json.get("access_token")
-        else:
-            return redirect(current_app.config["REDIRECT_URL"])
-
-    if not access_token:
-        return redirect(current_app.config["REDIRECT_URL"])
-
-    return Spotify(auth=access_token), None

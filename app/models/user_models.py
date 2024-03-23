@@ -1,101 +1,66 @@
+from datetime import datetime
+from sqlalchemy import BLOB
 from app import db
-from app.models.mixins import TimestampMixin, generate_uuid
 
 
-class User(db.Model, TimestampMixin):
-    __tablename__ = "users"
-    id = db.Column(db.String(255), primary_key=True)
-    user_name = db.Column(db.String(255), nullable=False)
-    profile_img_url = db.Column(db.String(255))
-    followers = db.Column(db.Integer, default=0)
-    account_type = db.Column(db.Enum("free", "premium"), nullable=False)
-    api_key = db.Column(db.String(255))
-    dark_mode = db.Column(db.Boolean, default=False)
-    playlists = db.relationship("Playlist", backref="user", lazy="dynamic")
-    last_active = db.Column(db.DateTime, nullable=True)
-
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
+class UserData(db.Model):
+    spotify_user_id = db.Column(db.VARCHAR(255), primary_key=True, index=True)
+    top_tracks = db.Column(db.JSON, nullable=True)
+    top_artists = db.Column(db.JSON, nullable=True)
+    all_artists_info = db.Column(db.JSON, nullable=True)
+    audio_features = db.Column(db.JSON, nullable=True)
+    genre_specific_data = db.Column(db.JSON, nullable=True)
+    sorted_genres_by_period = db.Column(db.JSON, nullable=True)
+    recent_tracks = db.Column(db.JSON, nullable=True)
+    playlist_info = db.Column(db.JSON, nullable=True)
+    last_active = db.Column(db.DateTime, default=datetime.utcnow)
+    api_key_encrypted = db.Column(BLOB, nullable=True)
+    isDarkMode = db.Column(db.Boolean, nullable=True)
 
 
-class UserTrackStats(db.Model, TimestampMixin):
-    __tablename__ = "user_track_stats"
-    id = db.Column(db.String(255), primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"))
-    track_id = db.Column(db.String(255), db.ForeignKey("tracks.id"))
-    period = db.Column(db.Enum("long_term", "medium_term", "short_term"))
-    popularity_score = db.Column(db.Integer)
+class artist_sql(db.Model):
+    id = db.Column(db.String(100), primary_key=True, index=True)
+    name = db.Column(db.VARCHAR(255))
+    external_url = db.Column(db.VARCHAR(255))
+    followers = db.Column(db.Integer)
+    genres = db.Column(db.VARCHAR(255))
+    images = db.Column(db.JSON)
+    popularity = db.Column(db.Integer)
 
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
-
-
-class UserArtistStats(db.Model, TimestampMixin):
-    __tablename__ = "user_artist_stats"
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"))  # Ensure this matches the 'id' column in 'users'
-    artist_id = db.Column(db.String(255), db.ForeignKey("artists.id"))
-    period = db.Column(db.Enum("long_term", "medium_term", "short_term"))
-    popularity_score = db.Column(db.Integer)
-
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserGenreStats(db.Model, TimestampMixin):
-    __tablename__ = "user_genre_stats"
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"))
-    genre_id = db.Column(db.String(255), db.ForeignKey("genres.name"))
-    period = db.Column(db.Enum("long_term", "medium_term", "short_term"))
-    popularity_score = db.Column(db.Integer)
+class features_sql(db.Model):
+    id = db.Column(db.VARCHAR(255), primary_key=True, index=True)
+    danceability = db.Column(db.Float)
+    energy = db.Column(db.Float)
+    key = db.Column(db.Integer)
+    loudness = db.Column(db.Float)
+    mode = db.Column(db.Integer)
+    speechiness = db.Column(db.Float)
+    acousticness = db.Column(db.Float)
+    instrumentalness = db.Column(db.Float)
+    liveness = db.Column(db.Float)
+    valence = db.Column(db.Float)
+    tempo = db.Column(db.Float)
+    time_signature = db.Column(db.Integer)
 
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
-
-
-class UserGenreTopTracks(db.Model, TimestampMixin):
-    __tablename__ = "user_genre_top_tracks"
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"), primary_key=True)
-    genre_id = db.Column(db.String(255), db.ForeignKey("genres.name"), primary_key=True)
-    track_id = db.Column(db.String(255), db.ForeignKey("tracks.id"), primary_key=True)
-    period = db.Column(db.Enum("long_term", "medium_term", "short_term"), primary_key=True)
-
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserGenreTopArtists(db.Model, TimestampMixin):
-    __tablename__ = "user_genre_top_artists"
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"), primary_key=True)
-    genre_id = db.Column(db.String(255), db.ForeignKey("genres.name"), primary_key=True)
-    artist_id = db.Column(db.String(255), db.ForeignKey("artists.id"), primary_key=True)
-    period = db.Column(db.Enum("long_term", "medium_term", "short_term"), primary_key=True)
-
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
-
-
-class RecentlyPlayedTracks(db.Model, TimestampMixin):
-    __tablename__ = "recently_played_tracks"
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String(255), db.ForeignKey("users.id"))
-    track_id = db.Column(db.String(255), db.ForeignKey("tracks.id"))
-    played_at = db.Column(db.DateTime, nullable=False)
-
-    def to_dict(self):
-        data = self.__dict__.copy()
-        data.pop("_sa_instance_state", None)
-        return data
+class playlist_sql(db.Model):
+    id = db.Column(db.VARCHAR(255), primary_key=True, index=True)
+    name = db.Column(db.VARCHAR(255))
+    owner = db.Column(db.VARCHAR(255))
+    cover_art = db.Column(db.VARCHAR(255))
+    public = db.Column(db.Boolean)
+    collaborative = db.Column(db.Boolean)
+    total_tracks = db.Column(db.Integer)
+    snapshot_id = db.Column(db.VARCHAR(255))
+    tracks = db.Column(db.JSON)
+    genre_counts = db.Column(db.JSON)
+    top_artists = db.Column(db.JSON)
+    feature_stats = db.Column(db.JSON)
+    temporal_stats = db.Column(db.JSON)

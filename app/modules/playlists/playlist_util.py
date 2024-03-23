@@ -1,121 +1,239 @@
-from collections import Counter
+import json
+from collections import defaultdict
 from datetime import datetime
+
+from flask import session
 from app import db
-from app.models.artgen_models import GenreStat
-from app.models.playlist_models import Playlist
-from util.database_util import (
-    fetch_playlist_tracks,
-    add_playlist_temporal_stats,
-    add_playlist_yearly_stats,
-    fetch_features,
-    add_playlist_feature_stats,
-    add_playlist_top_artists,
-    add_playlist,
-    add_playlist_genre_stats,
-)
+from models.user_models import playlist_sql
+from modules.user.user_util import init_session_client
+from util.database_util import get_or_fetch_audio_features, get_or_fetch_artist_info
 
 
-def fetch_playlists(sp, user_id):
-    playlists_info = []
-    playlists = sp.user_playlists(user_id)
+def get_playlist_info(sp, playlist_id):
+    playlist = sp.playlist(playlist_id)
 
-    for playlist in playlists["items"]:
-        playlist_info = {
-            "id": playlist["id"],
-            "name": playlist["name"],
-            "owner": playlist["owner"]["id"],
-            "public": playlist["public"],
-            "collaborative": playlist["collaborative"],
-            "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
-            "followers": playlist["followers"]["total"],
-            "total_tracks": playlist["tracks"]["total"],
-            "snapshot_id": playlist["snapshot_id"],
-        }
-        playlists_info.append(playlist_info)
-        Playlist.from_spotify_playlist(playlist, user_id)
-        db.session_commit()
-    return playlists_info
+    playlist_info = {
+        "id": playlist["id"],
+        "name": playlist["name"],
+        "owner": playlist["owner"]["display_name"],
+        "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
+        "public": playlist["public"],
+        "collaborative": playlist["collaborative"],
+        "total_tracks": playlist["tracks"]["total"],
+        "snapshot_id": playlist["snapshot_id"],
+    }
+
+    return playlist_info
 
 
-def find_newest_track(tracks):
-    return max(tracks, key=lambda track: track.album.release_date if track.album else datetime.min)
+def get_playlist_tracks(sp, playlist_id):
+    results = sp.playlist_tracks(playlist_id)
+    tracks = results["items"]
+    next_page = results["next"]
+
+    while next_page:
+        results = sp.next(results)
+        tracks.extend(results["items"])
+        next_page = results["next"]
+
+    return tracks
 
 
-def find_oldest_track(tracks):
-    return min(tracks, key=lambda track: track.album.release_date if track.album else datetime.max)
+def get_track_info_list(sp, tracks):
+    track_ids = [track_data["track"]["id"] for track_data in tracks if track_data["track"]["id"] is not None]
+    track_features_dict = get_or_fetch_audio_features(sp, track_ids)
+    track_info_list = []
 
-
-def tally_decades_from_tracks(tracks):
-    decades = [
-        (track.album.release_date.year // 10) * 10 for track in tracks if track.album and track.album.release_date
-    ]
-    decade_frequency = Counter(decades)
-    return decade_frequency
-
-
-def calculate_feature_stats(features):
-    feature_stats = {}
-    feature_keys = [
-        "acousticness",
-        "danceability",
-        "energy",
-        "instrumentalness",
-        "liveness",
-        "loudness",
-        "speechiness",
-        "valence",
-        "tempo",
-    ]
-    for key in feature_keys:
-        feature_stats[key] = {"avg_value": 0, "max_value": float("-inf"), "min_value": float("inf"), "total_value": 0}
-    for feature in features:
-        for key in feature_keys:
-            value = feature.get(key, 0)
-            feature_stats[key]["max_value"] = max(feature_stats[key]["max_value"], value)
-            feature_stats[key]["min_value"] = min(feature_stats[key]["min_value"], value)
-            feature_stats[key]["total_value"] += value
-    for key in feature_keys:
-        feature_stats[key]["avg_value"] = feature_stats[key]["total_value"] / len(features) if features else 0
-    return feature_stats
-
-
-def calc_artist_stats(tracks):
-    artist_counts = {}
-    for track in tracks:
-        for artist in track.artists:
-            if artist.id in artist_counts:
-                artist_counts[artist.id] += 1
-            else:
-                artist_counts[artist.id] = 1
-    return artist_counts
-
-
-def calc_genre_stats(tracks):
-    genre_counts = {}
-    for track in tracks:
-        for artist in track.artists:
-            for genre in artist.genres:
-                if genre.name in genre_counts:
-                    genre_counts[genre.name] += 1
-                else:
-                    genre_counts[genre.name] = 1
-    return genre_counts
-
-
-def update_playlist_genre_stats(playlist_id):
-    tracks = fetch_playlist_tracks(playlist_id)
-    genre_counts = calc_genre_stats(tracks)
-    update_playlist_genre_stats(playlist_id, genre_counts)
-    return genre_counts
-
-
-def compute_playlist_genres(genre_info):
-    results = []
-    genres = (
-        db.session.query(GenreStat).filter(GenreStat.sim_genres.isnot(None), GenreStat.opp_genres.isnot(None)).all()
+    unique_artist_ids = list(
+        set(
+            artist["id"]
+            for track_data in tracks
+            for artist in track_data["track"]["artists"]
+            if artist["id"] is not None
+        )
     )
+    all_artist_info = get_or_fetch_artist_info(sp, unique_artist_ids)
+
+    for track_data in tracks:
+        track = track_data["track"]
+
+        track.pop("available_markets", None)
+        track.pop("disc_number", None)
+        track.pop("external_ids", None)
+        track.pop("href", None)
+        track.pop("linked_from", None)
+        track.pop("restrictions", None)
+
+        artists = track["artists"]
+        image = track["album"].get("images", [])
+        cover_art = image[0].get("url") if image else None
+
+        artist_info = []
+        for artist in artists:
+            artist_id = artist["id"]
+            if artist_id is not None and artist_id in all_artist_info:
+                artist_info.append(all_artist_info[artist_id])
+        audio_features = track_features_dict.get(track["id"], {})
+        is_local = track.get("is_local", False)
+
+        track_info = {
+            "id": track["id"],
+            "name": track["name"],
+            "is_local": is_local,
+            "added_at": track_data.get("added_at", None),
+            "album": track["album"]["name"],
+            "release_date": track["album"]["release_date"],
+            "explicit": track["explicit"],
+            "popularity": None if is_local else track["popularity"],
+            "cover_art": cover_art,
+            "artists": artist_info,
+            "audio_features": audio_features,
+        }
+
+        track_info_list.append(track_info)
+
+    return track_info_list
+
+
+def get_genre_artists_count(track_info_list, top_n=10):
+    genre_info = {}
+    artist_counts = {}
+    artist_images = {}
+    artist_urls = {}
+    artist_ids = {}
+
+    for track_info in track_info_list:
+        for artist_dict in track_info["artists"]:
+            artist_id = artist_dict.get("id")
+            artist_name = artist_dict.get("name")
+            artist_genres = artist_dict.get("genres", [])
+            spotify_url = f"https://open.spotify.com/artist/{artist_id}"
+
+            try:
+                artist_image_url = artist_dict.get("images", [{}])[0].get("url")
+            except IndexError:
+                artist_image_url = None
+
+            for genre in artist_genres:
+                if genre not in genre_info:
+                    genre_info[genre] = {"count": 0, "artists": set()}
+
+                genre_info[genre]["count"] += 1
+                genre_info[genre]["artists"].add(artist_name)
+
+            artist_counts[artist_name] = artist_counts.get(artist_name, 0) + 1
+            artist_ids[artist_name] = artist_id
+
+            if artist_image_url:
+                artist_images[artist_name] = artist_image_url
+
+            artist_urls[artist_name] = spotify_url
+
+    sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
+    top_artists = [
+        (name, count, artist_images.get(name, None), artist_urls.get(name), artist_ids.get(name))
+        for name, count in sorted_artists[:top_n]
+    ]
+
+    for genre, info in genre_info.items():
+        info["artists"] = list(info["artists"])
+
+    return genre_info, top_artists
+
+
+def get_audio_features_stats(track_info_list):
+    audio_feature_stats = {
+        feature: {"min": None, "max": None, "total": 0}
+        for feature in track_info_list[0]["audio_features"].keys()
+        if feature != "id"
+    }
+    audio_feature_stats["popularity"] = {"min": None, "max": None, "total": 0}
+
+    for idx, track_info in enumerate(track_info_list):
+        if track_info["is_local"] or track_info["popularity"] is None:
+            continue
+
+        for feature, value in track_info["audio_features"].items():
+            if feature != "id":
+                try:
+                    if audio_feature_stats[feature]["min"] is None or value < audio_feature_stats[feature]["min"][1]:
+                        audio_feature_stats[feature]["min"] = (track_info["name"], value)
+                    if audio_feature_stats[feature]["max"] is None or value > audio_feature_stats[feature]["max"][1]:
+                        audio_feature_stats[feature]["max"] = (track_info["name"], value)
+                    audio_feature_stats[feature]["total"] += value
+                except KeyError:
+                    print(
+                        f"KeyError at track index {idx}, track name: {track_info['name']}, missing feature: {feature}"
+                    )
+                    continue
+
+        pop = track_info["popularity"]
+        if audio_feature_stats["popularity"]["min"] is None or pop < audio_feature_stats["popularity"]["min"][1]:
+            audio_feature_stats["popularity"]["min"] = (track_info["name"], pop)
+        if audio_feature_stats["popularity"]["max"] is None or pop > audio_feature_stats["popularity"]["max"][1]:
+            audio_feature_stats["popularity"]["max"] = (track_info["name"], pop)
+        audio_feature_stats["popularity"]["total"] += pop
+
+    for feature, stats in audio_feature_stats.items():
+        stats["avg"] = stats["total"] / len(
+            [track for track in track_info_list if not track["is_local"] and track["popularity"] is not None]
+        )
+
+    return audio_feature_stats
+
+
+def get_temporal_stats(track_info_list, playlist_id):
+    if not track_info_list:
+        return {}
+
+    def parse_date_or_default(track, default):
+        release_date = track["release_date"]
+        if release_date:
+            return (
+                datetime.strptime(release_date, "%Y")
+                if len(release_date) == 4
+                else datetime.strptime(release_date, "%Y-%m-%d")
+            )
+        return default
+
+    valid_tracks = [track for track in track_info_list if track.get("id") and not track.get("is_local")]
+
+    if not valid_tracks:
+        return {}  # return empty dict if no valid tracks
+
+    oldest_track = min(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.min))
+    newest_track = max(valid_tracks, key=lambda x: parse_date_or_default(x, datetime.max))
+
+    year_count = defaultdict(int)
+
+    for track in track_info_list:
+        if track["release_date"]:
+            year = track["release_date"].split("-")[0]
+            decade = year[:-1] + "0s"  # truncate the last digit and append "0s" for the decade representation
+            year_count[decade] += 1
+
+    temporal_stats = {
+        "oldest_track": oldest_track["name"],
+        "newest_track": newest_track["name"],
+        "oldest_track_date": oldest_track["release_date"],
+        "newest_track_date": newest_track["release_date"],
+        "oldest_track_image": oldest_track["cover_art"],
+        "newest_track_image": newest_track["cover_art"],
+        "oldest_track_artist": oldest_track["artists"][0]["name"] if oldest_track["artists"] else "Unknown",
+        "newest_track_artist": newest_track["artists"][0]["name"] if newest_track["artists"] else "Unknown",
+        "year_count": year_count,
+    }
+    return temporal_stats
+
+
+def compute_scores_for_playlist(genre_info, genre_sql):
+    results = []
+
+    # Fetch all relevant genres from the genre_sql table
+    genres = genre_sql.query.filter(genre_sql.sim_genres.isnot(None), genre_sql.opp_genres.isnot(None)).all()
 
     for genre_entry in genres:
+        # Skip genres that are already in the playlist
         if genre_entry.genre in genre_info:
             continue
 
@@ -125,7 +243,10 @@ def compute_playlist_genres(genre_info):
         opp_genres = genre_entry.opp_genres.split(", ")
         opp_weights = list(map(int, genre_entry.opp_weights.split(", ")))
 
+        # Compute similarity score
         sim_score = sum([genre_info.get(genre, 0) * weight for genre, weight in zip(sim_genres, sim_weights)])
+
+        # Compute opposition score
         opp_score = sum([genre_info.get(genre, 0) * weight for genre, weight in zip(opp_genres, opp_weights)])
 
         results.append(
@@ -133,104 +254,123 @@ def compute_playlist_genres(genre_info):
                 "genre": genre_entry.genre,
                 "similarity_score": sim_score,
                 "opposition_score": opp_score,
-                "spotify_url": genre_entry.spotify_url,
+                "spotify_url": genre_entry.spotify_url,  # Including the spotify_url attribute
             }
         )
 
+    # Sort the results based on similarity_score and opposition_score
     most_similar = sorted(results, key=lambda x: x["similarity_score"], reverse=True)[:10]
     most_opposite = sorted(results, key=lambda x: x["opposition_score"], reverse=True)[:10]
 
     return {"most_similar": most_similar, "most_opposite": most_opposite}
 
 
-def calculate_playlist_weights(genre_counts):
+def calculate_genre_weights(genre_counts, genre_sql):
     genre_info = {genre: data["count"] for genre, data in genre_counts.items()}
-    genre_scores = compute_playlist_genres(genre_info)
+    genre_scores = compute_scores_for_playlist(genre_info, genre_sql)
 
     total_tracks = sum(genre_info.values())
     genre_prevalence = {genre: count / total_tracks for genre, count in genre_info.items()}
 
     sorted_genres = sorted(genre_prevalence.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    # Create a dictionary to store the mapping of genre to closest_genre_stat
     genre_to_stat_mapping = {}
 
     for genre, _ in sorted_genres:
-        genre_entry = db.session.query(GenreStat).filter_by(genre=genre).first()
+        genre_entry = genre_sql.query.filter_by(genre=genre).first()
         if genre_entry:
             genre_to_stat_mapping[genre] = genre_entry.closest_stat_genres
 
     return genre_to_stat_mapping, genre_scores
 
 
-def aggregate_playlist_statistics(playlist_id):
-    # Fetch playlist tracks
-    tracks = fetch_playlist_tracks(playlist_id)
-    if not tracks:
-        print("No tracks found for the playlist.")
-        return
-
-    # Temporal Stats
-    newest_track = find_newest_track(tracks)
-    oldest_track = find_oldest_track(tracks)
-    temporal_stats = {"newest_track": newest_track, "oldest_track": oldest_track}
-
-    # Feature Stats
-    track_ids = [track.id for track in tracks if track]
-    features = fetch_features(track_ids)
-    feature_stats = calculate_feature_stats(features)
-
-    # Top Artists
-    artist_counts = calc_artist_stats(tracks)
-
-    # Genre Stats
-    genre_counts = calc_genre_stats(tracks)
-    genre_scores = compute_playlist_genres(genre_counts)
-
-    # Calculate Playlist Weights
-    year_count = tally_decades_from_tracks(tracks)
-    sorted_genre_data = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)
-    top_10_genre_data = dict(sorted_genre_data[:10])
-    artgen_ten, genre_scores = calculate_playlist_weights(genre_counts)
-
-    # Aggregate Results
-    playlist_data = {
-        "temporal_stats": temporal_stats,
-        "feature_stats": feature_stats,
-        "top_artists": artist_counts,
-        "genre_stats": genre_counts,
-        "year_count": year_count,
-        "top_10_genres": top_10_genre_data,
-        "artgen_ten": artgen_ten,
-        "genre_scores": genre_scores,
-    }
-
-    # Update the database with the aggregated statistics
-    add_playlist_temporal_stats(playlist_id, newest_track, oldest_track)
-    add_playlist_feature_stats(playlist_id, feature_stats)
-    add_playlist_top_artists(playlist_id, artist_counts)
-    add_playlist_genre_stats(playlist_id, genre_counts)
-
-    return playlist_data
-
-
 def get_playlist_details(sp, playlist_id):
+    playlist_info = get_playlist_info(sp, playlist_id)
+    tracks = get_playlist_tracks(sp, playlist_id)
+    track_info_list = get_track_info_list(sp, tracks)
+    genre_counts, top_artists = get_genre_artists_count(track_info_list)
+    audio_feature_stats = get_audio_features_stats(track_info_list)
+    temporal_stats = get_temporal_stats(track_info_list, playlist_id)
+    return playlist_info, track_info_list, genre_counts, top_artists, audio_feature_stats, temporal_stats
+
+
+def update_playlist_data(playlist_id):
+    sp, error = init_session_client(session)
+    if error:
+        return json.dumps(error), 401
+
+    playlist = playlist_sql.query.get(playlist_id)
+    if not playlist:
+        return "Playlist not found", 404
+
+    # Fetch the new data
+    (
+        pl_playlist_info,
+        pl_track_data,
+        pl_genre_counts,
+        pl_top_artists,
+        pl_feature_stats,
+        pl_temporal_stats,
+    ) = get_playlist_details(sp, playlist_id)
+
+    # Update the playlist object
+    playlist.name = pl_playlist_info["name"]
+    playlist.owner = pl_playlist_info["owner"]
+    playlist.cover_art = pl_playlist_info["cover_art"]
+    playlist.public = pl_playlist_info["public"]
+    playlist.collaborative = pl_playlist_info["collaborative"]
+    playlist.total_tracks = pl_playlist_info["total_tracks"]
+    playlist.snapshot_id = pl_playlist_info["snapshot_id"]
+    playlist.tracks = pl_track_data
+    playlist.genre_counts = pl_genre_counts
+    playlist.top_artists = pl_top_artists
+    playlist.feature_stats = pl_feature_stats
+    playlist.temporal_stats = pl_temporal_stats
+
     try:
-        # Fetch playlist metadata
-        playlist = sp.playlist(playlist_id)
-        user_id = playlist["owner"]["id"]
-        # Extract and return relevant details
-        playlist_details = {
-            "id": playlist["id"],
-            "name": playlist["name"],
-            "owner": playlist["owner"]["display_name"],
-            "public": playlist["public"],
-            "collaborative": playlist["collaborative"],
-            "cover_art": playlist["images"][0]["url"] if playlist["images"] else None,
-            "followers": playlist["followers"]["total"],
-            "total_tracks": playlist["tracks"]["total"],
-            "snapshot_id": playlist["snapshot_id"],
-        }
-        Playlist.from_spotify_playlist(playlist, user_id)
-        return playlist_details
-    except Exception as e:
-        print(f"Error fetching playlist details: {e}")
-        return None
+        db.session.merge(playlist)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        raise
+
+    return "Playlist updated successfully"
+
+
+def get_sp_genre_seeds(sp):
+    global genre_seeds
+    if "genre_seeds" not in globals():
+        genre_seeds = sp.recommendation_genre_seeds()  # Assuming sp is your Spotipy client
+    return genre_seeds
+
+
+def get_artists_seeds(artist_counts, artist_ids, top_n=5):
+    sorted_artists = sorted(artist_counts.items(), key=lambda x: x[1], reverse=True)
+    return [artist_ids[artist[0]] for artist in sorted_artists[: min(top_n, len(sorted_artists))]]
+
+
+def get_genres_seeds(sp, genre_info, top_n=10):
+    genre_seeds_dict = get_sp_genre_seeds(sp)
+    genre_seeds = genre_seeds_dict["genres"]
+
+    valid_genres = []
+    for genre, count in sorted(genre_info.items(), key=lambda x: x[1]["count"], reverse=True)[:top_n]:
+        sanitized_genre = genre.strip().lower()
+
+        # Check for direct match
+        if sanitized_genre in genre_seeds:
+            valid_genres.append(sanitized_genre)
+            continue
+
+        hyphenated_genre = sanitized_genre.replace(" ", "-")
+        if hyphenated_genre in genre_seeds:
+            valid_genres.append(hyphenated_genre)
+            continue
+
+        spaced_genre = sanitized_genre.replace("-", " ")
+        if spaced_genre in genre_seeds:
+            valid_genres.append(spaced_genre)
+
+    print(valid_genres)
+    return valid_genres[:2]

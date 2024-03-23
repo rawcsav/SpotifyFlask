@@ -1,465 +1,536 @@
-$(document).ready(function () {
-  $("#playlistOptions").empty();
+function getCsrfToken() {
+  return document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const playlistOptions = document.getElementById("playlistOptions");
+  playlistOptions.innerHTML = "";
+
+  // eslint-disable-next-line no-undef
   playlistData.forEach(function (playlist) {
-    $("#playlistOptions")
-      .append(`<a href="#" class="playlist-option" data-playlistid="${playlist.id}">
-                  <div class="playlist-item">
-                    <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
-                    <span class="playlist-name">${playlist.name}</span>
-                  </div>
-                </a>`);
+    const option = document.createElement("a");
+    option.href = "#";
+    option.classList.add("playlist-option");
+    option.dataset.playlistid = playlist.id;
+    option.innerHTML = `<div class="playlist-item">
+                          <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
+                          <span class="playlist-name">${playlist.name}</span>
+                        </div>`;
+    playlistOptions.appendChild(option);
   });
 
-  var modal = $("#instructionsModal");
-  var closeBtn = $(".close");
+  const modal = document.getElementById("instructionsModal");
+  const closeBtn = document.querySelector(".close");
 
-  $("#showInstructions").click(function () {
-    modal.css("display", "block");
+  document
+    .getElementById("showInstructions")
+    .addEventListener("click", function () {
+      modal.style.display = "block";
+    });
+
+  closeBtn.addEventListener("click", function () {
+    modal.style.display = "none";
   });
 
-  closeBtn.click(function () {
-    modal.css("display", "none");
-  });
-
-  $(window).click(function (event) {
-    if ($(event.target).is(modal)) {
-      modal.css("display", "none");
+  window.addEventListener("click", function (event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
     }
   });
 });
 
-$(document).ready(function () {
-  $("#showInstructions").on("click", function () {
-    $("#instructionsModal").fadeIn();
-    $("body").css("overflow", "hidden");
+document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("showInstructions")
+    .addEventListener("click", function () {
+      document.getElementById("instructionsModal").style.display = "block";
+      document.body.style.overflow = "hidden";
+    });
+
+  document.querySelector(".close").addEventListener("click", function () {
+    document.getElementById("instructionsModal").style.display = "none";
+    document.body.style.overflow = "auto";
   });
 
-  $(".close").on("click", function () {
-    $("#instructionsModal").fadeOut();
-    $("body").css("overflow", "auto");
-  });
-
-  $(window).on("click", function (event) {
-    if ($(event.target).is("#instructionsModal")) {
-      $("#instructionsModal").fadeOut();
-      $("body").css("overflow", "auto");
+  window.addEventListener("click", function (event) {
+    if (event.target === document.getElementById("instructionsModal")) {
+      document.getElementById("instructionsModal").style.display = "none";
+      document.body.style.overflow = "auto";
     }
   });
+});
+document
+  .getElementById("universal_search")
+  .addEventListener("click", function () {
+    let query = document.getElementById("universal_input").value;
+    document.getElementById("universal_search_results").innerHTML = "";
+    document.getElementById("universal_loading").style.display = "block";
+    document.getElementById("universal_error").style.display = "none";
 
-  $("#universal_search").click(function () {
-    let query = $("#universal_input").val();
-    $("#universal_search_results").empty();
-    $("#universal_loading").show();
-    $("#universal_error").hide();
-    $.ajax({
-      url: "/search",
+    fetch("/search", {
       method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
+      body: JSON.stringify({
         query: query,
         type: "track,artist",
       }),
-      success: function (data) {
-        $("#universal_loading").hide();
-        let trackResults = JSON.parse(data)["tracks"]["items"];
-        let artistResults = JSON.parse(data)["artists"]["items"];
-        $("#universal_search_results").empty();
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("universal_loading").style.display = "none";
+        let trackResults = data["tracks"]["items"];
+        let artistResults = data["artists"]["items"];
+        let searchResults = document.getElementById("universal_search_results");
+        searchResults.innerHTML = "";
 
         trackResults.forEach((result) => {
-          $("#universal_search_results").append(`
-                  <div class="clickable-result track" data-id="${result["id"]}">
-                      <img src="${result["album"]["images"][0]["url"]}" alt="Cover Art" class="result-image">
-                      <div class="result-info">
-                          <h2>${result["name"]}</h2>
-                          <p>${result["artists"][0]["name"]}</p>
-                      </div>
-                  </div>
-              `);
+          searchResults.insertAdjacentHTML(
+            "beforeend",
+            `<div class="clickable-result track" data-id="${result["id"]}">
+             <img src="${result["album"]["images"][0]["url"]}" alt="Cover Art" class="result-image">
+             <div class="result-info">
+                 <h2>${result["name"]}</h2>
+                 <p>${result["artists"][0]["name"]}</p>
+             </div>
+           </div>`,
+          );
         });
-        artistResults.forEach((result) => {
-          $("#universal_search_results").append(`
-                  <div class="clickable-result artist" data-id="${result["id"]}">
-                      <img src="${result["images"][0]["url"]}" alt="${result["name"]}" class="result-image">
-                      <div class="result-info">
-                          <h2>${result["name"]}</h2>
-                      </div>
-                  </div>
-              `);
-        });
-      },
-      fail: function (jqXHR, textStatus, errorThrown) {
-        $("#universal_error").show();
-        $("#universal_loading").hide();
-        console.error("Error:", textStatus, errorThrown);
-      },
-    });
-  });
-  function updateSeedsInput(inputId) {
-    let ids = [];
-    let trackIds = [];
-    let artistIds = [];
 
-    $(`#${inputId} .clickable-result`).each(function () {
-      ids.push($(this).attr("data-id"));
-      if ($(this).hasClass("track")) {
-        trackIds.push($(this).attr("data-id"));
-      } else if ($(this).hasClass("artist")) {
-        artistIds.push($(this).attr("data-id"));
+        artistResults.forEach((result) => {
+          searchResults.insertAdjacentHTML(
+            "beforeend",
+            `<div class="clickable-result artist" data-id="${result["id"]}">
+             <img src="${result["images"][0]["url"]}" alt="${result["name"]}" class="result-image">
+             <div class="result-info">
+                 <h2>${result["name"]}</h2>
+             </div>
+           </div>`,
+          );
+        });
+      })
+      .catch((error) => {
+        document.getElementById("universal_error").style.display = "block";
+        document.getElementById("universal_loading").style.display = "none";
+        console.error("Error:", error);
+      });
+  });
+
+function updateSeedsInput(inputId) {
+  let ids = [];
+  let trackIds = [];
+  let artistIds = [];
+
+  document
+    .querySelectorAll(`#${inputId} .clickable-result`)
+    .forEach(function (element) {
+      ids.push(element.getAttribute("data-id"));
+      if (element.classList.contains("track")) {
+        trackIds.push(element.getAttribute("data-id"));
+      } else if (element.classList.contains("artist")) {
+        artistIds.push(element.getAttribute("data-id"));
       }
     });
 
-    $(`#${inputId}`).val(ids.join(","));
-    $("#track_seeds").val(trackIds.join(","));
-    $("#artist_seeds").val(artistIds.join(","));
-  }
+  document.getElementById(inputId).value = ids.join(",");
+  document.getElementById("track_seeds").value = trackIds.join(",");
+  document.getElementById("artist_seeds").value = artistIds.join(",");
+}
 
-  $("#universal_input").on("keypress", function (e) {
-    if (e.which == 13) {
-      let query = $(this).val();
-      $("#universal_search").trigger("click");
+document
+  .getElementById("universal_input")
+  .addEventListener("keypress", function (e) {
+    if (e.which === 13) {
+      // eslint-disable-next-line no-unused-vars
+      let query = this.value;
+      document.getElementById("universal_search").click();
     }
   });
 
-  function getTotalSeeds() {
-    return $("#universal_seeds_container .clickable-result").length;
-  }
+function getTotalSeeds() {
+  return document.querySelectorAll(
+    "#universal_seeds_container .clickable-result",
+  ).length;
+}
+document
+  .getElementById("universal_search_results")
+  .addEventListener("click", function (event) {
+    if (event.target.closest(".clickable-result")) {
+      if (getTotalSeeds() < 5) {
+        let seedType = event.target
+          .closest(".clickable-result")
+          .classList.contains("track")
+          ? "track"
+          : "artist";
+        let seed = event.target.closest(".clickable-result").cloneNode(true);
+        seed.classList.add(seedType);
+        document.getElementById("universal_seeds_container").appendChild(seed);
+        updateSeedsInput("universal_seeds_container");
+      } else {
+        alert("You can select no more than 5 combined seeds.");
+      }
+    }
+  });
 
-  $("#universal_search_results").on("click", ".clickable-result", function () {
-    if (getTotalSeeds() < 5) {
-      let seedType = $(this).hasClass("track") ? "track" : "artist";
-      $("#universal_seeds_container").append(
-        $(this).clone().addClass(seedType),
-      );
+document
+  .getElementById("universal_seeds_container")
+  .addEventListener("click", function (event) {
+    if (event.target.closest(".clickable-result")) {
+      event.target.closest(".clickable-result").remove();
       updateSeedsInput("universal_seeds_container");
-    } else {
-      alert("You can select no more than 5 combined seeds.");
     }
   });
 
-  $("#universal_seeds_container").on("click", ".clickable-result", function () {
-    let seedType = $(this).hasClass("track") ? "track" : "artist";
-    $(this).remove();
-    updateSeedsInput("universal_seeds_container");
+document.querySelector("form").addEventListener("submit", function (event) {
+  event.preventDefault();
+  getRecommendations();
+});
+
+function createSlider(sliderId, inputId, min, max, step, values) {
+  const slider = document.getElementById(sliderId);
+  slider.min = min;
+  slider.max = max;
+  slider.step = step || 1;
+  slider.valueLow = values[0];
+  slider.valueHigh = values[1];
+  slider.addEventListener("input", function () {
+    document.getElementById(inputId).value =
+      slider.valueLow + "," + slider.valueHigh;
   });
+}
 
-  $("form").submit(function (event) {
-    event.preventDefault();
-    getRecommendations();
-  });
+createSlider("popularity_slider", "popularity_input", 0, 100, 1, [0, 100]);
+createSlider("energy_slider", "energy_input", 0, 1, 0.01, [0, 1]);
+createSlider(
+  "instrumentalness_slider",
+  "instrumentalness_input",
+  0,
+  1,
+  0.01,
+  [0, 1],
+);
+createSlider("tempo_slider", "tempo_input", 24, 208, 1, [24, 208]);
+createSlider("danceability_slider", "danceability_input", 0, 1, 0.01, [0, 1]);
+createSlider("valence_slider", "valence_input", 0, 1, 0.01, [0, 1]);
 
-  $("#popularity_slider")
-    .slider({
-      range: true,
-      min: 0,
-      max: 100,
-      values: [0, 100],
-      slide: function (event, ui) {
-        $("#popularity_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "🤷 Who's that?")
-    .attr("data-max", "🌟 Superstar!");
-
-  $("#energy_slider")
-    .slider({
-      range: true,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      values: [0, 1],
-      slide: function (event, ui) {
-        $("#energy_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "🐢 Chill vibes")
-    .attr("data-max", "🚀 Blast off!");
-
-  $("#instrumentalness_slider")
-    .slider({
-      range: true,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      values: [0, 1],
-      slide: function (event, ui) {
-        $("#instrumentalness_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "🎤 Vocal party")
-    .attr("data-max", "🎸 All instruments");
-
-  $("#tempo_slider")
-    .slider({
-      range: true,
-      min: 24,
-      max: 208,
-      values: [24, 208],
-      slide: function (event, ui) {
-        $("#tempo_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "🚶 Strolling pace")
-    .attr("data-max", "🏃 Sprint mode");
-
-  $("#danceability_slider")
-    .slider({
-      range: true,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      values: [0, 1],
-      slide: function (event, ui) {
-        $("#danceability_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "🪑 Seat groove")
-    .attr("data-max", "💃 Dance fever!");
-
-  $("#valence_slider")
-    .slider({
-      range: true,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      values: [0, 1],
-      slide: function (event, ui) {
-        $("#valence_input").val(ui.values[0] + "," + ui.values[1]);
-      },
-    })
-    .attr("data-min", "☁️ Moody blues")
-    .attr("data-max", "☀️ Sunshine joy");
-
-  let currentPlayingAudio = null;
-  let currentPlayingButton = null;
-  $(document).on("click", ".add-to-seeds", function (event) {
+// Add data-min and data-max attributes for each slider
+document.getElementById("popularity_slider").dataset.min = "🤷 Who's that?";
+document.getElementById("popularity_slider").dataset.max = "🌟 Superstar!";
+document.getElementById("energy_slider").dataset.min = "🐢 Chill vibes";
+document.getElementById("energy_slider").dataset.max = "🚀 Blast off!";
+document.getElementById("instrumentalness_slider").dataset.min =
+  "🎤 Vocal party";
+document.getElementById("instrumentalness_slider").dataset.max =
+  "🎸 All instruments";
+document.getElementById("tempo_slider").dataset.min = "🚶 Strolling pace";
+document.getElementById("tempo_slider").dataset.max = "🏃 Sprint mode";
+document.getElementById("danceability_slider").dataset.min = "🪑 Seat groove";
+document.getElementById("danceability_slider").dataset.max = "💃 Dance fever!";
+document.getElementById("valence_slider").dataset.min = "☁️ Moody blues";
+document.getElementById("valence_slider").dataset.max = "☀️ Sunshine joy";
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".add-to-seeds")) {
     event.preventDefault();
     if (getTotalSeeds() < 5) {
       let trackId, trackName, artistName, artistId;
-      let seedType = $(this).hasClass("track") ? "track" : "artist";
-      let imgSrc = $(this)
+      let seedType = event.target
+        .closest(".add-to-seeds")
+        .classList.contains("track")
+        ? "track"
+        : "artist";
+      let imgSrc = event.target
         .closest(".result-item")
-        .find(".result-cover-art-container img")
-        .attr("src");
+        .querySelector(".result-cover-art-container img").src;
 
+      let seedElement;
       if (seedType === "track") {
-        let trackId = $(this).attr("data-trackid");
-        let trackName = $(this).attr("data-name");
-        let artistName = $(this).attr("data-artist");
-        seedElement = $(`
-                <div class="clickable-result track" data-id="${trackId}">
-                    <img src="${imgSrc}" alt="Cover Art" class="result-image">
-                    <div class="result-info">
-                        <h2>${trackName}</h2>
-                        <p>${artistName}</p>
-                    </div>
-                </div>
-            `);
+        trackId = event.target.closest(".add-to-seeds").dataset.trackid;
+        trackName = event.target.closest(".add-to-seeds").dataset.name;
+        artistName = event.target.closest(".add-to-seeds").dataset.artist;
+        seedElement = document.createElement("div");
+        seedElement.classList.add("clickable-result", "track");
+        seedElement.dataset.id = trackId;
+        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
+                                 <div class="result-info">
+                                     <h2>${trackName}</h2>
+                                     <p>${artistName}</p>
+                                 </div>`;
       } else {
-        let artistName = $(this).attr("data-artist");
-        let artistId = $(this).attr("data-artistid");
-        seedElement = $(`
-                <div class="clickable-result artist" data-id="${artistId}">
-                    <img src="${imgSrc}" alt="Cover Art" class="result-image">
-                    <div class="result-info">
-                        <h2>${artistName}</h2>
-                    </div>
-                </div>
-            `);
+        artistName = event.target.closest(".add-to-seeds").dataset.artist;
+        artistId = event.target.closest(".add-to-seeds").dataset.artistid;
+        seedElement = document.createElement("div");
+        seedElement.classList.add("clickable-result", "artist");
+        seedElement.dataset.id = artistId;
+        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
+                                 <div class="result-info">
+                                     <h2>${artistName}</h2>
+                                 </div>`;
       }
 
-      $("#universal_seeds_container").append(seedElement);
+      document
+        .getElementById("universal_seeds_container")
+        .appendChild(seedElement);
       updateSeedsInput("universal_seeds_container");
     } else {
       alert("You can select no more than 5 combined seeds.");
     }
-  });
+  }
+});
 
-  function getRecommendations() {
-    $.post("/get_recommendations", $("form").serialize(), function (data) {
-      console.log($("form").serialize());
+function getRecommendations() {
+  const formData = new FormData(document.querySelector("form"));
+  const formObject = Object.fromEntries(formData.entries());
+  const formJSON = JSON.stringify(formObject);
+
+  fetch("/get_recommendations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: formJSON,
+  })
+    .then((response) => response.json())
+    .then(async (data) => {
+      console.log(formJSON);
 
       let recommendations = data["recs"];
-      $("#results").empty();
-      recommendations.forEach((trackInfo) => {
-        let audioElement = new Audio(trackInfo["preview"]);
-        $("#results").append(`
-                  <div class="result-item">
-                    <div class="result-cover-art-container">
-                      <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
-                      <div class="caption">
-                        <h2>${trackInfo["trackName"]}</h2>
-                        <p>${trackInfo["artist"]}</p>
-                      </div>
-                      <div class="play-button" id="play_${trackInfo["trackid"]}">&#9654;</div>
-                    </div>
-                          <div class="dropdown-content">
-                            <a href="#" class="add-to-saved" data-trackid="${trackInfo["trackid"]}">
-                                <i class="far fa-heart heart-icon"></i>
-                            </a>
-                            <a href="#" class="add-to-playlist" data-trackid="${trackInfo["trackid"]}">
-                                <i class="plus-icon fas fa-plus plus-icon-grey"></i>
-                            </a>
-                            <div class="add-to-seeds-dropdown">
-                              <a href="#" class="add-to-seeds-toggle" data-trackid="${trackInfo["trackid"]}" data-artistid="${trackInfo["artistid"]}">
-                                <i class="fas fa-seedling seed-icon"></i>
-                              </a>
-                              <div class="seeds-options">
-                                <a href="#" class="add-to-seeds track" data-trackid="${trackInfo["trackid"]}" data-name="${trackInfo["trackName"]}" data-artist="${trackInfo["artist"]}">Add Track to Seeds</a>
-                                <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo["artistid"]}" data-artist="${trackInfo["artist"]}">Add Artist to Seeds</a>
-                              </div>
-                            </div>
-                          </div>
-                      <audio controls>
-                          <source src="${trackInfo["preview"]}" type="audio/mpeg">
-                          Your browser does not support the audio element.
-                      </audio>
-                  </div> 
-                `);
-        let playButton = $(`#play_${trackInfo["trackid"]}`);
-        playButton.addClass("noselect");
+      const results = document.getElementById("results");
+      results.innerHTML = "";
 
-        audioElement.addEventListener("play", function () {
-          if (currentPlayingAudio && currentPlayingAudio !== audioElement) {
-            currentPlayingAudio.pause();
-            currentPlayingButton.html("&#9654;");
+      let currentPlayingSource = null;
+      let currentPlayingButton = null;
+      const audioContext = new AudioContext();
+
+      for (const trackInfo of recommendations) {
+        const response = await fetch(trackInfo["preview"]);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        results.insertAdjacentHTML(
+          "beforeend",
+          `<div class="result-item">
+             <div class="result-cover-art-container">
+               <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
+               <div class="caption">
+                 <h2>${trackInfo["trackName"]}</h2>
+                 <p>${trackInfo["artist"]}</p>
+               </div>
+               <div class="play-button noselect" id="play_${trackInfo["trackid"]}">&#9654;</div>
+             </div>
+             <div class="dropdown-content">
+               <a href="#" class="add-to-saved" data-trackid="${trackInfo["trackid"]}">
+                 <i class="far fa-heart heart-icon"></i>
+               </a>
+               <a href="#" class="add-to-playlist" data-trackid="${trackInfo["trackid"]}">
+                 <i class="plus-icon fas fa-plus plus-icon-grey"></i>
+               </a>
+               <div class="add-to-seeds-dropdown">
+                 <a href="#" class="add-to-seeds-toggle" data-trackid="${trackInfo["trackid"]}" data-artistid="${trackInfo["artistid"]}">
+                   <i class="fas fa-seedling seed-icon"></i>
+                 </a>
+                 <div class="seeds-options">
+                   <a href="#" class="add-to-seeds track" data-trackid="${trackInfo["trackid"]}" data-name="${trackInfo["trackName"]}" data-artist="${trackInfo["artist"]}">Add Track to Seeds</a>
+                   <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo["artistid"]}" data-artist="${trackInfo["artist"]}">Add Artist to Seeds</a>
+                 </div>
+               </div>
+             </div>
+             <audio controls>
+               <source src="${trackInfo["preview"]}" type="audio/mpeg">
+               Your browser does not support the audio element.
+             </audio>
+           </div>`,
+        );
+
+        let playButton = document.getElementById(
+          `play_${trackInfo["trackid"]}`,
+        );
+
+        playButton.addEventListener("click", function () {
+          if (currentPlayingSource) {
+            currentPlayingSource.stop();
+            currentPlayingButton.innerHTML = "&#9654;";
           }
-          currentPlayingAudio = audioElement;
-          currentPlayingButton = playButton;
-          playButton.html("&#9616;&#9616;");
-        });
-        audioElement.addEventListener("pause", function () {
-          playButton.html("&#9654;");
-        });
-        playButton.click(function () {
-          if (audioElement.paused) {
-            audioElement.play();
+
+          const source = audioContext.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioContext.destination);
+
+          if (currentPlayingSource !== source) {
+            source.start();
+            currentPlayingSource = source;
+            currentPlayingButton = playButton;
+            playButton.innerHTML = "&#9616;&#9616;";
           } else {
-            audioElement.pause();
+            currentPlayingSource = null;
           }
+
+          source.onended = function () {
+            playButton.innerHTML = "&#9654;";
+          };
         });
-      });
+      }
 
       document.querySelector(".results-container").scrollTop = 0;
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-      console.error("Error:", textStatus, errorThrown);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
-  }
-});
-
+}
 function showToast(button, message) {
-  let toast = $("#toast");
+  let toast = document.getElementById("toast");
 
-  let buttonOffset = button.offset();
-  toast.css({
-    top: buttonOffset.top,
-    left: buttonOffset.left,
-  });
+  let buttonOffset = button.getBoundingClientRect();
+  toast.style.top = buttonOffset.top + "px";
+  toast.style.left = buttonOffset.left + "px";
 
-  toast.text(message).fadeIn(400).delay(2000).fadeOut(1000);
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3400);
 }
 
-$(document).on("click", ".add-to-saved", function (event) {
-  event.preventDefault();
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".add-to-saved")) {
+    event.preventDefault();
 
-  let heartIcon = $(this).find(".heart-icon");
-  let trackId = $(this).attr("data-trackid");
-  let button = $(this);
+    let heartIcon = event.target
+      .closest(".add-to-saved")
+      .querySelector(".heart-icon");
+    let trackId = event.target.closest(".add-to-saved").dataset.trackid;
+    let button = event.target.closest(".add-to-saved");
 
-  if (heartIcon.hasClass("fas fa-heart")) {
-    $.ajax({
-      url: "/unsave_track",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ track_id: trackId }),
-      success: function (data) {
-        showToast(button, "Track unsaved successfully!");
-
-        heartIcon.removeClass("fas fa-heart liked").addClass("far fa-heart");
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        showToast(
-          button,
-          "An error occurred while unsaving the track.",
-          "error",
-        );
-        console.error("Error:", textStatus, errorThrown);
-      },
-    });
-  } else {
-    $.ajax({
-      url: "/save_track",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ track_id: trackId }),
-      success: function (data) {
-        showToast(button, "Track saved successfully!");
-
-        heartIcon.removeClass("far fa-heart").addClass("fas fa-heart liked");
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        showToast(button, "An error occurred while saving the track.");
-        console.error("Error:", textStatus, errorThrown);
-      },
-    });
+    if (heartIcon.classList.contains("fas", "fa-heart")) {
+      fetch("/unsave_track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCsrfToken(),
+        },
+        body: JSON.stringify({ track_id: trackId }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            showToast(button, "Track unsaved successfully!");
+            heartIcon.classList.remove("fas", "fa-heart", "liked");
+            heartIcon.classList.add("far", "fa-heart");
+          } else {
+            throw new Error("Error unsaving the track");
+          }
+        })
+        .catch((error) => {
+          showToast(button, "An error occurred while unsaving the track.");
+          console.error("Error:", error);
+        });
+    } else {
+      fetch("/save_track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCsrfToken(),
+        },
+        body: JSON.stringify({ track_id: trackId }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            showToast(button, "Track saved successfully!");
+            heartIcon.classList.remove("far", "fa-heart");
+            heartIcon.classList.add("fas", "fa-heart", "liked");
+          } else {
+            throw new Error("Error saving the track");
+          }
+        })
+        .catch((error) => {
+          showToast(button, "An error occurred while saving the track.");
+          console.error("Error:", error);
+        });
+    }
   }
 });
 
-$(document).on("click", ".add-to-playlist", function (event) {
-  event.preventDefault();
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".add-to-playlist")) {
+    event.preventDefault();
 
-  let button = $(this);
-  let trackId = $(this).attr("data-trackid");
+    let button = event.target.closest(".add-to-playlist");
+    let trackId = button.dataset.trackid;
 
-  $("#playlistModal")
-    .data("trackid", trackId)
-    .data("button", button)
-    .css("display", "block");
+    let playlistModal = document.getElementById("playlistModal");
+    playlistModal.dataset.trackid = trackId;
+    playlistModal.dataset.button = button;
+    playlistModal.style.display = "block";
+  }
 });
 
-$(document).on("click", ".playlist-option", function (event) {
-  event.preventDefault();
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".playlist-option")) {
+    event.preventDefault();
 
-  let plusIcon = $(this).find(".plus-icon");
-  let playlistId = $(this).attr("data-playlistid");
-  let modal = $("#playlistModal");
-  let trackId = modal.data("trackid");
+    let plusIcon = event.target
+      .closest(".playlist-option")
+      .querySelector(".plus-icon");
+    let playlistId =
+      event.target.closest(".playlist-option").dataset.playlistid;
+    let modal = document.getElementById("playlistModal");
+    let trackId = modal.dataset.trackid;
 
-  let button = modal.data("button");
+    let button = modal.dataset.button;
 
-  $.ajax({
-    url: "/add_to_playlist",
-    method: "POST",
-    contentType: "application/json",
-    data: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
-    success: function (data) {
-      showToast(button, "Added to Playlist!");
-      modal.css("display", "none");
-      plusIcon.removeClass("plus-icon-grey").addClass("plus-icon-green");
-    },
-    fail: function (jqXHR, textStatus, errorThrown) {
-      console.error("Error:", textStatus, errorThrown);
-    },
+    fetch("/add_to_playlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
+      body: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          showToast(button, "Added to Playlist!");
+          modal.style.display = "none";
+          plusIcon.classList.remove("plus-icon-grey");
+          plusIcon.classList.add("plus-icon-green");
+        } else {
+          throw new Error("Error adding to playlist");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+});
+
+document.querySelectorAll(".close").forEach((closeButton) => {
+  closeButton.addEventListener("click", function () {
+    document.getElementById("playlistModal").style.display = "none";
   });
 });
 
-$(".close").click(function () {
-  $("#playlistModal").css("display", "none");
-});
-
-$(window).click(function (event) {
-  if ($(event.target).is($("#playlistModal"))) {
-    $("#playlistModal").css("display", "none");
+window.addEventListener("click", function (event) {
+  if (event.target === document.getElementById("playlistModal")) {
+    document.getElementById("playlistModal").style.display = "none";
   }
 });
 
-$(document).on("click", ".add-to-seeds-toggle", function (event) {
-  event.preventDefault();
-  $(this).next(".seeds-options").toggle();
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".add-to-seeds-toggle")) {
+    event.preventDefault();
+    event.target
+      .closest(".add-to-seeds-toggle")
+      .nextElementSibling.classList.toggle("hidden");
+  }
 });
 
-$(window).click(function (event) {
-  if (!$(event.target).closest(".add-to-seeds-dropdown").length) {
-    $(".seeds-options").hide();
+window.addEventListener("click", function (event) {
+  if (!event.target.closest(".add-to-seeds-dropdown")) {
+    document.querySelectorAll(".seeds-options").forEach((element) => {
+      element.classList.add("hidden");
+    });
   }
 });
 
@@ -470,12 +541,12 @@ function updateSvgContainerHeight() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  var toggleButton = document.getElementById("toggleButton");
-  var formContainer = document.querySelector(".form-container");
-  var searchContainer = document.querySelector(".search-container");
-  var seedsContainer = document.querySelector(".seed-container"); // Add this line
+  const toggleButton = document.getElementById("toggleButton");
+  const formContainer = document.querySelector(".form-container");
+  const searchContainer = document.querySelector(".search-container");
+  const seedsContainer = document.querySelector(".seed-container"); // Add this line
 
-  var isFormVisible = false; // The form is not visible by default
+  let isFormVisible = false; // The form is not visible by default
   const svgUrls = [
     "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34",
     "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/amp",

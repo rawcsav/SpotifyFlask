@@ -75,7 +75,7 @@
     <title></title>
     {% endassets %} {% block styles %}{% endblock %}
   </head>
-  <body>
+  <body class="{% if g.is_dark_mode %}dark-mode{% endif %}">
     {% block menu %}{% include 'menu.html' %} {% endblock %} {% block body %} {%
     endblock %} {% include 'footer.html' %}
     <script

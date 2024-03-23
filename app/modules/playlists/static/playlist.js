@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function handlePlaylistClick() {
   window.isArtGenerationRequest = true;
   window.showLoading(20000);
@@ -16,9 +17,11 @@ function updateSvgContainerHeight() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // eslint-disable-next-line no-undef
   const colorThief = new ColorThief();
   const playlistContainer = document.getElementById("playlist-container");
 
+  // eslint-disable-next-line no-undef
   playlistData.forEach(function (playlist) {
     const img = new Image();
     img.crossOrigin = "anonymous";

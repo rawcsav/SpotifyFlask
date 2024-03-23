@@ -176,3 +176,105 @@ document.addEventListener("DOMContentLoaded", function () {
     true,
   ); // Use capture phase for form submission
 });
+
+// eslint-disable-next-line no-unused-vars
+function toggleDropdown(event) {
+  event.stopPropagation(); // Prevents the dropdown from closing
+  const menu = document.getElementById("menu");
+  const settingsCog = document.getElementById("settingsCog");
+  if (menu.style.display === "none" || menu.style.display === "") {
+    menu.style.display = "block";
+    settingsCog.style.display = "inline-block"; // Show the settings cog
+  } else {
+    menu.style.display = "none";
+    settingsCog.style.display = "none"; // Hide the settings cog
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
+function toggleSettings(event) {
+  event.stopPropagation(); // Prevents the dropdown from closing
+  // eslint-disable-next-line no-unused-vars
+  const settingsCog = document.getElementById("settingsCog");
+  const settingsMenu = document.getElementById("settings-menu");
+  if (
+    settingsMenu.style.display === "none" ||
+    settingsMenu.style.display === ""
+  ) {
+    settingsMenu.style.display = "block";
+  } else {
+    settingsMenu.style.display = "none";
+  }
+}
+
+// Close the dropdown if clicked outside
+window.addEventListener("click", function (event) {
+  const dropdown = document.getElementById("spotifyUserDropdown");
+  if (!dropdown.contains(event.target)) {
+    document.getElementById("menu").style.display = "none";
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+function toggleMode() {
+  const body = document.body;
+  const isDarkMode = body.classList.contains("dark-mode");
+  const modeToSave = isDarkMode ? "light" : "dark";
+
+  fetch("/update_mode", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify({
+      mode: modeToSave,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.message);
+
+      const toggleButton = document.getElementById("modeToggle");
+      if (isDarkMode) {
+        body.classList.remove("dark-mode");
+        toggleButton.innerText = "Dark Mode";
+      } else {
+        body.classList.add("dark-mode");
+        toggleButton.innerText = "Light Mode";
+      }
+      document.dispatchEvent(new Event("themeToggled"));
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function checkMode() {
+  fetch("/get_mode", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      const body = document.body;
+      const toggleButton = document.getElementById("modeToggle");
+
+      if (data.mode === "dark") {
+        body.classList.add("dark-mode");
+        toggleButton.innerText = "Light Mode";
+      } else {
+        body.classList.remove("dark-mode");
+        toggleButton.innerText = "Dark Mode";
+      }
+      document.dispatchEvent(new Event("themeToggled"));
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+window.onload = function () {
+  checkMode();
+};

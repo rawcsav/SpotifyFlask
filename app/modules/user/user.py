@@ -5,12 +5,18 @@ from flask import Blueprint, render_template, session, request, jsonify
 from pytz import timezone
 
 from app import db
+from models.user_models import UserData
 from modules.auth.auth import require_spotify_auth, fetch_user_data
-from modules.user.user_util import convert_utc_to_est, check_and_refresh_user_data, fetch_user_stats
-from modules.auth.auth_util import verify_session, init_session_client
-from app.models.user_models import User
+from modules.auth.auth_util import verify_session, convert_utc_to_est
+from modules.user.user_util import (
+    init_session_client,
+    check_and_refresh_user_data,
+    fetch_and_process_data,
+    delete_old_user_data,
+    update_user_data,
+)
 
-user_bp = Blueprint("user", __name__, template_folder="templates", static_folder="static")
+user_bp = Blueprint("user", __name__, template_folder="templates", static_folder="static", url_prefix="/user")
 
 eastern = timezone("US/Eastern")
 
@@ -23,42 +29,81 @@ def profile():
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
         spotify_user_display_name = res_data.get("display_name")
-        spotify_profile_img_url = res_data.get("images")[0].get("url") if res_data.get("images") else None
-        spotify_followers = res_data.get("followers").get("total")
-        spotify_account_type = res_data.get("product")
 
         session["DISPLAY_NAME"] = spotify_user_display_name
         session["USER_ID"] = spotify_user_id
-
         sp, error = init_session_client(session)
         if error:
             return json.dumps(error), 401
 
-        user_data_entry = User.query.filter_by(id=spotify_user_id).first()
-        user_data = fetch_user_stats(sp)
-        new_entry = User(
-            id=spotify_user_id,
-            user_name=spotify_user_display_name,
-            profile_img_url=spotify_profile_img_url,
-            followers=spotify_followers,
-            account_type=spotify_account_type,
-            api_key=None,
-        )
-        db.session.merge(new_entry)  # Efficiently handles both insert and update operations
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            raise e
+        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
-        est_time = convert_utc_to_est(datetime.utcnow())
+        if check_and_refresh_user_data(user_data_entry):
+            user_data = {
+                "top_tracks": user_data_entry.top_tracks,
+                "top_artists": user_data_entry.top_artists,
+                "all_artists_info": user_data_entry.all_artists_info,
+                "audio_features": user_data_entry.audio_features,
+                "sorted_genres": user_data_entry.sorted_genres_by_period,
+                "genre_specific_data": user_data_entry.genre_specific_data,
+                "recent_tracks": user_data_entry.recent_tracks,
+                "playlists": user_data_entry.playlist_info,
+                "last_active": user_data_entry.last_active,
+            }
+            last_active = user_data_entry.last_active
+
+        else:
+            last_active = datetime.utcnow()
+
+            time_periods = ["short_term", "medium_term", "long_term"]
+            (
+                top_tracks,
+                top_artists,
+                all_artists_info,
+                audio_features,
+                genre_specific_data,
+                sorted_genres_by_period,
+                recent_tracks,
+                playlist_info,
+            ) = fetch_and_process_data(sp, time_periods)
+
+            user_data = {
+                "top_tracks": top_tracks,
+                "top_artists": top_artists,
+                "all_artists_info": all_artists_info,
+                "audio_features": audio_features,
+                "sorted_genres": sorted_genres_by_period,
+                "genre_specific_data": genre_specific_data,
+                "recent_tracks": recent_tracks,
+                "playlists": playlist_info,
+            }
+
+            new_entry = UserData(
+                spotify_user_id=spotify_user_id,
+                top_tracks=top_tracks,
+                top_artists=top_artists,
+                all_artists_info=all_artists_info,
+                audio_features=audio_features,
+                genre_specific_data=genre_specific_data,
+                sorted_genres_by_period=sorted_genres_by_period,
+                recent_tracks=recent_tracks,
+                playlist_info=playlist_info,
+                last_active=last_active,
+            )
+            try:
+                db.session.merge(new_entry)
+                db.session.commit()
+            except:
+                db.session.rollback()
+                raise
+
+        delete_old_user_data()
+
+        est_time = convert_utc_to_est(last_active)
         return render_template(
-            "templates/profile.html",
-            data=res_data,
-            tokens=session.get("tokens"),
-            user_data=user_data,
-            last_active=est_time,
+            "profile.html", data=res_data, tokens=session.get("tokens"), user_data=user_data, last_active=est_time
         )
+
     except Exception as e:
         print(f"An error occurred: {e}")
         return str(e), 500
@@ -67,14 +112,14 @@ def profile():
 @user_bp.route("/refresh-data", methods=["POST"])
 def refresh_data():
     try:
-        sp = init_session_client(session)
         access_token = verify_session(session)
         res_data = fetch_user_data(access_token)
         spotify_user_id = res_data.get("id")
         session["USER_ID"] = spotify_user_id
-        user_data_entry = User.query.filter_by(id=spotify_user_id).first()
+
+        user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
         if user_data_entry:
-            check_and_refresh_user_data(sp, user_data_entry)
+            update_user_data(user_data_entry)
             return "User Refreshed Successfully!", 200
         else:
             return "User data not found", 404
@@ -90,9 +135,9 @@ def get_mode():
     res_data = fetch_user_data(access_token)
     spotify_user_id = res_data.get("id")
 
-    user = User.query.filter_by(id=spotify_user_id).first()
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
-    mode = "dark" if user.dark_mode else "light"
+    mode = "dark" if user.isDarkMode else "light"
 
     return jsonify({"mode": mode})
 
@@ -105,8 +150,8 @@ def update_mode():
     mode = request.json.get("mode")
 
     # Assuming you're using SQLalchemy for ORM
-    user = User.query.filter_by(id=spotify_user_id).first()
-    user.dark_mode = True if mode == "dark" else False
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+    user.isDarkMode = True if mode == "dark" else False
     db.session.commit()
 
     return jsonify({"message": "Mode updated successfully!"}), 200

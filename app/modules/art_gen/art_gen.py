@@ -1,10 +1,11 @@
+import openai
 from flask import Blueprint, request, send_from_directory, jsonify, session
 
+from models.user_models import UserData
 from modules.art_gen.art_gen_util import generate_and_save_images
-from modules.auth.auth import fetch_user_data
-from modules.auth.auth_util import verify_session, create_openai_client
+from modules.auth.auth_util import verify_session, fetch_user_data, decrypt_data
 
-art_gen_bp = Blueprint("art_gen", __name__, template_folder="templates", static_folder="static")
+art_gen_bp = Blueprint("art_gen", __name__, template_folder="templates", static_folder="static", url_prefix="/art_gen")
 
 
 @art_gen_bp.route("/generate_images/<string:playlist_id>", methods=["POST"])
@@ -20,9 +21,14 @@ def generate_images(playlist_id):
             access_token = verify_session(session)
             res_data = fetch_user_data(access_token)
             spotify_user_id = res_data.get("id")
-            client = create_openai_client(spotify_user_id)
+
+            user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+            encrypted_api_key = user_data.api_key_encrypted
+            api_key = decrypt_data(encrypted_api_key)
+            openai.api_key = api_key
+
             image_urls, revised_prompts = generate_and_save_images(
-                playlist_id, spotify_user_id, client, refresh=refresh, quality=quality, genre_list=genres_list
+                playlist_id, refresh=refresh, quality=quality, genre_list=genres_list
             )
             image_and_prompts = [{"image": url, "prompt": prompt} for url, prompt in zip(image_urls, revised_prompts)]
 

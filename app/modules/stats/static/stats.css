@@ -32,7 +32,7 @@ body {
 }
 body.dark-mode {
   background-attachment: fixed;
-  background-image: url('http://res.cloudinary.com/dn9bcrimg/image/upload/v1698265750/layered-peaks-haikei_4_vslyur_nsaxvq.svg');
+  background-image: url("http://res.cloudinary.com/dn9bcrimg/image/upload/v1698265750/layered-peaks-haikei_4_vslyur_nsaxvq.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -123,7 +123,7 @@ body.dark-mode .center-text {
   background-repeat: no-repeat;
   height: 60px;
   width: 60px;
-  background-image: url('/secure_image?public_id=v1701024834/colorfullogo_ypzgak.svg');
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1701024834/colorfullogo_ypzgak.svg");
   transition: transform 0.3s;
 }
 

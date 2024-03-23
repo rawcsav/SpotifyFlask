@@ -9,18 +9,19 @@ from flask import make_response
 from openai import OpenAI
 
 from app import db
-from app.models.user_models import User
+from models.user_models import UserData
 from modules.auth.auth_util import (
     verify_session,
     generate_state,
     prepare_auth_payload,
     request_tokens,
-    encrypt_api_key,
-    test_gpt4,
-    create_openai_client,
+    fetch_user_data,
+    decrypt_data,
+    is_api_key_valid,
+    encrypt_data,
 )
 
-auth_bp = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
+auth_bp = Blueprint("auth", __name__, template_folder="templates", static_folder="static", url_prefix="/")
 
 
 @auth_bp.route("/")
@@ -48,13 +49,18 @@ def require_spotify_auth(f):
 
 @auth_bp.route("/<loginout>")
 def login(loginout):
+    # If the path is logout, clear the session and return to the index page.
     if loginout == "logout":
         session.clear()
+        # Optionally, if you want to force re-authentication on Spotify's side next time,
+        # you could set `show_dialog=True` for the next login attempt.
         session["show_dialog"] = True
+        # You also might want to clear the spotify_auth_state cookie if it's not needed anymore.
         response = make_response(redirect(url_for("auth.index")))
         response.set_cookie("spotify_auth_state", "", expires=0, path="/")
         return response
 
+    # If the path is login, handle the login logic.
     state = generate_state()
     scope = " ".join(
         [
@@ -71,8 +77,14 @@ def login(loginout):
             "ugc-image-upload",
         ]
     )
+
+    # Check if we're supposed to show the dialog (this would be set upon logout).
     show_dialog = session.pop("show_dialog", False)
+
+    # Prepare the payload for authentication.
     payload = prepare_auth_payload(state, scope, show_dialog=show_dialog)
+
+    # Redirect the user to Spotify's authorization URL.
     res = make_response(redirect(f'{current_app.config["AUTH_URL"]}/?{urlencode(payload)}'))
     res.set_cookie("spotify_auth_state", state)
 
@@ -83,10 +95,6 @@ def login(loginout):
 def callback():
     state = request.args.get("state")
     stored_state = request.cookies.get("spotify_auth_state")
-
-    # Add print statements to debug the values of state and stored_state
-    print(f"State from request: {state}")
-    print(f"Stored state from cookies: {stored_state}")
 
     if state is None or state != stored_state:
         abort(400, description="State mismatch")
@@ -141,18 +149,19 @@ def save_api_key():
     res_data = fetch_user_data(access_token)
     spotify_user_id = res_data.get("id")
 
-    user_data = User.query.filter_by(id=spotify_user_id).first()
+    user_data = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
 
     api_key = request.json.get("api_key")
     api_key_pattern = re.compile(r"sk-[A-Za-z0-9]{48}")
     if not api_key_pattern.match(api_key):
         return jsonify({"status": "error", "message": "Invalid API key format."}), 400
-    client = OpenAI(api_key=api_key)
-    if not test_gpt4(client):
+
+    if not is_api_key_valid(api_key):
         return jsonify({"message": "Invalid OpenAI API Key"}), 400
-    encrypted_key = encrypt_api_key(api_key)
+
+    encrypted_key = encrypt_data(api_key)
     try:
-        user_data.api_key = encrypted_key
+        user_data.api_key_encrypted = encrypted_key
         db.session.commit()
     except:
         db.session.rollback()
@@ -175,93 +184,16 @@ def check_api_key():
 
     spotify_user_id = res_data.get("id")
     if not spotify_user_id:
+        # Handle the case where Spotify user ID is not obtained
         return jsonify({"error": "Spotify user ID not found"}), 500
 
-    client = create_openai_client(spotify_user_id)
-    if test_gpt4(client):
-        return jsonify({"has_key": True})
+    user = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+    if user and user.api_key_encrypted:
+        api_key = decrypt_data(user.api_key_encrypted)
+        if is_api_key_valid(api_key):
+            return jsonify({"has_key": True})
+        else:
+            return jsonify({"has_key": False})
     else:
+        # Handle the case where no user or API key is found
         return jsonify({"has_key": False})
-
-
-@auth_bp.route("/secure_image")
-def secure_image():
-    EXCLUDED_PUBLIC_IDS = ["image1", "image2", "image3"]  # Add public_ids of images you want to exclude
-
-    public_id = request.args.get("public_id")
-    if not public_id:
-        return "Public ID not provided", 400
-
-    # Get transformations from query parameters
-    width = request.args.get("width", None)
-    height = request.args.get("height", None)
-    crop = request.args.get("crop", None)
-    aspect_ratio = request.args.get("aspect_ratio", None)
-    gravity = request.args.get("gravity", None)
-    radius = request.args.get("radius", None)
-    quality = request.args.get("quality", None)
-    effect = request.args.get("effect", None)
-    opacity = request.args.get("opacity", None)
-    border = request.args.get("border", None)
-    background = request.args.get("background", None)
-    angle = request.args.get("angle", None)
-    overlay = request.args.get("overlay", None)
-    tint = request.args.get("tint", None)
-    format = request.args.get("format", None)
-
-    transformations = {"quality": "auto"}
-
-    if public_id not in EXCLUDED_PUBLIC_IDS:
-        transformations["fetch_format"] = "auto"
-
-    if width:
-        transformations["width"] = int(width)
-    if height:
-        transformations["height"] = int(height)
-    if crop:
-        transformations["crop"] = crop
-    if aspect_ratio:
-        transformations["aspect_ratio"] = aspect_ratio
-    if gravity:
-        transformations["gravity"] = gravity
-    if radius:
-        transformations["radius"] = radius
-    if quality:
-        transformations["quality"] = int(quality)
-    if effect:
-        transformations["effect"] = effect
-    if opacity:
-        transformations["opacity"] = int(opacity)
-    if border:
-        transformations["border"] = border
-    if background:
-        transformations["background"] = background
-    if angle:
-        transformations["angle"] = angle
-    if overlay:
-        transformations["overlay"] = overlay
-    if tint:
-        transformations["tint"] = tint
-    if format:
-        transformations["format"] = format
-
-    signed_url = cloudinary.utils.cloudinary_url(public_id, **transformations, sign_url=True)[0]
-
-    # Redirect to the signed URL
-    return redirect(signed_url)
-
-
-def fetch_user_data(access_token):
-    headers = {"Authorization": f"Bearer {access_token}"}
-    res = requests.get(current_app.config["ME_URL"], headers=headers)
-    if res.status_code != 200:
-        abort(res.status_code)
-
-    return res.json()
-
-
-def fetch_user_id(session):
-    access_token = verify_session(session)
-    res_data = fetch_user_data(access_token)
-    user_id = res_data.get("id")
-    return user_id

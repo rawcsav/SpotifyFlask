@@ -1,6 +1,7 @@
 from spotipy import SpotifyException
-from app import db
-from util.api_util import process_artists
+from sqlalchemy.testing import db
+
+from util.database_util import add_artist_to_db
 
 
 def spotify_search(sp, query, type, limit=6):
@@ -9,7 +10,7 @@ def spotify_search(sp, query, type, limit=6):
         if results.get("artists", {}).get("items"):
             for artist_data in results["artists"]["items"]:
                 try:
-                    process_artists(artist_data)
+                    add_artist_to_db(artist_data)
                     db.session.commit()
                 except:
                     db.session.rollback()

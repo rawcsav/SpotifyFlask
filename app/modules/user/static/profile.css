@@ -36,7 +36,7 @@ body.dark-mode {
   background-size: cover;
   color: #368dbf;
   background-color: #001220;
-  background-image: url('http://res.cloudinary.com/dn9bcrimg/image/upload/v1698265749/blob-scene-haikei_3_pptlg9_y5tidv.svg');
+  background-image: url("http://res.cloudinary.com/dn9bcrimg/image/upload/v1698265749/blob-scene-haikei_3_pptlg9_y5tidv.svg");
 }
 
 h1 {
@@ -87,7 +87,7 @@ h3 {
   background-repeat: no-repeat;
   height: 60px;
   width: 60px;
-  background-image: url('/secure_image?public_id=v1701024834/colorfullogo_ypzgak.svg');
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1701024834/colorfullogo_ypzgak.svg");
   transition: transform 0.3s;
 }
 

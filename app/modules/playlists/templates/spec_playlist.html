@@ -5,7 +5,7 @@
   var yearCountData = JSON.parse("{{ year_count | safe }}");
   var playlistId = "{{ playlist_id }}";
 </script>
-{% endblock %} {% block styles %} {% assets "playlist_style_bundle" %}
+{% endblock %} {% block styles %} {% assets "spec_playlist_style_bundle" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}" />
 {% endassets %} {% endblock %} {% block body %}
 <h1 id="playlist-name">{{ playlist_data['name'] }}</h1>
@@ -278,7 +278,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-{% assets "playlist_js_bundle" %}
+{% assets "spec_playlist_js_bundle" %}
 <script src="{{ ASSET_URL }}"></script>
 {% endassets %}{% endblock %}

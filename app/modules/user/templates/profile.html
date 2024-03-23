@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block head %}
 <title>Profile Info</title>
-{% endblock %} {% block styles %} {% assets "profile_style_bundle" %}
+{% endblock %} {% block styles %} {% assets "user_style_bundle" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}" />
 {% endassets %} {% endblock %} {% block body %}
 <div class="container">
@@ -16,7 +16,7 @@
               >Statistics</a
             >
             <a
-              href="{{ url_for('recommendations.recommendations') }}"
+              href="{{ url_for('recs.recommendations') }}"
               class="btn btn-info rec-btn"
               >Recommendations</a
             >
@@ -94,8 +94,12 @@
   <div class="row mt-5 profile-footer"></div>
 </div>
 {% endblock %}{% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.js"></script>
-{% assets "profile_js_bundle" %}
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"
+/>
+{% assets "user_js_bundle" %}
 <script src="{{ ASSET_URL }}"></script>
 {% endassets %}{% endblock %}

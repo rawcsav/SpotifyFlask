@@ -1,13 +1,14 @@
 import json
 from flask import Blueprint, jsonify, render_template, request, session, json
-from modules.auth.auth import require_spotify_auth, fetch_user_data
-from modules.auth.auth_util import verify_session, init_session_client
-from util.api_util import format_track_info
-from app.models.playlist_models import Playlist
-from app.models.user_models import User
-from modules.recs.recs_util import spotify_search, get_recommendations
 
-recs_bp = Blueprint("recs", __name__, template_folder="templates", static_folder="static")
+from models.user_models import UserData
+from modules.auth.auth import require_spotify_auth, fetch_user_data
+from modules.auth.auth_util import verify_session
+from modules.recs.recs_util import spotify_search, get_recommendations
+from modules.user.user_util import init_session_client, format_track_info
+from util.form_util import RecommendationsForm
+
+recs_bp = Blueprint("recs", __name__, template_folder="templates", static_folder="static", url_prefix="/recs")
 
 
 def parse_seeds(key):
@@ -21,19 +22,19 @@ def recommendations():
     access_token = verify_session(session)
     res_data = fetch_user_data(access_token)
 
-    playlist_data = Playlist.query.filter_by(user_id=spotify_user_id)
-    user_data_entry = User.query.filter_by(id=spotify_user_id).first()
-    if not playlist_data:
+    user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
+
+    if not user_data_entry:
         return jsonify(error="User data not found"), 404
 
     owner_name = session.get("DISPLAY_NAME")
     playlists = [
-        playlist for playlist in playlist_data if playlist["owner"] is not None and playlist["owner"] == owner_name
+        playlist
+        for playlist in user_data_entry.playlist_info
+        if playlist["owner"] is not None and playlist["owner"] == owner_name
     ]
 
-    return render_template(
-        "templates/recommendations.html", data=res_data, playlists=playlists, user_data=user_data_entry
-    )
+    return render_template("recommendations.html", data=res_data, playlists=playlists, user_data=user_data_entry)
 
 
 @recs_bp.route("/get_recommendations", methods=["GET", "POST"])
@@ -42,14 +43,16 @@ def get_recommendations_route():
     if error:
         return json.dumps(error), 401
 
-    if request.method == "POST":
+    form = RecommendationsForm()
+
+    if form.validate_on_submit():
         seeds = {
-            key: [item.strip() for item in request.form.get(f"{key}_seeds", "").split(",") if item.strip()] or None
+            key: [item.strip() for item in form.data.get(f"{key}_seeds", "").split(",") if item.strip()] or None
             for key in ["track", "artist"]
         }
-        limit = request.form.get("limit", 5)
+        limit = form.limit.data
         sliders = {
-            key: tuple(map(type_func, request.form.get(f"{key}_slider").split(",")))
+            key: tuple(map(type_func, form.data[f"{key}_slider"].split(",")))
             for key, type_func in zip(
                 ["popularity", "energy", "instrumentalness", "tempo", "danceability", "valence"],
                 [int, float, float, float, float, float],
@@ -62,7 +65,7 @@ def get_recommendations_route():
             return json.dumps(recommendations_data), 400
 
         track_info_list = [format_track_info(track) for track in recommendations_data["tracks"]]
-        return jsonify({"recs": track_info_list})
+        return jsonify({"recommendations": track_info_list}, form=form)
 
 
 @recs_bp.route("/save_track", methods=["POST"])
