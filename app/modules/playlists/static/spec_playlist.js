@@ -303,7 +303,6 @@ document.addEventListener("DOMContentLoaded", function () {
       reorderPlaylist("Release Date - Descending");
     });
   });
-
   document.getElementById("shuffle-btn").addEventListener("click", function () {
     showReorderModal(function () {
       reorderPlaylist("Shuffle");
