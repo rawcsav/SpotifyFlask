@@ -7,14 +7,6 @@ from util.database_util import add_artist_to_db
 def spotify_search(sp, query, type, limit=6):
     try:
         results = sp.search(q=query, type=type, limit=limit)
-        if results.get("artists", {}).get("items"):
-            for artist_data in results["artists"]["items"]:
-                try:
-                    add_artist_to_db(artist_data)
-                    db.session.commit()
-                except:
-                    db.session.rollback()
-                    raise
         return results
     except SpotifyException as e:
         return {"error": str(e)}

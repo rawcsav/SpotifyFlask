@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, current_app, request, Response
 from flask_assets import Environment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -11,6 +11,7 @@ from flask_cors import CORS
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+cors = CORS()
 
 
 def create_app():
@@ -25,7 +26,14 @@ def create_app():
         ProductionConfig.init_app(app)
 
     assets = Environment(app)
-    CORS(app)
+    CORS(
+        app,
+        origins="*",
+        resources={r"/*": {"origins": "*"}},
+        support_credentials=True,
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    )
+
     CSRFProtect(app)
     db.init_app(app)
     Migrate(app, db)
@@ -50,6 +58,11 @@ def create_app():
         from app.util.assets_util import compile_static_assets
 
         compile_static_assets(assets)
+
+        @current_app.before_request
+        def basic_authentication():
+            if request.method.lower() == "options":
+                return Response()
 
         @app.teardown_request
         def session_teardown(exception=None):

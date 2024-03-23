@@ -12,10 +12,6 @@ body {
   padding: 0;
 }
 
-.hidden {
-  display: none;
-}
-
 body.dark-mode {
   background-attachment: fixed;
 

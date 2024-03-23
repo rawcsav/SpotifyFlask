@@ -5,22 +5,37 @@ function getCsrfToken() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const playlistOptions = document.getElementById("playlistOptions");
-  playlistOptions.innerHTML = "";
+  const playlistsContainer = document.getElementById("playlistOptions");
 
-  // eslint-disable-next-line no-undef
-  playlistData.forEach(function (playlist) {
-    const option = document.createElement("a");
-    option.href = "#";
-    option.classList.add("playlist-option");
-    option.dataset.playlistid = playlist.id;
-    option.innerHTML = `<div class="playlist-item">
-                          <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
-                          <span class="playlist-name">${playlist.name}</span>
-                        </div>`;
-    playlistOptions.appendChild(option);
-  });
-
+  fetch("/recs/get-user-playlists")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((playlists) => {
+      if (playlists.error) {
+        playlistsContainer.innerHTML = `<p>Error: ${playlists.error}</p>`;
+      } else {
+        const playlistsHtml = playlists
+          .map((playlist) => {
+            return `<div>
+                                <h3>${playlist.name}</h3>
+                                <p>Owner: ${playlist.owner}</p>
+                            </div>`;
+          })
+          .join("");
+        playlistsContainer.innerHTML = playlistsHtml;
+      }
+    })
+    .catch((error) => {
+      console.error(
+        "There has been a problem with your fetch operation:",
+        error,
+      );
+      playlistsContainer.innerHTML = `<p>Failed to load playlists.</p>`;
+    });
   const modal = document.getElementById("instructionsModal");
   const closeBtn = document.querySelector(".close");
 
@@ -39,9 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       modal.style.display = "none";
     }
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("showInstructions")
     .addEventListener("click", function () {
@@ -60,16 +73,80 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.style.overflow = "auto";
     }
   });
+
+  function getSliderConfig(sliderId, inputId) {
+    const slider = document.getElementById(sliderId);
+
+    console.log("sliderId:", sliderId);
+    console.log("valueLow (raw):", slider.getAttribute("valueLow")); // Get the raw attribute value
+    console.log("valueHigh (raw):", slider.getAttribute("valueHigh"));
+
+    const valueLow = parseFloat(slider.getAttribute("valueLow")); // Modify to get the attribute directly
+    const valueHigh = parseFloat(slider.getAttribute("valueHigh"));
+
+    console.log("valueLow (parsed):", valueLow, typeof valueLow);
+    console.log("valueHigh (parsed):", valueHigh, typeof valueHigh);
+
+    return {
+      start: [valueLow, valueHigh],
+      connect: true,
+      range: {
+        min: Math.min(valueLow, valueHigh), // Ensures correct overall min
+        max: Math.max(valueLow, valueHigh), // Ensures correct overall max
+      },
+    };
+  }
+
+  function createSlider(sliderId, inputId) {
+    const slider = document.getElementById(sliderId);
+    const sliderConfig = getSliderConfig(sliderId, inputId);
+
+    noUiSlider.create(slider, sliderConfig); // No need to log here anymore
+
+    slider.noUiSlider.on("update", function (values, handle) {
+      document.getElementById(inputId).value = values.join(",");
+    });
+  }
+  createSlider("popularity_slider", "popularity_input");
+  createSlider("energy_slider", "energy_input");
+  createSlider("instrumentalness_slider", "instrumentalness_input");
+  createSlider("tempo_slider", "tempo_input");
+  createSlider("danceability_slider", "danceability_input");
+  createSlider("valence_slider", "valence_input");
 });
+
+function getTotalSeeds() {
+  return document.querySelectorAll(
+    "#universal_seeds_container .clickable-result",
+  ).length;
+}
+document
+  .getElementById("universal_search_results")
+  .addEventListener("click", function (event) {
+    if (event.target.closest(".clickable-result")) {
+      if (getTotalSeeds() < 5) {
+        let seedType = event.target
+          .closest(".clickable-result")
+          .classList.contains("track")
+          ? "track"
+          : "artist";
+        let seed = event.target.closest(".clickable-result").cloneNode(true);
+        seed.classList.add(seedType);
+        document.getElementById("universal_seeds_container").appendChild(seed);
+        updateSeedsInput("universal_seeds_container");
+      } else {
+        alert("You can select no more than 5 combined seeds.");
+      }
+    }
+  });
+
 document
   .getElementById("universal_search")
   .addEventListener("click", function () {
     let query = document.getElementById("universal_input").value;
     document.getElementById("universal_search_results").innerHTML = "";
-    document.getElementById("universal_loading").style.display = "block";
-    document.getElementById("universal_error").style.display = "none";
 
-    fetch("/search", {
+    fetch("/recs/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,7 +159,6 @@ document
     })
       .then((response) => response.json())
       .then((data) => {
-        document.getElementById("universal_loading").style.display = "none";
         let trackResults = data["tracks"]["items"];
         let artistResults = data["artists"]["items"];
         let searchResults = document.getElementById("universal_search_results");
@@ -114,32 +190,9 @@ document
         });
       })
       .catch((error) => {
-        document.getElementById("universal_error").style.display = "block";
-        document.getElementById("universal_loading").style.display = "none";
         console.error("Error:", error);
       });
   });
-
-function updateSeedsInput(inputId) {
-  let ids = [];
-  let trackIds = [];
-  let artistIds = [];
-
-  document
-    .querySelectorAll(`#${inputId} .clickable-result`)
-    .forEach(function (element) {
-      ids.push(element.getAttribute("data-id"));
-      if (element.classList.contains("track")) {
-        trackIds.push(element.getAttribute("data-id"));
-      } else if (element.classList.contains("artist")) {
-        artistIds.push(element.getAttribute("data-id"));
-      }
-    });
-
-  document.getElementById(inputId).value = ids.join(",");
-  document.getElementById("track_seeds").value = trackIds.join(",");
-  document.getElementById("artist_seeds").value = artistIds.join(",");
-}
 
 document
   .getElementById("universal_input")
@@ -150,37 +203,12 @@ document
       document.getElementById("universal_search").click();
     }
   });
-
-function getTotalSeeds() {
-  return document.querySelectorAll(
-    "#universal_seeds_container .clickable-result",
-  ).length;
-}
-document
-  .getElementById("universal_search_results")
-  .addEventListener("click", function (event) {
-    if (event.target.closest(".clickable-result")) {
-      if (getTotalSeeds() < 5) {
-        let seedType = event.target
-          .closest(".clickable-result")
-          .classList.contains("track")
-          ? "track"
-          : "artist";
-        let seed = event.target.closest(".clickable-result").cloneNode(true);
-        seed.classList.add(seedType);
-        document.getElementById("universal_seeds_container").appendChild(seed);
-        updateSeedsInput("universal_seeds_container");
-      } else {
-        alert("You can select no more than 5 combined seeds.");
-      }
-    }
-  });
-
 document
   .getElementById("universal_seeds_container")
   .addEventListener("click", function (event) {
     if (event.target.closest(".clickable-result")) {
       event.target.closest(".clickable-result").remove();
+      console.log("Seed removed");
       updateSeedsInput("universal_seeds_container");
     }
   });
@@ -190,197 +218,6 @@ document.querySelector("form").addEventListener("submit", function (event) {
   getRecommendations();
 });
 
-function createSlider(sliderId, inputId, min, max, step, values) {
-  const slider = document.getElementById(sliderId);
-  slider.min = min;
-  slider.max = max;
-  slider.step = step || 1;
-  slider.valueLow = values[0];
-  slider.valueHigh = values[1];
-  slider.addEventListener("input", function () {
-    document.getElementById(inputId).value =
-      slider.valueLow + "," + slider.valueHigh;
-  });
-}
-
-createSlider("popularity_slider", "popularity_input", 0, 100, 1, [0, 100]);
-createSlider("energy_slider", "energy_input", 0, 1, 0.01, [0, 1]);
-createSlider(
-  "instrumentalness_slider",
-  "instrumentalness_input",
-  0,
-  1,
-  0.01,
-  [0, 1],
-);
-createSlider("tempo_slider", "tempo_input", 24, 208, 1, [24, 208]);
-createSlider("danceability_slider", "danceability_input", 0, 1, 0.01, [0, 1]);
-createSlider("valence_slider", "valence_input", 0, 1, 0.01, [0, 1]);
-
-// Add data-min and data-max attributes for each slider
-document.getElementById("popularity_slider").dataset.min = "🤷 Who's that?";
-document.getElementById("popularity_slider").dataset.max = "🌟 Superstar!";
-document.getElementById("energy_slider").dataset.min = "🐢 Chill vibes";
-document.getElementById("energy_slider").dataset.max = "🚀 Blast off!";
-document.getElementById("instrumentalness_slider").dataset.min =
-  "🎤 Vocal party";
-document.getElementById("instrumentalness_slider").dataset.max =
-  "🎸 All instruments";
-document.getElementById("tempo_slider").dataset.min = "🚶 Strolling pace";
-document.getElementById("tempo_slider").dataset.max = "🏃 Sprint mode";
-document.getElementById("danceability_slider").dataset.min = "🪑 Seat groove";
-document.getElementById("danceability_slider").dataset.max = "💃 Dance fever!";
-document.getElementById("valence_slider").dataset.min = "☁️ Moody blues";
-document.getElementById("valence_slider").dataset.max = "☀️ Sunshine joy";
-document.addEventListener("click", function (event) {
-  if (event.target.closest(".add-to-seeds")) {
-    event.preventDefault();
-    if (getTotalSeeds() < 5) {
-      let trackId, trackName, artistName, artistId;
-      let seedType = event.target
-        .closest(".add-to-seeds")
-        .classList.contains("track")
-        ? "track"
-        : "artist";
-      let imgSrc = event.target
-        .closest(".result-item")
-        .querySelector(".result-cover-art-container img").src;
-
-      let seedElement;
-      if (seedType === "track") {
-        trackId = event.target.closest(".add-to-seeds").dataset.trackid;
-        trackName = event.target.closest(".add-to-seeds").dataset.name;
-        artistName = event.target.closest(".add-to-seeds").dataset.artist;
-        seedElement = document.createElement("div");
-        seedElement.classList.add("clickable-result", "track");
-        seedElement.dataset.id = trackId;
-        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
-                                 <div class="result-info">
-                                     <h2>${trackName}</h2>
-                                     <p>${artistName}</p>
-                                 </div>`;
-      } else {
-        artistName = event.target.closest(".add-to-seeds").dataset.artist;
-        artistId = event.target.closest(".add-to-seeds").dataset.artistid;
-        seedElement = document.createElement("div");
-        seedElement.classList.add("clickable-result", "artist");
-        seedElement.dataset.id = artistId;
-        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
-                                 <div class="result-info">
-                                     <h2>${artistName}</h2>
-                                 </div>`;
-      }
-
-      document
-        .getElementById("universal_seeds_container")
-        .appendChild(seedElement);
-      updateSeedsInput("universal_seeds_container");
-    } else {
-      alert("You can select no more than 5 combined seeds.");
-    }
-  }
-});
-
-function getRecommendations() {
-  const formData = new FormData(document.querySelector("form"));
-  const formObject = Object.fromEntries(formData.entries());
-  const formJSON = JSON.stringify(formObject);
-
-  fetch("/get_recommendations", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCsrfToken(),
-    },
-    body: formJSON,
-  })
-    .then((response) => response.json())
-    .then(async (data) => {
-      console.log(formJSON);
-
-      let recommendations = data["recs"];
-      const results = document.getElementById("results");
-      results.innerHTML = "";
-
-      let currentPlayingSource = null;
-      let currentPlayingButton = null;
-      const audioContext = new AudioContext();
-
-      for (const trackInfo of recommendations) {
-        const response = await fetch(trackInfo["preview"]);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-        results.insertAdjacentHTML(
-          "beforeend",
-          `<div class="result-item">
-             <div class="result-cover-art-container">
-               <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
-               <div class="caption">
-                 <h2>${trackInfo["trackName"]}</h2>
-                 <p>${trackInfo["artist"]}</p>
-               </div>
-               <div class="play-button noselect" id="play_${trackInfo["trackid"]}">&#9654;</div>
-             </div>
-             <div class="dropdown-content">
-               <a href="#" class="add-to-saved" data-trackid="${trackInfo["trackid"]}">
-                 <i class="far fa-heart heart-icon"></i>
-               </a>
-               <a href="#" class="add-to-playlist" data-trackid="${trackInfo["trackid"]}">
-                 <i class="plus-icon fas fa-plus plus-icon-grey"></i>
-               </a>
-               <div class="add-to-seeds-dropdown">
-                 <a href="#" class="add-to-seeds-toggle" data-trackid="${trackInfo["trackid"]}" data-artistid="${trackInfo["artistid"]}">
-                   <i class="fas fa-seedling seed-icon"></i>
-                 </a>
-                 <div class="seeds-options">
-                   <a href="#" class="add-to-seeds track" data-trackid="${trackInfo["trackid"]}" data-name="${trackInfo["trackName"]}" data-artist="${trackInfo["artist"]}">Add Track to Seeds</a>
-                   <a href="#" class="add-to-seeds artist" data-artistid="${trackInfo["artistid"]}" data-artist="${trackInfo["artist"]}">Add Artist to Seeds</a>
-                 </div>
-               </div>
-             </div>
-             <audio controls>
-               <source src="${trackInfo["preview"]}" type="audio/mpeg">
-               Your browser does not support the audio element.
-             </audio>
-           </div>`,
-        );
-
-        let playButton = document.getElementById(
-          `play_${trackInfo["trackid"]}`,
-        );
-
-        playButton.addEventListener("click", function () {
-          if (currentPlayingSource) {
-            currentPlayingSource.stop();
-            currentPlayingButton.innerHTML = "&#9654;";
-          }
-
-          const source = audioContext.createBufferSource();
-          source.buffer = audioBuffer;
-          source.connect(audioContext.destination);
-
-          if (currentPlayingSource !== source) {
-            source.start();
-            currentPlayingSource = source;
-            currentPlayingButton = playButton;
-            playButton.innerHTML = "&#9616;&#9616;";
-          } else {
-            currentPlayingSource = null;
-          }
-
-          source.onended = function () {
-            playButton.innerHTML = "&#9654;";
-          };
-        });
-      }
-
-      document.querySelector(".results-container").scrollTop = 0;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
 function showToast(button, message) {
   let toast = document.getElementById("toast");
 
@@ -533,6 +370,226 @@ window.addEventListener("click", function (event) {
     });
   }
 });
+function updateSeedsInput(inputId) {
+  let ids = [];
+  let trackIds = [];
+  let artistIds = [];
+  const seedsContainer = document.getElementById("universal_seeds_container");
+
+  // Then, use the seedsContainer variable to find all .clickable-result elements within it
+  seedsContainer
+    .querySelectorAll(".clickable-result")
+    .forEach(function (element) {
+      const id = element.getAttribute("data-id");
+      ids.push(id);
+
+      if (element.classList.contains("track")) {
+        trackIds.push(id);
+      } else if (element.classList.contains("artist")) {
+        artistIds.push(id);
+      }
+    });
+
+  document.getElementById(inputId).value = ids.join(",");
+  console.log("trackIds:", trackIds);
+  console.log("artistIds:", artistIds);
+  document.getElementById("track_seeds").value = trackIds.join(",");
+  document.getElementById("artist_seeds").value = artistIds.join(",");
+}
+async function getRecommendations() {
+  const formData = new FormData(document.querySelector("form"));
+  const formObject = Object.fromEntries(formData.entries());
+  const formJSON = JSON.stringify(formObject);
+
+  try {
+    const response = await fetch("/recs/get_recommendations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
+      body: formJSON,
+    });
+    const data = await response.json();
+    console.log(formJSON);
+    displayRecommendations(data["recommendations"]);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+async function displayRecommendations(recommendations) {
+  const results = document.getElementById("results");
+  results.innerHTML = "";
+
+  let currentPlayingSource = null;
+  let currentPlayingButton = null;
+  const audioContext = new AudioContext();
+
+  for (const trackInfo of recommendations) {
+    const trackElement = createTrackElement(trackInfo);
+    results.appendChild(trackElement);
+
+    // Correctly scoped playButton within the loop for each track
+    const playButton = trackElement.querySelector(`.play-button`);
+    setupPlayButton(
+      playButton,
+      trackInfo,
+      audioContext,
+      currentPlayingSource,
+      currentPlayingButton,
+    );
+  }
+
+  document.querySelector(".results-container").scrollTop = 0;
+}
+
+function createTrackElement(trackInfo) {
+  const div = document.createElement("div");
+  div.className = "result-item";
+  div.innerHTML = `
+    <div class="result-cover-art-container">
+      <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
+      <div class="caption">
+        <h2>${trackInfo["trackName"]}</h2>
+        <p>${trackInfo["artist"]}</p>
+      </div>
+      <div class="play-button noselect" id="play_${trackInfo["trackid"]}">&#9654;</div>
+    </div>
+    <audio controls>
+      <source src="${trackInfo["preview"]}" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  `;
+  return div;
+}
+
+async function fetchAudioPreview(url, audioContext, retries = 3) {
+  try {
+    const response = await fetchWithRetry(url, retries);
+    const arrayBuffer = await response.arrayBuffer();
+    return audioContext.decodeAudioData(arrayBuffer);
+  } catch (error) {
+    console.error("Error loading audio after retries:", error);
+    throw error; // Rethrow to handle in the calling function
+  }
+}
+
+async function fetchWithRetry(url, retries, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok)
+        throw new Error(`Fetch failed with status ${response.status}`);
+      return response;
+    } catch (error) {
+      console.log(`Retry ${i + 1} for ${url}`);
+      if (i === retries - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
+function indicateUnavailableAudio(playButton) {
+  playButton.innerHTML = "N/A";
+  playButton.classList.add("unavailable");
+}
+
+function setupPlayButton(playButton, trackInfo, audioContext) {
+  playButton.addEventListener("click", async () => {
+    // If this track is already playing, pause it
+    if (playButton === window.currentPlayingButton) {
+      if (window.currentPlayingSource) {
+        window.currentPlayingSource.stop();
+        playButton.innerHTML = "&#9654;";
+        window.currentPlayingSource = null;
+        window.currentPlayingButton = null;
+        return;
+      }
+    }
+
+    // Stop any currently playing track
+    if (window.currentPlayingSource) {
+      window.currentPlayingSource.stop();
+      if (window.currentPlayingButton) {
+        window.currentPlayingButton.innerHTML = "&#9654;";
+      }
+    }
+
+    try {
+      const audioBuffer = await fetchAudioPreview(
+        trackInfo["preview"],
+        audioContext,
+      );
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+
+      source.start(0);
+      window.currentPlayingSource = source;
+      window.currentPlayingButton = playButton;
+      playButton.innerHTML = "&#9616;&#9616;";
+
+      source.onended = () => {
+        playButton.innerHTML = "&#9654;";
+        window.currentPlayingSource = null;
+        window.currentPlayingButton = null;
+      };
+    } catch (error) {
+      console.error("Error loading audio:", error);
+      indicateUnavailableAudio(playButton); // Indicate unavailable audio
+    }
+  });
+}
+
+document.addEventListener("click", function (event) {
+  if (event.target.closest(".add-to-seeds")) {
+    event.preventDefault();
+    if (getTotalSeeds() < 5) {
+      let trackId, trackName, artistName, artistId;
+      let seedType = event.target
+        .closest(".add-to-seeds")
+        .classList.contains("track")
+        ? "track"
+        : "artist";
+      let imgSrc = event.target
+        .closest(".result-item")
+        .querySelector(".result-cover-art-container img").src;
+
+      let seedElement;
+      if (seedType === "track") {
+        trackId = event.target.closest(".add-to-seeds").dataset.trackid;
+        trackName = event.target.closest(".add-to-seeds").dataset.name;
+        artistName = event.target.closest(".add-to-seeds").dataset.artist;
+        seedElement = document.createElement("div");
+        seedElement.classList.add("clickable-result", "track");
+        seedElement.dataset.id = trackId;
+        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
+                                 <div class="result-info">
+                                     <h2>${trackName}</h2>
+                                     <p>${artistName}</p>
+                                 </div>`;
+      } else {
+        artistName = event.target.closest(".add-to-seeds").dataset.artist;
+        artistId = event.target.closest(".add-to-seeds").dataset.artistid;
+        seedElement = document.createElement("div");
+        seedElement.classList.add("clickable-result", "artist");
+        seedElement.dataset.id = artistId;
+        seedElement.innerHTML = `<img src="${imgSrc}" alt="Cover Art" class="result-image">
+                                 <div class="result-info">
+                                     <h2>${artistName}</h2>
+                                 </div>`;
+      }
+
+      document
+        .getElementById("universal_seeds_container")
+        .appendChild(seedElement);
+      updateSeedsInput("universal_seeds_container");
+    } else {
+      alert("You can select no more than 5 combined seeds.");
+    }
+  }
+});
 
 function updateSvgContainerHeight() {
   const bodyHeight = document.body.scrollHeight; // Get the full scroll height of the body
@@ -540,133 +597,129 @@ function updateSvgContainerHeight() {
   svgContainer.style.height = `${bodyHeight}px`; // Update the container height
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const toggleButton = document.getElementById("toggleButton");
-  const formContainer = document.querySelector(".form-container");
-  const searchContainer = document.querySelector(".search-container");
-  const seedsContainer = document.querySelector(".seed-container"); // Add this line
+const toggleButton = document.getElementById("toggleButton");
+const formContainer = document.querySelector(".form-container");
+const searchContainer = document.querySelector(".search-container");
+const seedsContainer = document.querySelector(".seed-container"); // Add this line
 
-  let isFormVisible = false; // The form is not visible by default
-  const svgUrls = [
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/amp",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/cd",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/clarinet",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/domra",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/drums_jsuiqf",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/f9cca628-b87a-4880-b2b3-a38e94b48d6f",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/grammy-svgrepo-com",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/gramophone",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/guitar_vqh6f4",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1701529651/randomsvg/headphones_lgdmiw.svg",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1701529651/randomsvg/headphone_pn69ku.svg",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_1",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_2",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_3",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_30",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_33",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_35",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_36",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_4",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_5",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_6",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano_hzttv3",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/radio-svgrepo-com",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/shape",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/speaker",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/trombone",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/vinyl_z1naey",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/wave_anpgln",
-    "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/xylophone",
-  ];
+let isFormVisible = false; // The form is not visible by default
+const svgUrls = [
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/amp",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/cd",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/clarinet",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/domra",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/drums_jsuiqf",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/f9cca628-b87a-4880-b2b3-a38e94b48d6f",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/grammy-svgrepo-com",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/gramophone",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/guitar_vqh6f4",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1701529651/randomsvg/headphones_lgdmiw.svg",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1701529651/randomsvg/headphone_pn69ku.svg",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_1",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_2",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_3",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_30",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_33",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_35",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_36",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_4",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_5",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/Layer_6",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/piano_hzttv3",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/radio-svgrepo-com",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/shape",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/speaker",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/trombone",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/vinyl_z1naey",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/wave_anpgln",
+  "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/xylophone",
+];
 
-  const svgPositions = [
-    { class: "svg1", x: "10%", y: "4%" },
-    { class: "svg2", x: "80%", y: "10%" },
-    { class: "svg3", x: "65%", y: "1%" },
-    { class: "svg4", x: "1%", y: "27%" },
-    { class: "svg5", x: "91%", y: "30%" },
-    { class: "svg6", x: "3%", y: "53%" },
-    { class: "svg7", x: "85%", y: "60%" },
-    { class: "svg8", x: "30%", y: "70%" },
-    { class: "svg9", x: "50%", y: "75%" },
-    { class: "svg10", x: "39%", y: "6%" },
-    { class: "svg11", x: "73%", y: "81%" },
-    { class: "svg12", x: "15%", y: "80%" },
-  ];
+const svgPositions = [
+  { class: "svg1", x: "10%", y: "4%" },
+  { class: "svg2", x: "80%", y: "10%" },
+  { class: "svg3", x: "65%", y: "1%" },
+  { class: "svg4", x: "1%", y: "27%" },
+  { class: "svg5", x: "91%", y: "30%" },
+  { class: "svg6", x: "3%", y: "53%" },
+  { class: "svg7", x: "85%", y: "60%" },
+  { class: "svg8", x: "30%", y: "70%" },
+  { class: "svg9", x: "50%", y: "75%" },
+  { class: "svg10", x: "39%", y: "6%" },
+  { class: "svg11", x: "73%", y: "81%" },
+  { class: "svg12", x: "15%", y: "80%" },
+];
 
-  const selectedPositions = svgPositions
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 12);
+const selectedPositions = svgPositions
+  .sort(() => 0.5 - Math.random())
+  .slice(0, 12);
 
-  document.body.style.position = "relative";
-  document.body.style.overflowX = "hidden"; // Prevent horizontal scrolling
-  document.body.style.margin = "0"; // Remove default margin
+document.body.style.position = "relative";
+document.body.style.overflowX = "hidden"; // Prevent horizontal scrolling
+document.body.style.margin = "0"; // Remove default margin
 
-  // Create a container for the SVG images
-  const svgContainer = document.createElement("div");
-  svgContainer.classList.add("svg-container"); // Add the class for the query selector
-  svgContainer.style.position = "absolute"; // Change to absolute to scroll with content
-  svgContainer.style.width = "100%";
-  // Initial height will be set by updateSvgContainerHeight function
-  svgContainer.style.top = "0";
-  svgContainer.style.left = "0";
-  svgContainer.style.zIndex = "-1"; // Ensure it's behind all other content
-  svgContainer.style.overflow = "hidden"; // Prevent scrollbars if SVGs overflow
-  document.body.prepend(svgContainer); // Insert it as the first child of body
+// Create a container for the SVG images
+const svgContainer = document.createElement("div");
+svgContainer.classList.add("svg-container"); // Add the class for the query selector
+svgContainer.style.position = "absolute"; // Change to absolute to scroll with content
+svgContainer.style.width = "100%";
+// Initial height will be set by updateSvgContainerHeight function
+svgContainer.style.top = "0";
+svgContainer.style.left = "0";
+svgContainer.style.zIndex = "-1"; // Ensure it's behind all other content
+svgContainer.style.overflow = "hidden"; // Prevent scrollbars if SVGs overflow
+document.body.prepend(svgContainer); // Insert it as the first child of body
 
-  svgContainer
-    .querySelectorAll(".svg-placeholder")
-    .forEach((el) => el.remove());
+svgContainer.querySelectorAll(".svg-placeholder").forEach((el) => el.remove());
 
-  // Create and append SVG images to the svgContainer
-  selectedPositions.forEach((position, index) => {
-    const svgImage = document.createElement("img");
-    svgImage.src = svgUrls[index % svgUrls.length]; // Cycle through SVG URLs
-    svgImage.classList.add("svg-placeholder", position.class);
-    svgImage.style.position = "absolute";
-    svgImage.style.left = position.x;
-    svgImage.style.top = position.y;
-    svgContainer.appendChild(svgImage);
-  });
-  updateSvgContainerHeight();
-  window.addEventListener("resize", updateSvgContainerHeight);
+// Create and append SVG images to the svgContainer
+selectedPositions.forEach((position, index) => {
+  const svgImage = document.createElement("img");
+  svgImage.src = svgUrls[index % svgUrls.length]; // Cycle through SVG URLs
+  svgImage.classList.add("svg-placeholder", position.class);
+  svgImage.style.position = "absolute";
+  svgImage.style.left = position.x;
+  svgImage.style.top = position.y;
+  svgContainer.appendChild(svgImage);
+});
+updateSvgContainerHeight();
+window.addEventListener("resize", updateSvgContainerHeight);
 
-  toggleButton.addEventListener("click", function () {
-    // Check if the viewport width is less than or equal to 620px
-    if (window.innerWidth <= 1024) {
-      if (isFormVisible) {
-        formContainer.style.display = "none";
-        searchContainer.style.display = "flex"; // Adjust according to your layout
-        seedsContainer.style.display = "flex"; // Show seeds container - adjust if needed
-      } else {
-        formContainer.style.display = "flex"; // Adjust according to your layout
-        searchContainer.style.display = "none";
-        seedsContainer.style.display = "none"; // Hide seeds container
-      }
-      isFormVisible = !isFormVisible;
-    }
-  });
-
-  // Optional: Add a resize event listener to handle cases when the window is resized across the 620px threshold
-  window.addEventListener("resize", function () {
-    if (window.innerWidth > 1024) {
-      // If the viewport is wider than 620px, ensure both containers are visible
-      formContainer.style.display = "flex";
-      searchContainer.style.display = "flex";
+toggleButton.addEventListener("click", function () {
+  // Check if the viewport width is less than or equal to 620px
+  if (window.innerWidth <= 1024) {
+    if (isFormVisible) {
+      formContainer.style.display = "none";
+      searchContainer.style.display = "flex"; // Adjust according to your layout
       seedsContainer.style.display = "flex"; // Show seeds container - adjust if needed
     } else {
-      // If the viewport is 620px or less, apply the visibility based on the isFormVisible flag
-      if (isFormVisible) {
-        formContainer.style.display = "flex";
-        searchContainer.style.display = "none";
-        seedsContainer.style.display = "none"; // Hide seeds container
-      } else {
-        formContainer.style.display = "none";
-        searchContainer.style.display = "flex";
-        seedsContainer.style.display = "flex"; // Show seeds container - adjust if needed
-      }
+      formContainer.style.display = "flex"; // Adjust according to your layout
+      searchContainer.style.display = "none";
+      seedsContainer.style.display = "none"; // Hide seeds container
     }
-  });
+    isFormVisible = !isFormVisible;
+  }
+});
+
+// Optional: Add a resize event listener to handle cases when the window is resized across the 620px threshold
+window.addEventListener("resize", function () {
+  if (window.innerWidth > 1024) {
+    // If the viewport is wider than 620px, ensure both containers are visible
+    formContainer.style.display = "flex";
+    searchContainer.style.display = "flex";
+    seedsContainer.style.display = "flex"; // Show seeds container - adjust if needed
+  } else {
+    // If the viewport is 620px or less, apply the visibility based on the isFormVisible flag
+    if (isFormVisible) {
+      formContainer.style.display = "flex";
+      searchContainer.style.display = "none";
+      seedsContainer.style.display = "none"; // Hide seeds container
+    } else {
+      formContainer.style.display = "none";
+      searchContainer.style.display = "flex";
+      seedsContainer.style.display = "flex"; // Show seeds container - adjust if needed
+    }
+  }
 });

@@ -67,7 +67,7 @@ class Config(object):
         "popularity",
     ]
 
-    REDIRECT_URL = "http://rawcon.rawcsav.com/"
+    REDIRECT_URL = os.getenv("REDIRECT_URL")
 
     MAX_RETRIES = 3
     RETRY_WAIT_SECONDS = 2
