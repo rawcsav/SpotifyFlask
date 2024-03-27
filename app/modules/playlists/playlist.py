@@ -2,12 +2,10 @@ import base64
 import json
 import random
 from io import BytesIO
-
 import requests
 from PIL import Image
 from flask import Blueprint, render_template, jsonify, session, redirect, url_for, request
-from sqlalchemy.testing import db
-
+from app import db
 from models.artgen_models import genre_sql
 from models.user_models import UserData, playlist_sql
 from modules.auth.auth import require_spotify_auth, fetch_user_data
@@ -298,7 +296,7 @@ def reorder_playlist(playlist_id):
         sorted_tracks = sorted(combined, key=lambda x: (x[2] is None, x[2]))  # Prioritize non-None values
     elif sorting_criterion == "Release Date - Descending":
         sorted_tracks = sorted(combined, key=lambda x: (x[2] is None, x[2]), reverse=True)
-    elif sorting_criterion == "Random Shuffle":
+    elif sorting_criterion == "Shuffle":
         random.shuffle(combined)
         sorted_tracks = combined
     else:

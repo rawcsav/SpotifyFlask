@@ -1,10 +1,5 @@
 {% extends 'base.html' %} {% block head %}
 <title>Playlist - {{ playlist_data['id'] }}</title>
-<script>
-  var artgenTen = JSON.parse("{{ artgen_ten | tojson | safe }}");
-  var yearCountData = JSON.parse("{{ year_count | safe }}");
-  var playlistId = "{{ playlist_id }}";
-</script>
 {% endblock %} {% block styles %} {% assets "spec_playlist_style_bundle" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}" />
 {% endassets %} {% endblock %} {% block body %}
@@ -14,34 +9,34 @@
     <div class="plfunc-group">
       <h3 class="utils-title">Playlist Utilities</h3>
       <button id="like-all-songs-btn" title="Like all songs in the playlist">
-        <i class="fas fa-thumbs-up"></i> Like All Songs
+        <i class="icon-thumbs-up"></i> Like All Songs
       </button>
       <button
         id="unlike-all-songs-btn"
         title="Unlike all songs in the playlist"
       >
-        <i class="fas fa-thumbs-down"></i> Unlike All Songs
+        <i class="icon-thumbs-down"></i> Unlike All Songs
       </button>
       <br />
       <button
         id="remove-duplicates-btn"
         title="Remove duplicate songs from the playlist"
       >
-        <i class="fas fa-clone"></i> Remove Duplicates
+        <i class="icon-layer-minus"></i> Remove Duplicates
       </button>
       <br />
       <button
         id="recommendations-btn"
         title="Get recommendations based on this playlist"
       >
-        <i class="fas fa-lightbulb"></i> Track Recs
+        <i class="icon-list-music"></i> Track Recs
       </button>
       <button
         id="artgen-btn"
         title="Generate cover art"
         onclick="showArtGenContainer()"
       >
-        <i class="fas fa-image"></i> Cover Art Gen
+        <i class="icon-paintbruhs"></i> Cover Art Gen
       </button>
     </div>
     <div class="playlist-container">
@@ -65,8 +60,9 @@
           action="{{ url_for('playlist.refresh_playlist', playlist_id=playlist_id) }}"
           method="post"
         >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <button id="refresh-btn" type="submit" class="pl-refresh">
-            <i class="fas fa-sync-alt"></i> Refresh Data
+            <i class="icon-refresh"></i> Refresh Data
           </button>
         </form>
       </div>
@@ -74,21 +70,21 @@
     <div class="plorder-group">
       <h3 class="utils-title">Playlist Ordering</h3>
       <button id="order-asc-btn">
-        <i class="fas fa-sort-numeric-up"></i> Date Added (Ascending)
+        <i class="icon-sort-up"></i> Date Added (Ascending)
       </button>
       <button id="order-desc-btn">
-        <i class="fas fa-sort-numeric-down"></i> Date Added (Descending)
+        <i class="icon-sort-down"></i> Date Added (Descending)
       </button>
       <br />
       <button id="rd-asc-btn">
-        <i class="fas fa-calendar-plus"></i> Release Date (Ascending)
+        <i class="icon-calendar-up"></i> Release Date (Ascending)
       </button>
       <button id="rd-desc-btn">
-        <i class="fas fa-calendar-minus"></i> Release Date (Descending)
+        <i class="icon-calendar-down"></i> Release Date (Descending)
       </button>
       <br />
 
-      <button id="shuffle-btn"><i class="fas fa-random"></i> Shuffle</button>
+      <button id="shuffle-btn"><i class="icon-shuffle"></i> Shuffle</button>
     </div>
     <div id="reorderModal" class="modal">
       <div class="modal-content">
@@ -124,13 +120,13 @@
     >
       <input type="text" id="apiKey" name="apiKey" required />
       <button type="submit" class="submit-btn">
-        <i class="fas fa-arrow-right"></i>
+        <i class="icon-arrow-right"></i>
       </button>
     </form>
     <div class="gen-btns">
       <input type="checkbox" id="parent-toggle" style="display: none" />
       <i
-        class="fas fa-bullseye"
+        class="icon-target"
         id="parent-toggle-icon"
         title="Use Parent Genre"
         onclick="toggleCheckbox('parent-toggle', 'parent-toggle-icon')"
@@ -138,7 +134,7 @@
 
       <input type="checkbox" id="hd-toggle" style="display: none" />
       <i
-        class="fa-solid fa-wand-magic-sparkles"
+        class="icon-high-definition"
         id="hd-toggle-icon"
         title="Toggle HD Quality"
         onclick="toggleCheckbox('hd-toggle', 'hd-toggle-icon')"
@@ -147,7 +143,7 @@
         Generate Art
       </button>
 
-      <i id="gen-refresh-icon" class="fas fa-sync" onclick="refreshArt()"></i>
+      <i id="gen-refresh-icon" class="icon-refresh" onclick="refreshArt()"></i>
     </div>
     <div id="art-gen-results"></div>
     <p
@@ -274,10 +270,14 @@
   <div class="toast-content" id="toastMessage"></div>
   <span class="close-toast">×</span>
 </div>
+<div
+  id="data-container"
+  data-artgen-ten="{{ artgen_ten|safe }}"
+  data-year-count="{{ year_count }}"
+  data-playlist-id="{{ playlist_id }}"
+></div>
 {% endblock %}{% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js"></script>
 {% assets "spec_playlist_js_bundle" %}
 <script src="{{ ASSET_URL }}"></script>
 {% endassets %}{% endblock %}

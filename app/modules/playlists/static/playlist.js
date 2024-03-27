@@ -17,58 +17,42 @@ function updateSvgContainerHeight() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  // eslint-disable-next-line no-undef
-  const colorThief = new ColorThief();
-  const playlistContainer = document.getElementById("playlist-container");
-
-  // eslint-disable-next-line no-undef
-  playlistData.forEach(function (playlist) {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = playlist.cover_art;
-
-    img.onload = function () {
-      const palette = colorThief.getPalette(img, 4);
-      let dominantColor = palette[0];
-      for (let i = 0; i < palette.length; i++) {
-        if (
-          dominantColor[0] < 85 &&
-          dominantColor[1] < 85 &&
-          dominantColor[2] < 85
-        ) {
-          dominantColor = palette[i];
-        } else {
-          break;
-        }
+  fetch("/recs/get-user-playlists")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+      return response.json();
+    })
+    .then((playlistsData) => {
+      const playlistContainer = document.getElementById("playlist-container");
+      playlistsData.forEach((playlist) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = playlist.cover_art;
 
-      const complementaryColor = [
-        255 - dominantColor[0],
-        255 - dominantColor[1],
-        255 - dominantColor[2],
-      ];
+        img.onload = function () {
+          playlistContainer.innerHTML += `
+            <div class="playlist-item">
+              <a href="/playlist/playlist/${playlist.id}?playlist_name=${encodeURIComponent(playlist.name)}" class="playlist-option">
+                <div class="image-container">
+                  <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image" onclick="handlePlaylistClick()">
+                  <div class="overlay-text">${playlist.name}</div>
+                </div>
+              </a>
+            </div>`;
+        };
 
-      img.style.animation = `dynamicShadow 2s infinite`;
-      img.style.animation = `sparkle 1s infinite`;
-
-      const boxShadowColor = `rgba(${complementaryColor[0]}, ${complementaryColor[1]}, ${complementaryColor[2]}, 0.6)`;
-      const boxShadow = `0 0 60px 0 ${boxShadowColor}, inset -100px 10px 80px 20px #080707, 0 0 40px 10px ${boxShadowColor}, inset 0 0 10px 0 ${boxShadowColor}`;
-
-      playlistContainer.innerHTML += `
-  <div class="playlist-item">
-    <a href="/playlist/${playlist.id}?playlist_name=${encodeURIComponent(
-      playlist.name,
-    )}" class="playlist-option">
-      <div class="image-container" style="box-shadow: ${boxShadow};">
-        <img src="${playlist.cover_art}" alt="${
-          playlist.name
-        }" class="playlist-image" onclick="handlePlaylistClick()">
-        <div class="overlay-text">${playlist.name}</div>
-      </div>
-    </a>
-  </div>`;
-    };
-  });
+        img.onerror = function () {
+          console.error("Failed to load image:", playlist.cover_art);
+          // Handle image load failure (optional)
+        };
+      });
+    })
+    .catch((error) => {
+      console.error("Failed to fetch playlists:", error);
+      // Handle fetch error (optional)
+    });
 
   const svgUrls = [
     "http://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34",

@@ -61,7 +61,7 @@ def select_random_elements(genres_list=None):
 
 def generate_dalle_prompt(genre_name, art_style, random_attribute):
     response = openai.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4-turbo-preview",
         messages=[
             {
                 "role": "system",
@@ -85,7 +85,7 @@ def generate_dalle_prompt(genre_name, art_style, random_attribute):
 def generate_images_dalle(prompt, style, quality="standard"):
     image_data = []
 
-    for i in range(3):
+    for i in range(2):
         generation_response = openai.images.generate(
             model="dall-e-3", prompt=prompt, size="1024x1024", quality=quality, style=style, n=1
         )

@@ -355,8 +355,7 @@ nav button {
   flex-direction: column;
 }
 
-/* FontAwesome icon base style */
-.nav-button .fa {
+.nav-button i {
   margin-bottom: 5px;
   transition: transform 0.3s;
 }
@@ -379,7 +378,7 @@ nav button {
 }
 
 /* Apply the bounce animation to the icon of the active tab */
-.nav-button.active .fa {
+.nav-button.active i {
   animation: bounce 1s infinite;
 }
 

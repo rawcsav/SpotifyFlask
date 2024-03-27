@@ -137,18 +137,15 @@ def search():
 
 @recs_bp.route("/get-user-playlists")
 def get_user_playlists():
-    spotify_user_id = session["USER_ID"]
+    spotify_user_id = session.get("USER_ID")
+    if not spotify_user_id:
+        return jsonify(error="Session not initialized"), 403
 
     user_data_entry = UserData.query.filter_by(spotify_user_id=spotify_user_id).first()
-
     if not user_data_entry:
         return jsonify(error="User data not found"), 404
 
     owner_name = session.get("DISPLAY_NAME")
-    playlists_data = [
-        playlist
-        for playlist in user_data_entry.playlist_info
-        if playlist["owner"] is not None and playlist["owner"] == owner_name
-    ]
-    # Return the data as JSON
+    playlists_data = [playlist for playlist in user_data_entry.playlist_info if playlist.get("owner") == owner_name]
+
     return jsonify(playlists_data)

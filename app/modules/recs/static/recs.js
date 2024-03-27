@@ -18,14 +18,19 @@ document.addEventListener("DOMContentLoaded", function () {
       if (playlists.error) {
         playlistsContainer.innerHTML = `<p>Error: ${playlists.error}</p>`;
       } else {
+        // Generate HTML for each playlist and join them into a single string
         const playlistsHtml = playlists
           .map((playlist) => {
-            return `<div>
-                                <h3>${playlist.name}</h3>
-                                <p>Owner: ${playlist.owner}</p>
-                            </div>`;
+            return `<div class="playlist-option" data-playlistid="${playlist.id}">
+                    <div class="playlist-item">
+                      <img src="${playlist.cover_art}" alt="${playlist.name}" class="playlist-image">
+                      <h3 class="playlist-name">${playlist.name}</h3>
+                      <p>Owner: ${playlist.owner}</p>
+                    </div>
+                    </div>`;
           })
           .join("");
+        // Set the innerHTML of the playlistsContainer to the generated HTML
         playlistsContainer.innerHTML = playlistsHtml;
       }
     })
@@ -74,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // eslint-disable-next-line no-unused-vars
   function getSliderConfig(sliderId, inputId) {
     const slider = document.getElementById(sliderId);
 
@@ -101,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const slider = document.getElementById(sliderId);
     const sliderConfig = getSliderConfig(sliderId, inputId);
 
+    // eslint-disable-next-line no-undef
     noUiSlider.create(slider, sliderConfig); // No need to log here anymore
 
     slider.noUiSlider.on("update", function (values, handle) {
@@ -218,18 +225,25 @@ document.querySelector("form").addEventListener("submit", function (event) {
   getRecommendations();
 });
 
-function showToast(button, message) {
-  let toast = document.getElementById("toast");
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  const toastMessage = document.getElementById("toastMessage");
 
-  let buttonOffset = button.getBoundingClientRect();
-  toast.style.top = buttonOffset.top + "px";
-  toast.style.left = buttonOffset.left + "px";
+  toastMessage.textContent = message;
 
-  toast.textContent = message;
-  toast.classList.add("show");
+  if (type === "error") {
+    toast.classList.add("error");
+    toast.classList.remove("success");
+  } else {
+    toast.classList.add("success");
+    toast.classList.remove("error");
+  }
+
+  toast.style.display = "block";
+
   setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3400);
+    toast.style.display = "none";
+  }, 5000);
 }
 
 document.addEventListener("click", function (event) {
@@ -242,8 +256,8 @@ document.addEventListener("click", function (event) {
     let trackId = event.target.closest(".add-to-saved").dataset.trackid;
     let button = event.target.closest(".add-to-saved");
 
-    if (heartIcon.classList.contains("fas", "fa-heart")) {
-      fetch("/unsave_track", {
+    if (heartIcon.classList.contains("icon-")) {
+      fetch("/recs/unsave_track", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -254,8 +268,8 @@ document.addEventListener("click", function (event) {
         .then((response) => {
           if (response.ok) {
             showToast(button, "Track unsaved successfully!");
-            heartIcon.classList.remove("fas", "fa-heart", "liked");
-            heartIcon.classList.add("far", "fa-heart");
+            heartIcon.classList.remove("icon-heart-minus", "liked");
+            heartIcon.classList.add("icon-heart-plus");
           } else {
             throw new Error("Error unsaving the track");
           }
@@ -265,7 +279,7 @@ document.addEventListener("click", function (event) {
           console.error("Error:", error);
         });
     } else {
-      fetch("/save_track", {
+      fetch("/recs/save_track", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -276,8 +290,8 @@ document.addEventListener("click", function (event) {
         .then((response) => {
           if (response.ok) {
             showToast(button, "Track saved successfully!");
-            heartIcon.classList.remove("far", "fa-heart");
-            heartIcon.classList.add("fas", "fa-heart", "liked");
+            heartIcon.classList.remove("icon-heart-plus");
+            heartIcon.classList.add("icon-heart-minus", "liked");
           } else {
             throw new Error("Error saving the track");
           }
@@ -291,54 +305,65 @@ document.addEventListener("click", function (event) {
 });
 
 document.addEventListener("click", function (event) {
+  // Check if the clicked element or its parent has the 'add-to-playlist' class
   if (event.target.closest(".add-to-playlist")) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default action
 
-    let button = event.target.closest(".add-to-playlist");
-    let trackId = button.dataset.trackid;
+    const button = event.target.closest(".add-to-playlist");
+    const trackId = button.dataset.trackid; // Retrieve the track ID from the data attribute
+    const playlistModal = document.getElementById("playlistModal");
 
-    let playlistModal = document.getElementById("playlistModal");
+    // Set the track ID and button reference in the modal for later use
     playlistModal.dataset.trackid = trackId;
     playlistModal.dataset.button = button;
-    playlistModal.style.display = "block";
+    playlistModal.style.display = "block"; // Display the modal
   }
 });
 
+// This function handles adding a track to a playlist
+function addToPlaylist(trackId, playlistId, button) {
+  fetch("/recs/add_to_playlist", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(), // Ensure CSRF token is correctly used
+    },
+    body: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      showToast(button, "Added to Playlist!"); // Show success message
+      const plusIcon = button.querySelector(".plus-icon");
+      plusIcon.classList.remove("plus-icon-grey");
+      plusIcon.classList.add("plus-icon-green"); // Update icon color
+      document.getElementById("playlistModal").style.display = "none"; // Hide the modal
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      showToast(button, "An error occurred while adding to the playlist.");
+    });
+}
+
+// Listen for clicks on playlist options within the modal
 document.addEventListener("click", function (event) {
   if (event.target.closest(".playlist-option")) {
     event.preventDefault();
 
-    let plusIcon = event.target
-      .closest(".playlist-option")
-      .querySelector(".plus-icon");
-    let playlistId =
-      event.target.closest(".playlist-option").dataset.playlistid;
-    let modal = document.getElementById("playlistModal");
-    let trackId = modal.dataset.trackid;
+    const playlistOption = event.target.closest(".playlist-option");
+    const playlistId = playlistOption.dataset.playlistid; // Retrieve the playlist ID
+    const modal = document.getElementById("playlistModal");
+    const trackId = modal.dataset.trackid; // Retrieve the track ID set earlier
+    const button = modal.dataset.button; // Retrieve the button reference
 
-    let button = modal.dataset.button;
-
-    fetch("/add_to_playlist", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCsrfToken(),
-      },
-      body: JSON.stringify({ track_id: trackId, playlist_id: playlistId }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          showToast(button, "Added to Playlist!");
-          modal.style.display = "none";
-          plusIcon.classList.remove("plus-icon-grey");
-          plusIcon.classList.add("plus-icon-green");
-        } else {
-          throw new Error("Error adding to playlist");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    addToPlaylist(trackId, playlistId, button); // Call the function to add to playlist
   }
 });
 
@@ -411,134 +436,78 @@ async function getRecommendations() {
       body: formJSON,
     });
     const data = await response.json();
-    console.log(formJSON);
     displayRecommendations(data["recommendations"]);
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-async function displayRecommendations(recommendations) {
-  const results = document.getElementById("results");
-  results.innerHTML = "";
-
-  let currentPlayingSource = null;
-  let currentPlayingButton = null;
-  const audioContext = new AudioContext();
-
-  for (const trackInfo of recommendations) {
-    const trackElement = createTrackElement(trackInfo);
-    results.appendChild(trackElement);
-
-    // Correctly scoped playButton within the loop for each track
-    const playButton = trackElement.querySelector(`.play-button`);
-    setupPlayButton(
-      playButton,
-      trackInfo,
-      audioContext,
-      currentPlayingSource,
-      currentPlayingButton,
-    );
-  }
-
-  document.querySelector(".results-container").scrollTop = 0;
-}
-
 function createTrackElement(trackInfo) {
   const div = document.createElement("div");
   div.className = "result-item";
   div.innerHTML = `
-    <div class="result-cover-art-container">
-      <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art" id="cover_${trackInfo["trackid"]}">
-      <div class="caption">
-        <h2>${trackInfo["trackName"]}</h2>
-        <p>${trackInfo["artist"]}</p>
-      </div>
-      <div class="play-button noselect" id="play_${trackInfo["trackid"]}">&#9654;</div>
-    </div>
-    <audio controls>
-      <source src="${trackInfo["preview"]}" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
-  `;
-  return div;
+        <div class="result-cover-art-container">
+            <img src="${trackInfo["cover_art"]}" alt="Cover Art" class="result-cover-art">
+            <div class="caption">
+                <h2>${trackInfo["trackName"]}</h2>
+                <p>${trackInfo["artist"]}</p>
+            </div>
+            <div class="play-button noselect" id="play_${trackInfo["trackid"]}"><i class="icon-play"></i></div>
+        </div>
+        <div class="dropdown-content">
+            <a href="#" class="add-to-saved" data-trackid="${trackInfo["trackid"]}"><i class="heart-icon icon-heart-plus"></i></a>
+            <a href="#" class="add-to-playlist" data-trackid="${trackInfo["trackid"]}"><i class="plus-icon icon-album-plus"></i></a>
+        </div>
+        <audio controls class="audio-player" id="audio_${trackInfo["trackid"]}">
+            <source src="${trackInfo["preview"]}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    `;
+  return div; // Return the element for external handling
 }
+// Global reference to currently playing audio to manage play/pause
+let currentPlayingAudio = null;
 
-async function fetchAudioPreview(url, audioContext, retries = 3) {
-  try {
-    const response = await fetchWithRetry(url, retries);
-    const arrayBuffer = await response.arrayBuffer();
-    return audioContext.decodeAudioData(arrayBuffer);
-  } catch (error) {
-    console.error("Error loading audio after retries:", error);
-    throw error; // Rethrow to handle in the calling function
-  }
-}
+function setupPlayToggle(trackId) {
+  const playButton = document.getElementById(`play_${trackId}`);
+  const audioPlayer = document.getElementById(`audio_${trackId}`);
+  const playIcon = playButton.querySelector("i"); // Assuming <i> is a direct child of the play button
 
-async function fetchWithRetry(url, retries, delay = 1000) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url);
-      if (!response.ok)
-        throw new Error(`Fetch failed with status ${response.status}`);
-      return response;
-    } catch (error) {
-      console.log(`Retry ${i + 1} for ${url}`);
-      if (i === retries - 1) throw error;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-}
-
-function indicateUnavailableAudio(playButton) {
-  playButton.innerHTML = "N/A";
-  playButton.classList.add("unavailable");
-}
-
-function setupPlayButton(playButton, trackInfo, audioContext) {
-  playButton.addEventListener("click", async () => {
-    // If this track is already playing, pause it
-    if (playButton === window.currentPlayingButton) {
-      if (window.currentPlayingSource) {
-        window.currentPlayingSource.stop();
-        playButton.innerHTML = "&#9654;";
-        window.currentPlayingSource = null;
-        window.currentPlayingButton = null;
-        return;
-      }
+  playButton.addEventListener("click", function () {
+    // If there's any audio playing, pause it and reset its button
+    if (currentPlayingAudio && currentPlayingAudio !== audioPlayer) {
+      currentPlayingAudio.pause();
+      currentPlayingAudio.currentTime = 0; // Optionally reset the audio to the start
+      const playingId = currentPlayingAudio
+        .getAttribute("id")
+        .replace("audio_", "");
+      const playingButtonIcon = document
+        .getElementById(`play_${playingId}`)
+        .querySelector("i");
+      playingButtonIcon.className = "icon-play"; // Reset the icon
     }
 
-    // Stop any currently playing track
-    if (window.currentPlayingSource) {
-      window.currentPlayingSource.stop();
-      if (window.currentPlayingButton) {
-        window.currentPlayingButton.innerHTML = "&#9654;";
-      }
+    // Toggle play/pause for the clicked track
+    if (audioPlayer.paused) {
+      audioPlayer.play();
+      playIcon.className = "icon-pause"; // Change the icon to pause
+      currentPlayingAudio = audioPlayer; // Update the currently playing audio
+    } else {
+      audioPlayer.pause();
+      playIcon.className = "icon-play"; // Change the icon back to play
+      currentPlayingAudio = null; // No audio is playing now
     }
+  });
+}
+// Assume you have a function like this to handle the display of recommendations
+function displayRecommendations(recommendations) {
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = ""; // Clear existing entries
 
-    try {
-      const audioBuffer = await fetchAudioPreview(
-        trackInfo["preview"],
-        audioContext,
-      );
-      const source = audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(audioContext.destination);
-
-      source.start(0);
-      window.currentPlayingSource = source;
-      window.currentPlayingButton = playButton;
-      playButton.innerHTML = "&#9616;&#9616;";
-
-      source.onended = () => {
-        playButton.innerHTML = "&#9654;";
-        window.currentPlayingSource = null;
-        window.currentPlayingButton = null;
-      };
-    } catch (error) {
-      console.error("Error loading audio:", error);
-      indicateUnavailableAudio(playButton); // Indicate unavailable audio
-    }
+  recommendations.forEach((trackInfo) => {
+    const trackElement = createTrackElement(trackInfo);
+    resultsContainer.appendChild(trackElement); // Append the element here
+    setupPlayToggle(trackInfo["trackid"]); // Setup control here if preferable
   });
 }
 

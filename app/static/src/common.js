@@ -196,7 +196,7 @@ function toggleSettings(event) {
   event.stopPropagation(); // Prevents the dropdown from closing
   // eslint-disable-next-line no-unused-vars
   const settingsCog = document.getElementById("settingsCog");
-  const settingsMenu = document.getElementById("settings-menu");
+  const settingsMenu = document.getElementById("settingsDropdown");
   if (
     settingsMenu.style.display === "none" ||
     settingsMenu.style.display === ""

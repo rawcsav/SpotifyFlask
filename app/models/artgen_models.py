@@ -41,11 +41,11 @@ class artgenstyle_sql(db.Model):
 
 class artgenurl_sql(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    url = db.Column(db.VARCHAR(255), nullable=False)
+    url = db.Column(db.VARCHAR(510), nullable=False)
     genre_name = db.Column(db.VARCHAR(255), nullable=True)
     art_style = db.Column(db.VARCHAR(255), nullable=True)
     random_attribute = db.Column(db.VARCHAR(255), nullable=True)
-    prompt = db.Column(db.VARCHAR(255), nullable=True)
+    prompt = db.Column(db.VARCHAR(2048), nullable=True)
     playlist_id = db.Column(db.VARCHAR(255), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 

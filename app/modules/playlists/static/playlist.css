@@ -119,9 +119,9 @@ body.dark-mode p {
   align-items: stretch;
   display: flex;
   flex-wrap: wrap;
-  gap: 70px;
+  gap: 50px;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 20px 0;
 }
 
 .playlist-name,

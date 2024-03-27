@@ -4,6 +4,12 @@ function updateSvgContainerHeight() {
   svgContainer.style.height = `${bodyHeight}px`; // Update the container height
 }
 
+function getCsrfToken() {
+  return document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const svgUrls = [
     "https://res.cloudinary.com/dn9bcrimg/image/upload/v1/randomsvg/3673dcf5-01e4-43d2-ac71-ed04a7b56b34",
@@ -45,8 +51,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     event.stopImmediatePropagation();
 
-    fetch("/refresh-data", {
+    fetch("/user/refresh-data", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
     })
       .then((response) => {
         if (response.ok) {
