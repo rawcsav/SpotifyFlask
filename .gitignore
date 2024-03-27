@@ -162,7 +162,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 #Other
-.DS_Store
 pyproject.toml
 include/
 app/db.webstats
@@ -170,8 +169,38 @@ app/db.webstats
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
-.idea/
 node_modules/
 /app/db.webstats
 /app/data/
 /app/static/fonts/
+
+include/site/python3.11/greenlet/greenlet.h
+
+cert.pem
+*.pem
+key.pem
+# Distribution / packaging
+
+local_config.py
+
+#Config
+config.ini
+r
+stylelint.config.js
+/include/
+/app/static/user_files/temp_img/*
+/cert.pem
+/key.pem
+/app/static/user_files/user_img/*
+/app/static/user_files/user_audio/*
+!/app/static/dist/
+/ssl/
+/app/user_files/
+ssl/
+/web-config/cloudflared/*
+*cert.pem
+*key.pem
+*.key
+*.crt
+*.csr
+/web-config/certs/*
