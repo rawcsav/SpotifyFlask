@@ -1,0 +1,105 @@
+{% extends 'base.html' %} {% block head %}
+<title>Profile Info</title>
+{% endblock %} {% block styles %} {% assets "user_style_bundle" %}
+<link rel="stylesheet" href="{{ ASSET_URL }}" />
+{% endassets %} {% endblock %} {% block body %}
+<div class="container">
+  <div class="row d-flex">
+    <div class="col-md-6 flex-fill">
+      <section class="card">
+        <div class="user-info-row">
+          <h3>Hello <em>{{ data.display_name }}</em>!</h3>
+          <div class="text-center mt-4 d-flex justify-content-center page-nav">
+            <a
+              href="{{ url_for('stats.stats') }}"
+              class="btn btn-info stats-btn"
+              >Statistics</a
+            >
+            <a
+              href="{{ url_for('recs.recommendations') }}"
+              class="btn btn-info rec-btn"
+              >Recommendations</a
+            >
+            <a
+              href="{{ url_for('playlist.playlist') }}"
+              class="btn btn-info playlist-btn"
+              >Playlists</a
+            >
+          </div>
+          <div class="text-center mt-4 d-flex justify-content-center page-util">
+            <a href="/logout" class="btn btn-danger">Logout</a>
+            <button id="refresh-button" class="btn btn-success">
+              Refresh Data
+            </button>
+          </div>
+          <div class="text-center mt-2">
+            <small class="text-muted" style="font-size: 0.7rem"
+              >Last Refresh: {{ last_active.strftime('%b %d at %I:%M %p')
+              }}</small
+            >
+          </div>
+          <br />
+        </div>
+        <p class="project-text">
+          Visit Rawc-On on
+          <a
+            href="https://github.com/rawcsav/SpotifyFlask"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub.</a
+          >
+          <br />
+          Related projects:
+          <a
+            href="https://rawcsav.com/projects/botify10.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Botify</a
+          >
+          and
+          <a
+            href="https://rawcsav.com/projects/Botify%20Grime.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Botify Grime</a
+          >.
+        </p>
+      </section>
+    </div>
+    <div class="col-md-6 flex-fill">
+      <section class="card mb-4">
+        <h3>Recent Tracks</h3>
+        <ul class="recent-tracks">
+          {% for track in user_data.recent_tracks %}
+          <li>
+            <div class="recent-wrapper">
+              <img
+                src="{{ track.track.album.images[0].url }}"
+                alt="Cover Art"
+                width="50"
+                height="50"
+              />
+              <div class="recent-info">
+                <strong>{{ track.track.name }}</strong> from
+                <em>{{ track.track.album.name }}</em> by {{
+                track.track.artists[0].name }}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </div>
+  </div>
+  <div class="row mt-5 profile-footer"></div>
+</div>
+{% endblock %}{% block scripts %}
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"
+/>
+{% assets "user_js_bundle" %}
+<script src="{{ ASSET_URL }}"></script>
+{% endassets %}{% endblock %}

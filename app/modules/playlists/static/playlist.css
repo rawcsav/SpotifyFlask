@@ -1,0 +1,271 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+body {
+  animation: fadeIn 1s ease-out;
+  background-color: #fafafa;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body.dark-mode {
+  background-color: #0c1c30;
+}
+
+h1 {
+  font-family: Window-Bold, sans-serif;
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.colorful-text span:nth-child(7n + 1) {
+  color: #ca403f; /* First color */
+}
+
+.colorful-text span:nth-child(7n + 2) {
+  color: #f7893b; /* Second color */
+}
+
+.colorful-text span:nth-child(7n + 3) {
+  color: #f1db2b; /* Third color */
+}
+
+.colorful-text span:nth-child(7n + 4) {
+  color: #5dab54; /* Fourth color */
+}
+
+.colorful-text span:nth-child(7n + 5) {
+  color: #4b8dc2; /* Fifth color */
+}
+
+.colorful-text span:nth-child(7n + 6) {
+  color: #9b5de5; /* Sixth color */
+}
+
+.colorful-text span:nth-child(7n) {
+  color: #f7a1d5; /* Seventh color */
+}
+
+body.dark-mode h1 {
+  color: #fbae3c;
+}
+
+h2 {
+  font-family: Futura, sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+body.dark-mode h2 {
+  color: #fa9845;
+}
+
+p {
+  font-weight: 500;
+  margin: 0;
+  text-decoration: none;
+}
+body.dark-mode p {
+  color: #fbae3c;
+}
+
+.homepage-link {
+  cursor: pointer;
+  left: 3px;
+  position: absolute;
+  z-index: 100;
+  top: 1px;
+  -webkit-touch-callout: none;
+  user-select: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 60px;
+  width: 60px;
+  background-image: url("https://res.cloudinary.com/dn9bcrimg/image/upload/v1701024834/colorfullogo_ypzgak.svg");
+  transition: transform 0.3s;
+}
+
+.homepage-link:hover {
+  transform: scale(1.05);
+}
+
+#playlist-container {
+  align-content: center;
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  justify-content: center;
+  padding: 20px 20px 0;
+}
+
+.playlist-name,
+.playlist-info p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-right-nav {
+  display: flex;
+  gap: 10px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+@keyframes dynamicShadow {
+  0% {
+    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    box-shadow:
+      0 0 10px 2px red,
+      0 0 20px 2px rgba(255, 255, 255, 0.5),
+      0 0 30px 5px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 20px 5px pink,
+      0 0 30px 10px rgba(255, 255, 255, 0.5),
+      0 0 40px 15px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow:
+      0 0 10px 2px orange,
+      0 0 20px 2px rgba(255, 255, 255, 0.5),
+      0 0 30px 5px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.image-container {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgb(0 0 0 / 50%);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.image-container:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.playlist-image {
+  background-color: #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 200px;
+  min-height: 200px;
+  min-width: 200px;
+  object-fit: cover;
+  width: 200px;
+}
+
+.playlist-name {
+  align-items: center;
+  background-color: black;
+  font-family: Futura, sans-serif;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  font-size: 15px;
+  font-weight: bold;
+  height: 20%;
+  justify-content: center;
+  max-width: 200px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.overlay-text {
+  font-family: Futura, sans-serif;
+  align-items: center;
+  background-color: rgb(0 0 0 / 80%);
+  border-radius: 5px;
+  bottom: 0;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.playlist-item {
+  margin-bottom: 20px;
+}
+
+.pagination {
+  text-align: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 100px;
+}
+
+.pagination a {
+  color: #fff;
+  padding: 8px 16px;
+  margin: 0 4px;
+  background-color: #f1db2b;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+#spotifyUserDropdown {
+  border: 1px solid #f1db2b;
+}
+.svg-placeholder {
+  width: 150px; /* or your preferred width */
+  height: auto; /* maintains the aspect ratio */
+  position: absolute;
+  z-index: -1;
+}
+.pagination a:hover {
+  background-color: #555;
+}
+
+body.dark-mode .pagination a {
+  background-color: #fbae3c;
+}
+
+@media (max-width: 768px) {
+  .svg-placeholder {
+    width: 100px; /* or your preferred width */
+  }
+}

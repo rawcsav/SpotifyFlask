@@ -1,30 +1,25 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *$py.class
-/app/static/fonts/*
+
 # C extensions
-*.so
-data/
+
+
+cert.pem
+key.pem
+*.pem
+*.cert
+*.key
 # Distribution / packaging
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
-logs/
-user_data_dir/
-db.webstats
 .eggs/
 lib/
 bin/
-etc/
-share/
-.idea/
 lib64/
-.DS_Store
-pyvenv.cfg
 parts/
 sdist/
 var/
@@ -61,8 +56,7 @@ coverage.xml
 cover/
 
 # Translations
-*.mo
-*.pot
+
 
 # Django stuff:
 *.log
@@ -73,6 +67,7 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+flask_session/
 
 # Scrapy stuff:
 .scrapy
@@ -136,6 +131,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+node_modules/
+local_config.py
+
+#Config
+config.ini
 
 # Spyder project settings
 .spyderproject
@@ -143,7 +143,6 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
-webstats.db
 
 # mkdocs documentation
 /site
@@ -161,46 +160,21 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+#PyCharm
+.idea/
+pyvenv.cfg
+
 #Other
-pyproject.toml
-include/
-app/db.webstats
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-node_modules/
-/app/db.webstats
-/app/data/
-/app/static/fonts/
-
-include/site/python3.11/greenlet/greenlet.h
-
-cert.pem
-*.pem
-key.pem
-# Distribution / packaging
-
-local_config.py
-
-#Config
-config.ini
-r
+.DS_Store
 stylelint.config.js
 /include/
-/app/static/user_files/temp_img/*
 /cert.pem
 /key.pem
-/app/static/user_files/user_img/*
-/app/static/user_files/user_audio/*
-!/app/static/dist/
 /ssl/
-/app/user_files/
-ssl/
 /web-config/cloudflared/*
-*cert.pem
-*key.pem
-*.key
-*.crt
-*.csr
-/web-config/certs/*
+/web-config/cloudflared
+.git
+.gitignore
+Dockerfile
+README.md

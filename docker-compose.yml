@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
+      MYSQL_DATABASE: ${SQL_DB_NAME}
+      MYSQL_USER: remote_user
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
+    volumes:
+      - db_volume:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - appnet
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      FLASK_APP: wsgi.py
+      FLASK_ENV: production
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+      FLASK_DEBUG: False
+      SQL_HOSTNAME: mysql
+      SQL_USERNAME: remote_user
+      SQL_PASSWORD: ${SQL_PASSWORD}
+      SQL_DB_NAME: ${SQL_DB_NAME}
+      CRYPT_KEY: ${CRYPT_KEY}
+      CLOUD_NAME: ${CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_SECRET: ${CLOUDINARY_SECRET}
+    volumes:
+      - ./app:/rawcon/app
+      - ./app/static:/rawcon/app/static
+      - ./config.py:/rawcon/config.py
+      - ./wsgi.py:/rawcon/wsgi.py
+    depends_on:
+      - mysql
+    networks:
+      - appnet
+    ports:
+      - "8081:8081"
+  nginx:
+    image: nginx:mainline-alpine
+    volumes:
+      - web-root:/var/www/html
+      - ./web-config/nginx:/etc/nginx/conf.d/
+      - ./app:/rawcon/app
+      - ./app/static:/rawcon/app/static
+      - certs:/etc/ssl/certs
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    depends_on:
+      - web
+    networks:
+      - appnet
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run ${CLOUDFLARED_TUNNEL_ID}
+    volumes:
+      - ./web-config/cloudflared:/etc/cloudflared
+    depends_on:
+      - nginx
+    networks:
+      - appnet
+
+volumes:
+  db_volume:
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/rawcsav/SpotifyFlask/web-root/
+      o: bind
+  certs:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/rawcsav/SpotifyFlask/web-config/certs/
+      o: bind
+  user_files_volume:  # New volume for user files
+
+networks:
+    appnet:
+        driver: "bridge"
