@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0.36
@@ -43,53 +42,11 @@ services:
       - appnet
     ports:
       - "8081:8081"
-  nginx:
-    image: nginx:mainline-alpine
-    volumes:
-      - web-root:/var/www/html
-      - ./web-config/nginx:/etc/nginx/conf.d/
-      - ./app:/rawcon/app
-      - ./app/static:/rawcon/app/static
-      - certs:/etc/ssl/certs
-    ports:
-      - "80:80"
-      - "443:443"
-    restart: unless-stopped
-    depends_on:
-      - web
-    networks:
-      - appnet
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run ${CLOUDFLARED_TUNNEL_ID}
-    restart: unless-stopped
-    volumes:
-      - ./web-config/cloudflared:/etc/cloudflared
-    depends_on:
-      - nginx
-    networks:
-      - appnet
 
 volumes:
   db_volume:
-  certbot-etc:
-  certbot-var:
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/rawcsav/SpotifyFlask/web-root/
-      o: bind
-  certs:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/rawcsav/SpotifyFlask/web-config/certs/
-      o: bind
   user_files_volume:  # New volume for user files
 
 networks:
     appnet:
-        driver: "bridge"
+      external: true

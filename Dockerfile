@@ -4,6 +4,7 @@ FROM python:3.10
 WORKDIR /rawcon
 
 RUN chown -R www-data:www-data /rawcon
+
 COPY . /rawcon
 
 RUN apt-get update && \
