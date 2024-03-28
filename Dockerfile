@@ -6,7 +6,7 @@ WORKDIR /build
 # Copy only what is needed for pip install
 COPY requirements.txt .
 
-# Install dependencies
+# Install dependencies and uwsgi
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install uwsgi
 
@@ -21,10 +21,16 @@ COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/pytho
 # Copy the application code
 COPY . .
 
-# Change ownership to non-root user and switch to it
-RUN chown -R www-data:www-data /rawcon \
-    && apt-get update \
+# Install system dependencies required for runtime
+# Note: This step is necessary if your application or any Python package requires system libraries.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       # Add any system dependencies here
     && rm -rf /var/lib/apt/lists/*
+
+# Change ownership to non-root user and switch to it
+RUN useradd -m -d /rawcon www-data \
+    && chown -R www-data:www-data /rawcon
 
 USER www-data
 
