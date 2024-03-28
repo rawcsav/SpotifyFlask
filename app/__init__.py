@@ -41,12 +41,12 @@ def create_app():
     assets.init_app(app)  # Initialize Flask-Assets
 
     with app.app_context():
-        from modules.auth import auth
-        from modules.user import user
-        from modules.stats import stats
-        from modules.art_gen import art_gen
-        from modules.recs import recs
-        from modules.playlists import playlist
+        from app.modules.auth import auth
+        from app.modules.user import user
+        from app.modules.stats import stats
+        from app.modules.art_gen import art_gen
+        from app.modules.recs import recs
+        from app.modules.playlists import playlist
 
         app.register_blueprint(auth.auth_bp)
         app.register_blueprint(user.user_bp)
