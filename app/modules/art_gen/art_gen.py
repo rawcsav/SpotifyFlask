@@ -1,9 +1,9 @@
 import openai
 from flask import Blueprint, request, send_from_directory, jsonify, session
 
-from models.user_models import UserData
-from modules.art_gen.art_gen_util import generate_and_save_images
-from modules.auth.auth_util import verify_session, fetch_user_data, decrypt_data
+from app.models.user_models import UserData
+from app.modules.art_gen.art_gen_util import generate_and_save_images
+from app.modules.auth.auth_util import verify_session, fetch_user_data, decrypt_data
 
 art_gen_bp = Blueprint("art_gen", __name__, template_folder="templates", static_folder="static", url_prefix="/art_gen")
 

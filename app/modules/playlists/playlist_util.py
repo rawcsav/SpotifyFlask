@@ -4,7 +4,7 @@ from datetime import datetime
 
 from flask import session
 from app import db
-from models.user_models import playlist_sql
+from app.models.user_models import playlist_sql
 from modules.user.user_util import init_session_client
 from util.database_util import get_or_fetch_audio_features, get_or_fetch_artist_info
 

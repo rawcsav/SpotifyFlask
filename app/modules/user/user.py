@@ -5,10 +5,10 @@ from flask import Blueprint, render_template, session, request, jsonify
 from pytz import timezone
 
 from app import db
-from models.user_models import UserData
-from modules.auth.auth import require_spotify_auth, fetch_user_data
-from modules.auth.auth_util import verify_session, convert_utc_to_est
-from modules.user.user_util import (
+from app.models.user_models import UserData
+from app.modules.auth.auth import require_spotify_auth, fetch_user_data
+from app.modules.auth.auth_util import verify_session, convert_utc_to_est
+from app.modules.user.user_util import (
     init_session_client,
     check_and_refresh_user_data,
     fetch_and_process_data,

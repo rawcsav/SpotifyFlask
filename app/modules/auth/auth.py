@@ -9,8 +9,8 @@ from flask import make_response
 from openai import OpenAI
 
 from app import db
-from models.user_models import UserData
-from modules.auth.auth_util import (
+from app.models.user_models import UserData
+from app.modules.auth.auth_util import (
     verify_session,
     generate_state,
     prepare_auth_payload,

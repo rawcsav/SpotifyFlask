@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 import openai
 from app import db
-from models.artgen_models import artgen_sql, artgenstyle_sql, artgenurl_sql
+from app.models.artgen_models import artgen_sql, artgenstyle_sql, artgenurl_sql
 
 
 def select_random_elements(genres_list=None):

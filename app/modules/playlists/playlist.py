@@ -6,8 +6,8 @@ import requests
 from PIL import Image
 from flask import Blueprint, render_template, jsonify, session, redirect, url_for, request
 from app import db
-from models.artgen_models import genre_sql
-from models.user_models import UserData, playlist_sql
+from app.models.artgen_models import genre_sql
+from app.models.user_models import UserData, playlist_sql
 from modules.auth.auth import require_spotify_auth, fetch_user_data
 from modules.auth.auth_util import verify_session
 from modules.playlists.playlist_util import (
