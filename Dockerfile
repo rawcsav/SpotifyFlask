@@ -15,4 +15,4 @@ EXPOSE 8081
 
 ENV FLASK_APP=uwsgi.py
 
-CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8081", "myapp:app"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8081", "uwsgi:app"]
