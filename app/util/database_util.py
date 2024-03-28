@@ -7,8 +7,8 @@ import pandas as pd
 from scipy.spatial import distance_matrix
 
 from app import db
-from models.artgen_models import artgen_sql, artgenurl_sql
-from models.user_models import artist_sql, features_sql
+from app.models.artgen_models import artgen_sql, artgenurl_sql
+from app.models.user_models import artist_sql, features_sql
 
 
 def get_today_date():

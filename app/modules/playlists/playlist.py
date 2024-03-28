@@ -8,17 +8,17 @@ from flask import Blueprint, render_template, jsonify, session, redirect, url_fo
 from app import db
 from app.models.artgen_models import genre_sql
 from app.models.user_models import UserData, playlist_sql
-from modules.auth.auth import require_spotify_auth, fetch_user_data
-from modules.auth.auth_util import verify_session
-from modules.playlists.playlist_util import (
+from app.modules.auth.auth import require_spotify_auth, fetch_user_data
+from app.modules.auth.auth_util import verify_session
+from app.modules.playlists.playlist_util import (
     calculate_genre_weights,
     get_playlist_details,
     update_playlist_data,
     get_artists_seeds,
     get_genres_seeds,
 )
-from modules.recs.recs_util import get_recommendations
-from modules.user.user_util import init_session_client, format_track_info
+from app.modules.recs.recs_util import get_recommendations
+from app.modules.user.user_util import init_session_client, format_track_info
 from util.database_util import delete_expired_images_for_playlist
 
 playlist_bp = Blueprint(
