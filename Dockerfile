@@ -13,6 +13,6 @@ RUN apt-get update && \
 
 EXPOSE 8081
 
-ENV FLASK_APP=wsgi.py
+ENV FLASK_APP=uwsgi.py
 
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
+CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8081", "myapp:app"]

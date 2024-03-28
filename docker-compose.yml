@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      FLASK_APP: wsgi.py
+      FLASK_APP: uwsgi.py
       FLASK_ENV: production
       FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
       SQL_HOSTNAME: mysql
@@ -35,7 +35,7 @@ services:
       - ./app:/rawcon/app
       - ./app/static:/rawcon/app/static
       - ./config.py:/rawcon/config.py
-      - ./wsgi.py:/rawcon/wsgi.py
+      - ./uwsgi.py:/rawcon/uwsgi.py
     depends_on:
       - mysql
     networks:

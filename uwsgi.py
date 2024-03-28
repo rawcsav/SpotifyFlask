@@ -8,7 +8,6 @@ if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
 app = create_app()
-application = app
 
 if __name__ == "__main__":
-    application.run(port=8081, host="127.0.0.1")
+    app.run(port=8081, host="0.0.0.0")
