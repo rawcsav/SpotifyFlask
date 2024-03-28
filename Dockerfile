@@ -19,19 +19,12 @@ WORKDIR /rawcon
 COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 
 # Copy the application code
-COPY . .
+COPY . /rawcon
 
-# Install system dependencies required for runtime
-# Note: This step is necessary if your application or any Python package requires system libraries.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       # Add any system dependencies here
-    && rm -rf /var/lib/apt/lists/*
-
-RUN if ! id www-data &>/dev/null; then \
-        useradd -m -d /rawcon www-data; \
-    fi && \
-    chown -R www-data:www-data /rawcon \
+    && rm -rf /var/lib/apt/lists/* \
+    chown -R www-data:www-data /rawcon
 
 USER www-data
 
