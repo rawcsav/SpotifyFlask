@@ -28,9 +28,10 @@ RUN apt-get update \
        # Add any system dependencies here
     && rm -rf /var/lib/apt/lists/*
 
-# Change ownership to non-root user and switch to it
-RUN useradd -m -d /rawcon www-data \
-    && chown -R www-data:www-data /rawcon
+RUN if ! id www-data &>/dev/null; then \
+        useradd -m -d /rawcon www-data; \
+    fi && \
+    chown -R www-data:www-data /rawcon \
 
 USER www-data
 
