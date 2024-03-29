@@ -29,5 +29,3 @@ COPY . /rawcon
 EXPOSE 8081
 
 ENV FLASK_APP=uwsgi.py
-
-CMD ["gunicorn", "--workers", "3", "--worker-class","gevent", "-t", "90", "uwsgi:app", "--bind", "0.0.0.0:8081" ]

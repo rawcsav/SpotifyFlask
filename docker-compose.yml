@@ -15,6 +15,7 @@ services:
       - appnet
 
   web:
+    command: gunicorn --workers 3 --worker-class gevent -t 90 uwsgi:app --bind 0.0.0.0:8081
     build:
       context: .
       dockerfile: Dockerfile
