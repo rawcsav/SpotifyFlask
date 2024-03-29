@@ -12,6 +12,8 @@ services:
       - db_volume:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/:ro
     command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - internal
 
   web:
     command: gunicorn --workers 1  -t 90 --bind 0.0.0.0:8081 uwsgi:app --log-level=debug
@@ -40,6 +42,7 @@ services:
       - mysql
     networks:
       - appnet
+      - internal
     ports:
       - "8081:8081"
 
@@ -48,5 +51,7 @@ volumes:
   user_files_volume:  # New volume for user files
 
 networks:
+    internal:
+      driver: "bridge"
     appnet:
       external: true
