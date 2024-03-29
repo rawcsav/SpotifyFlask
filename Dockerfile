@@ -14,7 +14,6 @@ RUN chown -R www-data:www-data /rawcon
 # It's better to run them in a single RUN statement to ensure that the package index is
 # always updated before an install.
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends <your-system-dependencies> && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
