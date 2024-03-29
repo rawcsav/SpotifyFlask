@@ -6,7 +6,7 @@ from flask import session
 from app import db
 from app.models.user_models import playlist_sql
 from app.modules.user.user_util import init_session_client
-from util.database_util import get_or_fetch_audio_features, get_or_fetch_artist_info
+from app.util.database_util import get_or_fetch_audio_features, get_or_fetch_artist_info
 
 
 def get_playlist_info(sp, playlist_id):

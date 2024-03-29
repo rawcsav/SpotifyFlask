@@ -7,7 +7,7 @@ from flask import current_app
 from app import db
 from app.models.user_models import UserData
 from app.modules.auth.auth import refresh
-from util.database_util import get_or_fetch_artist_info, get_or_fetch_audio_features
+from app.util.database_util import get_or_fetch_artist_info, get_or_fetch_audio_features
 
 FEATURES = [
     "acousticness",

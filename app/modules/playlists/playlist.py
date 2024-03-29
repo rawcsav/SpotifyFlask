@@ -19,7 +19,7 @@ from app.modules.playlists.playlist_util import (
 )
 from app.modules.recs.recs_util import get_recommendations
 from app.modules.user.user_util import init_session_client, format_track_info
-from util.database_util import delete_expired_images_for_playlist
+from app.util.database_util import delete_expired_images_for_playlist
 
 playlist_bp = Blueprint(
     "playlist", __name__, template_folder="templates", static_folder="static", url_prefix="/playlist"

@@ -1,7 +1,7 @@
 from spotipy import SpotifyException
 from sqlalchemy.testing import db
 
-from util.database_util import add_artist_to_db
+from app.util.database_util import add_artist_to_db
 
 
 def spotify_search(sp, query, type, limit=6):
