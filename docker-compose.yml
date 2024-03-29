@@ -3,16 +3,15 @@ services:
   mysql:
     image: mysql:8.0.36
     environment:
-      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${SQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${SQL_DB_NAME}
       MYSQL_USER: remote_user
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
     restart: unless-stopped
     volumes:
       - db_volume:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/:ro
     command: --default-authentication-plugin=mysql_native_password
-    networks:
-      - appnet
 
   web:
     command: gunicorn --workers 1 --worker-class gevent -t 90 uwsgi:app --bind 0.0.0.0:8081 --log-level=debug
