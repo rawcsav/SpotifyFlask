@@ -33,6 +33,9 @@ services:
       CLOUD_NAME: ${CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_SECRET: ${CLOUDINARY_SECRET}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      REDIRECT_URI: ${REDIRECT_URI}
     volumes:
       - ./app:/rawcon/app
       - ./app/static:/rawcon/app/static
