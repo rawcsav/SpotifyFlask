@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, jsonify, session
 from sqlalchemy.orm import joinedload
 
 from app.models.user_models import UserData
-from modules.auth.auth import require_spotify_auth, fetch_user_data
-from modules.user.user_util import calculate_averages_for_period
-from modules.auth.auth_util import verify_session
+from app.modules.auth.auth import require_spotify_auth, fetch_user_data
+from app.modules.user.user_util import calculate_averages_for_period
+from app.modules.auth.auth_util import verify_session
 
 stats_bp = Blueprint("stats", __name__, template_folder="templates", static_folder="static", url_prefix="/stats")
 
