@@ -6,7 +6,9 @@ def compile_static_assets(assets):
     auth_style_bundle = Bundle("auth/landing.css", filters="cssmin", output="dist/css/auth.css")
     user_style_bundle = Bundle("user/profile.css", filters="cssmin", output="dist/css/user.css")
     playlist_style_bundle = Bundle("playlist/playlist.css", filters="cssmin", output="dist/css/playlist.css")
-    spec_playlist_style_bundle = Bundle("playlist/spec_playlist.css", filters="cssmin", output="dist/css/playlist.css")
+    spec_playlist_style_bundle = Bundle(
+        "playlist/spec_playlist.css", filters="cssmin", output="dist/css/spec_playlist.css"
+    )
     recs_style_bundle = Bundle("recs/recs.css", filters="cssmin", output="dist/css/recs.css")
     stats_style_bundle = Bundle("stats/stats.css", filters="cssmin", output="dist/css/stats.css")
 
@@ -22,7 +24,7 @@ def compile_static_assets(assets):
     auth_js_bundle = Bundle("auth/*.js", filters="jsmin", output="dist/js/auth.js")
     user_js_bundle = Bundle("user/*.js", filters="jsmin", output="dist/js/user.js")
     playlist_js_bundle = Bundle("playlist/playlist.js", filters="jsmin", output="dist/js/playlist.js")
-    spec_playlist_js_bundle = Bundle("playlist/spec_playlist.js", filters="jsmin", output="dist/js/playlist.js")
+    spec_playlist_js_bundle = Bundle("playlist/spec_playlist.js", filters="jsmin", output="dist/js/spec_playlist.js")
     recs_js_bundle = Bundle("recs/*.js", filters="jsmin", output="dist/js/recs.js")
     stats_js_bundle = Bundle("stats/*.js", filters="jsmin", output="dist/js/stats.js")
 
