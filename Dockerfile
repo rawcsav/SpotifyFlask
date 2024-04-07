@@ -7,7 +7,7 @@ WORKDIR /rawcon
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
-    libmysqlclient-dev \
+    default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
