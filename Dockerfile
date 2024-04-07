@@ -8,13 +8,17 @@ RUN apt-get update && \
 
 COPY requirements.txt /rawcon/
 RUN pip install --no-cache-dir -r requirements.txt
+COPY . /rawcon
 
 # Copy the rest of the application
-COPY . /rawcon
 RUN groupadd -r rawcon && useradd --no-log-init -r -g rawcon rawcon \
     && chown -R rawcon:rawcon /rawcon
 
-# Switch to non-root user
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 USER rawcon
 
 # Set environment variables
