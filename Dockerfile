@@ -6,6 +6,8 @@ WORKDIR /rawcon
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-libmysqlclient-dev \
+     pkg-config \
     default-mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
