@@ -64,10 +64,8 @@ def login(loginout):
     state = generate_state()
     scope = " ".join(
         [
-            "user-read-private",
             "user-top-read",
             "user-read-recently-played",
-            "user-follow-modify",
             "playlist-read-private",
             "playlist-read-collaborative",
             "playlist-modify-private",
