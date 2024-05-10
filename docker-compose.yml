@@ -36,11 +36,13 @@ services:
       CLIENT_ID: ${CLIENT_ID}
       CLIENT_SECRET: ${CLIENT_SECRET}
       REDIRECT_URI: ${REDIRECT_URI}
+      PROMETHEUS_MULTIPROC_DIR: "/app/metrics"
     volumes:
       - ./app:/rawcon/app
       - ./app/static:/rawcon/app/static
       - ./config.py:/rawcon/config.py
       - ./uwsgi.py:/rawcon/uwsgi.py
+      - ./metrics:"/app/metrics"
     depends_on:
       - mysql
     networks:
