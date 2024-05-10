@@ -8,7 +8,9 @@ from flask_wtf.csrf import CSRFProtect
 
 from config import ProductionConfig, DevelopmentConfig
 from flask_cors import CORS
+from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 
+metrics = GunicornInternalPrometheusMetrics.for_app_factory()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 cors = CORS()
@@ -24,6 +26,7 @@ def create_app():
     else:
         app.config.from_object(ProductionConfig)
         ProductionConfig.init_app(app)
+        metrics.init_app(app)
 
     assets = Environment(app)
     CORS(
