@@ -1,5 +1,6 @@
 {% extends 'base.html' %} {% block head %}
 <title>Playlists</title>
+<link rel="canonical" href="{{ url_for('playlist.playlist') }}" />
 {% endblock %} {% block styles %} {% assets "playlist_style_bundle" %}
 <link rel="stylesheet" href="{{ ASSET_URL }}" />
 {% endassets %} {% endblock %} {% block body %}
