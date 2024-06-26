@@ -110,7 +110,7 @@ pytimeparse2==1.7.1
 pytz==2023.3
 rapidfuzz==3.3.0
 redis==5.0.0
-requests==2.31.0
+requests==2.32.2
 requests-file==2.0.0
 row==0.1.0.dev3
 rsa==4.9
