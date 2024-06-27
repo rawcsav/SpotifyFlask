@@ -25,7 +25,6 @@ def create_app():
     else:
         app.config.from_object(ProductionConfig)
         ProductionConfig.init_app(app)
-        metrics.init_app(app)
 
     assets = Environment(app)
     CORS(
